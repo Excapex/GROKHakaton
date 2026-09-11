@@ -1,0 +1,1434 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Saglasnik — specifikacija v3</title>
+<meta name="description" content="Saglasnik v3: pregled projekta, povezane ispravke i provera nove revizije. Specifikacija za hakaton 12.09.2026.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#EFF2F4; --card:#FBFCFC; --sunk:#E2E7EA;
+    --ink:#101A22; --ink2:#38474F; --mute:#65757E;
+    --rule:#CBD3D7; --hard:#9FAAB0;
+    --acc:#0F5560; --accs:#DBE8EA;
+    --fail:#A3301C; --fails:#F5E3DE;
+    --miss:#8A6209; --misss:#F6EEDC;
+    --pass:#1F6146; --passs:#DFEBE4;
+    --m:66ch;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --paper:#0C1216;--card:#141C21;--sunk:#1B242A;
+    --ink:#E9EEF0;--ink2:#BCC7CC;--mute:#7E8C93;
+    --rule:#263238;--hard:#3B4A52;
+    --acc:#7FC0C9;--accs:#12262A;
+    --fail:#E09480;--fails:#2A1712;
+    --miss:#D9B15F;--misss:#271F10;
+    --pass:#7FC2A0;--passs:#122219;
+  }}
+  :root[data-theme="dark"]{
+    --paper:#0C1216;--card:#141C21;--sunk:#1B242A;
+    --ink:#E9EEF0;--ink2:#BCC7CC;--mute:#7E8C93;
+    --rule:#263238;--hard:#3B4A52;
+    --acc:#7FC0C9;--accs:#12262A;
+    --fail:#E09480;--fails:#2A1712;
+    --miss:#D9B15F;--misss:#271F10;
+    --pass:#7FC2A0;--passs:#122219;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:Spectral,Georgia,serif;font-size:17.5px;line-height:1.62;
+    padding-inline:20px;padding-block:0;-webkit-font-smoothing:antialiased;
+  }
+  .w{max-width:940px;margin:0 auto}
+
+  .top{padding-block:40px 22px;border-bottom:1px solid var(--hard)}
+  .eyebrow{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:500;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:13px;
+  }
+  h1{
+    font-family:"Barlow Semi Condensed",Arial,sans-serif;font-weight:700;
+    font-size:clamp(38px,7vw,68px);line-height:.94;letter-spacing:-.015em;
+    margin:0 0 6px;text-transform:uppercase;
+  }
+  .sub{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:500;font-size:clamp(17px,2.6vw,22px);
+    letter-spacing:.01em;color:var(--acc);margin:0 0 16px;
+  }
+  .dek{font-size:19.5px;color:var(--ink2);margin:0;max-width:62ch}
+  .meta{
+    margin-top:18px;font-family:"Roboto Mono",monospace;font-size:11px;color:var(--mute);
+    display:flex;flex-wrap:wrap;gap:5px 18px;
+  }
+
+  .lede{
+    margin-block:28px;background:var(--card);border:1px solid var(--hard);
+    border-left:5px solid var(--acc);padding:24px 26px;
+  }
+  .lede h2{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;
+    font-size:clamp(22px,3.6vw,31px);line-height:1.1;letter-spacing:-.008em;
+    margin:0 0 13px;text-wrap:balance;
+  }
+  .lede p{margin:11px 0 0;max-width:var(--m)}
+  .lede p:first-of-type{color:var(--ink)}
+  .lede p+p{color:var(--ink2)}
+
+  section{padding-block:36px;border-top:1px solid var(--rule)}
+  h3{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;font-size:30px;
+    line-height:1.08;letter-spacing:-.008em;margin:0 0 6px;text-transform:uppercase;
+    text-wrap:balance;
+  }
+  h4{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:20px;
+    letter-spacing:.005em;margin:28px 0 2px;
+  }
+  .lab{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:500;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:9px;
+  }
+  p{margin:12px 0;max-width:var(--m)}
+  ul,ol{max-width:var(--m);margin:12px 0;padding-left:1.2em}
+  li{margin:7px 0}
+  code{font-family:"Roboto Mono",monospace;font-size:.84em;background:var(--sunk);padding:1px 4px}
+  .mono{font-family:"Roboto Mono",monospace;font-size:.87em}
+  a{color:var(--acc);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  strong{font-weight:600}
+
+  pre{
+    margin:16px 0;padding:16px 18px;overflow-x:auto;background:var(--card);
+    border:1px solid var(--hard);font-family:"Roboto Mono",monospace;
+    font-size:12.5px;line-height:1.75;color:var(--ink2);font-variant-numeric:tabular-nums;
+  }
+  pre b{color:var(--ink);font-weight:700}
+  pre .g{color:var(--pass);font-weight:700}
+  pre .r{color:var(--fail);font-weight:700}
+  pre .y{color:var(--miss);font-weight:700}
+  pre .d{color:var(--mute)}
+  pre .t{color:var(--acc);font-weight:700}
+
+  .reg{margin-top:18px;border:1px solid var(--hard);background:var(--card)}
+  .reg-h{
+    display:grid;grid-template-columns:56px 96px 1fr;gap:0 14px;
+    padding:10px 16px;background:var(--sunk);border-bottom:1px solid var(--hard);
+    font-family:"Roboto Mono",monospace;font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--mute);
+  }
+  .f{display:grid;grid-template-columns:56px 96px 1fr;gap:2px 14px;padding:13px 16px;border-bottom:1px solid var(--rule)}
+  .f:last-child{border-bottom:none}
+  .fid{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;color:var(--mute);padding-top:2px}
+  .chip{
+    align-self:start;font-family:"Roboto Mono",monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.09em;padding:3px 6px;text-align:center;white-space:nowrap;
+  }
+  .chip.c,.chip.f{background:var(--fails);color:var(--fail)}
+  .chip.m{background:var(--misss);color:var(--miss)}
+  .chip.p{background:var(--passs);color:var(--pass)}
+  .fb{min-width:0}
+  .ft{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:16.5px;letter-spacing:.01em}
+  .fa{font-family:"Roboto Mono",monospace;font-size:11px;color:var(--acc);margin-top:1px}
+  .fd{font-size:15.5px;color:var(--ink2);margin-top:4px;max-width:64ch}
+  .fe{font-family:"Roboto Mono",monospace;font-size:11.5px;color:var(--mute);margin-top:3px}
+
+  .scroll{overflow-x:auto;margin-top:18px;border:1px solid var(--hard)}
+  table{border-collapse:collapse;width:100%;min-width:580px;background:var(--card)}
+  caption{
+    caption-side:top;text-align:left;padding:11px 15px;background:var(--sunk);
+    font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--rule);
+  }
+  th,td{padding:10px 15px;text-align:left;vertical-align:top;font-size:15.5px;border-bottom:1px solid var(--rule)}
+  thead th{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:14px;
+    letter-spacing:.02em;background:var(--sunk);border-bottom:1px solid var(--hard);
+  }
+  tbody tr:last-child td{border-bottom:none}
+  td.k{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:15.5px}
+  td.d,th.d{font-family:"Roboto Mono",monospace;font-size:12px;white-space:nowrap;color:var(--acc);font-weight:500}
+  td.n,th.n{text-align:right;font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+  .ok{color:var(--pass);font-weight:600}
+  .no{color:var(--fail);font-weight:600}
+  .mid{color:var(--mute)}
+
+  .box{margin:22px 0;padding:19px 21px;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--acc)}
+  .box .k{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--acc);display:block;margin-bottom:8px;
+  }
+  .box p{margin:0;max-width:64ch}
+  .box p+p{margin-top:9px}
+  .box.warn{border-left-color:var(--miss)}
+  .box.warn .k{color:var(--miss)}
+  .box.stop{border-left-color:var(--fail)}
+  .box.stop .k{color:var(--fail)}
+
+  .roster{margin-top:20px;border:1px solid var(--hard)}
+  .ag{display:grid;grid-template-columns:150px 1fr;gap:3px 18px;padding:15px 18px;background:var(--card);border-bottom:1px solid var(--rule)}
+  .ag:last-child{border-bottom:none}
+  .ag-n{font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;font-size:17px;letter-spacing:.01em;grid-row:1;grid-column:1}
+  .ag-m{font-family:"Roboto Mono",monospace;font-size:10.5px;color:var(--acc);grid-row:2;grid-column:1}
+  .ag-b{grid-row:1/3;grid-column:2;min-width:0}
+  .ag-b p{margin:0;font-size:15.5px;color:var(--ink2);max-width:62ch}
+  .ag-b p+p{margin-top:6px}
+  .ag.eng{background:var(--accs)}
+  .ag.eng .ag-n{color:var(--acc)}
+
+  .gap{border-top:1px solid var(--rule);padding:18px 0 4px;display:grid;grid-template-columns:42px 1fr;gap:0 16px}
+  .gap:last-of-type{border-bottom:1px solid var(--rule);padding-bottom:18px}
+  .gn{font-family:"Roboto Mono",monospace;font-weight:700;font-size:19px;color:var(--acc);font-variant-numeric:tabular-nums;padding-top:1px}
+  .gb h4{margin-top:0}
+  .gb p{margin-top:5px}
+
+  .tl{margin-top:20px}
+  .step{display:grid;grid-template-columns:74px 1fr;gap:2px 18px;padding:14px 0;border-top:1px solid var(--rule)}
+  .step:last-child{border-bottom:1px solid var(--rule)}
+  .st{font-family:"Roboto Mono",monospace;font-weight:700;font-size:14px;color:var(--acc);font-variant-numeric:tabular-nums;grid-row:1;grid-column:1}
+  .step strong{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:17px;letter-spacing:.01em;grid-row:1;grid-column:2}
+  .sd{grid-row:2;grid-column:2;font-size:15.5px;color:var(--ink2);max-width:62ch;margin-top:2px}
+  .step.hero strong{color:var(--acc)}
+
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:0;margin-top:20px;border:1px solid var(--hard)}
+  .col{padding:18px 20px;background:var(--card)}
+  .col+.col{border-left:1px solid var(--rule)}
+  .col h5{font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin:0 0 11px}
+  .col.y h5{color:var(--pass)}
+  .col.n h5{color:var(--fail)}
+  .col ul{margin:0;padding-left:1.1em;max-width:none}
+  .col li{font-size:15.5px}
+
+  footer{
+    border-top:1px solid var(--hard);margin-top:6px;padding-block:24px 46px;
+    color:var(--mute);font-family:"Roboto Mono",monospace;font-size:11px;line-height:1.85;
+  }
+  footer a{color:var(--mute)}
+
+  @media (max-width:600px){
+    body{font-size:17px}
+    .f,.reg-h{grid-template-columns:1fr;gap:5px}
+    .reg-h{display:none}
+    .step,.gap,.ag{grid-template-columns:1fr;gap:4px}
+    .ag-n,.ag-m,.ag-b{grid-row:auto;grid-column:auto}
+    .col+.col{border-left:none;border-top:1px solid var(--rule)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+body{margin:0} html{scroll-behavior:smooth} section{scroll-margin-top:20px}
+.contents{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid var(--rule);margin:24px 0 32px;background:var(--card)}
+.contents a{font-family:"Roboto Mono",monospace;font-size:11px;padding:11px 14px;border-bottom:1px solid var(--rule);text-decoration:none;overflow-wrap:anywhere}
+.contents a:hover{background:var(--accs)}
+.workspace-map{display:grid;grid-template-columns:1fr 1.35fr 1fr;border:1px solid var(--hard);margin:20px 0;background:var(--card)}
+.workspace-bar{grid-column:1/-1;padding:13px 16px;background:var(--sunk);font:500 11px/1.8 "Roboto Mono",monospace;border-bottom:1px solid var(--hard)}
+.workspace-bar span{display:block;color:var(--mute)}
+.workspace-col{padding:20px 16px;min-width:0}.workspace-col+.workspace-col{border-left:1px solid var(--rule)}
+.workspace-col p{font-size:15px;line-height:2;margin:0}.closing{margin-bottom:0}
+.step strong,.sd{min-width:0} p,li,td,.fe,.fa{overflow-wrap:anywhere}
+.scroll:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.ops details{border:1px solid var(--rule);margin:18px 0;background:var(--card);padding:12px 16px}
+.ops summary{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:600;cursor:pointer;line-height:1.7}
+.ops h3{margin-top:10px}.ops h3:not(:first-of-type){margin-top:32px}
+.ops pre{white-space:pre;overflow-x:auto;max-width:100%;font-size:12px;line-height:1.65}
+.ops pre code{background:none;padding:0;color:inherit;font-size:inherit;white-space:inherit}
+.code-wrap{position:relative;min-width:0}.code-wrap pre{padding-top:42px}
+.copy-code{position:absolute;right:8px;top:8px;border:1px solid var(--hard);border-radius:3px;background:var(--card);color:var(--ink);font:11px "Roboto Mono",monospace;padding:5px 9px;cursor:pointer}
+.ops td{vertical-align:top}.ops td:first-child{min-width:125px}.ops li{margin-bottom:6px}
+@media(max-width:600px){
+ .contents{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .workspace-map{grid-template-columns:1fr}.workspace-col+.workspace-col{border-left:0;border-top:1px solid var(--rule)}
+ .step .st,.step strong,.step .sd{grid-column:1;grid-row:auto}
+ .two{grid-template-columns:minmax(0,1fr)}.lede{padding:20px}.meta{font-size:10px}
+ .chip{justify-self:start}.scroll{max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{
+ :root,:root[data-theme="dark"]{--paper:#fff;--card:#fff;--sunk:#eef1f2;--ink:#101A22;--ink2:#38474F;--mute:#526169;--rule:#CBD3D7;--hard:#9FAAB0;--acc:#0F5560;--accs:#DBE8EA;--fail:#A3301C;--fails:#F5E3DE;--miss:#8A6209;--misss:#F6EEDC;--pass:#1F6146;--passs:#DFEBE4}
+ body{font-size:11pt;padding:0}.w{max-width:none}.contents{display:none}section{padding-block:20px}
+ h3,h4{break-after:avoid}.box,.step,.ag,.f,tr{break-inside:avoid}
+ .scroll{overflow:visible}table{min-width:0}th,td{font-size:9pt;padding:7px}pre{white-space:pre-wrap;font-size:8pt}
+ a{color:inherit}footer{font-size:8pt}.top{padding-top:0}.copy-code{display:none}.ops pre{white-space:pre-wrap}.ops details{break-inside:auto}
+}
+</style>
+</head>
+<body>
+<main class="w" id="vrh">
+<header class="top">
+  <div class="eyebrow">Verzija 3 · 11.09.2026 · Grok Bot Serbia Hackathon</div>
+  <h1>Saglasnik</h1>
+  <p class="sub">Kopilot za tehničke projekte svih disciplina.</p>
+  <p class="dek">Jedan radni prostor za projekte, dokumente, stručne preglede i revizije. Zaštita od požara je prvi aktivni modul: od dokaza i odluke do stvarne ispravke i proverene nove verzije.</p>
+  <div class="meta"><span>Hakaton: 12.09.2026 · tim od 2 člana</span><span>Planirana predaja: 18:30 · javni rok: 19:00</span><span>Status: specifikacija za izradu</span></div>
+</header>
+<div class="lede">
+  <h2>Širok proizvod. Prvi kompletan stručni modul.</h2>
+  <p><strong>Novi dogovor tima:</strong> interfejs i zajednički model podržavaju sve vrste tehničkih projekata; na hakatonu implementiramo ZOP. Ostali stručni moduli su jasno označeni kao planirani.</p><p>Projektant dodaje dokumentaciju. Saglasnik pronalazi problem, otvara dokaz, traži presudno pojašnjenje, priprema koordinisane izmene i posle prihvatanja proverava novu verziju. <strong>Posao je završen kada postoji upotrebljiv paket i dokaz šta je rešeno.</strong></p>
+  <p>Otac ima propise, tipske primedbe sa pravnim osnovom i projekte pre i posle ispravki, uključujući izvorne fajlove. Korisnik je potvrdio da materijal stiže večeras. To je osnova za izbor slučaja, pravila i evaluaciju; sadržaj još nije pregledan.</p>
+  <p><strong>Izmena izvornog dokumenta, izvoz i provera revizije ulaze u glavni obuhvat.</strong> Ambiciju ulažemo u tačnost povezivanja, posledice izmena i pouzdan završetak procesa.</p>
+</div>
+<div class="box"><span class="k">Rad u postojećem repou</span><p>Repo <strong>Excapex/GROKHakaton</strong> je već napravljen. Za početak pratite <a href="../README.md">README ovog repoa</a>. Odeljak 21 opisuje generički bootstrap: preskočite pravljenje drugog repoa, <code>git init</code> i <code>gh repo create</code>. Scaffold aplikacije prvo napravite u zasebnom privremenom folderu, pa prenesite samo aplikacione fajlove uz očuvanje ove dokumentacije. Promenljive za naziv repoa postavite na <code>Excapex/GROKHakaton</code>.</p></div>
+<nav class="contents" aria-label="Sadržaj specifikacije">
+  <a href="#proizvod">01 Proizvod</a><a href="#promene">02 Promene</a><a href="#primer">03 Demo slučaj</a><a href="#tok">04 Korisnički tok</a><a href="#interfejs">05 Interfejs</a><a href="#znanje">06 Stručno znanje</a><a href="#podaci">07 Podaci</a><a href="#agenti">08 Agenti</a><a href="#arhitektura">09 Arhitektura</a><a href="#stack">10 Stack</a><a href="#artefakti">11 Izmene i izlaz</a><a href="#kvalitet">12 Provere</a><a href="#obuhvat">13 Obuhvat</a><a href="#izvodjenje">14 Izvođenje</a><a href="#demo">15 Prezentacija</a><a href="#sudije">16 Sudije</a><a href="#resursi">17 Resursi</a><a href="#izvori">18 Osnova</a>
+<a href="#platforma">19 Novi scope</a><a href="#setup-pocetak">20 Nalozi i alati</a><a href="#setup-repo">21 Novi repo</a><a href="#setup-convex">22 Convex</a><a href="#setup-modeli">23 Modeli i izvori</a><a href="#setup-daytona">24 Daytona</a><a href="#setup-ui">25 UI alati</a><a href="#setup-deploy">26 CI i deploy</a><a href="#backlog">27 Posao i SP</a><a href="#git-protokol">28 Git protokol</a><a href="#claude-promptovi">29 CLAUDE promptovi</a><a href="#paket-setup">30 Setup paket</a>
+</nav>
+
+<section id="proizvod">
+  <div class="lab">01 — Proizvod i korisnik</div><h3>Projektant dobija sledeću reviziju pod kontrolom</h3>
+  <p>Početni korisnik je projektant ili odgovorno lice u birou koje usaglašava tehnički opis, tabele i grafičke priloge. Biro je prvi potencijalni kupac; investitor ima korist od kraćeg i jasnijeg procesa. Ko zaista plaća i koliko često koristi proizvod treba proveriti sa ocem i prvim korisnicima.</p>
+  <div class="box"><span class="k">Obećanje proizvoda</span><p>„Pokaži mi gde je problem, na čemu se zasniva i šta treba promeniti. Pripremi ono što možeš, a zatim proveri novu dokumentaciju.“</p></div>
+  <h4>Tri grupe provera u prvom ZOP modulu</h4>
+  <div class="roster">
+    <div class="ag"><div class="ag-n">Doslednost</div><div class="ag-m">više dokumenata</div><div class="ag-b"><p>Isti element ili podatak ima neusaglašene vrednosti. Pre poređenja potvrđuju se identitet, značenje, jedinice, sprat/sektor i revizija.</p></div></div>
+    <div class="ag"><div class="ag-n">Zahtevi</div><div class="ag-m">pravilo + preduslovi</div><div class="ag-b"><p>Stručno potvrđen zahtev proverava se nad dokazanim ulazima. Primenljivost i izuzeci su sastavni deo pravila.</p></div></div>
+    <div class="ag"><div class="ag-n">Nedostajući dokazi</div><div class="ag-m">pitanje ili zadatak</div><div class="ag-b"><p>Nedostaje podatak, prilog ili dovoljno čitljiv izvor. Sistem precizira šta je potrebno da bi pregled mogao da se nastavi.</p></div></div>
+  </div>
+  <p>Tip objekta i početne provere biraju se iz stvarnog materijala. Radna meta je <strong>8–15 potvrđenih pravila</strong>, sa širenjem kada ceo tok radi. To je početni plan kapaciteta, a ne tvrdnja o postojećoj pokrivenosti.</p>
+  <div class="box warn"><span class="k">Granica odgovornosti u korisničkom toku</span><p>Proizvod pomaže stručnom pregledu i pripremi dokumentacije. Projektantsku odluku i zvaničnu saglasnost ne može zameniti. Korisnik vidi obuhvat provera i preostale otvorene zadatke.</p></div>
+</section>
+
+<section id="promene">
+  <div class="lab">02 — Promene u odnosu na verziju 2</div><h3>Završetak posla postaje jezgro</h3>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Ugovor nove verzije</caption><thead><tr><th>Prethodni smer</th><th>Verzija 3</th><th>Zašto</th></tr></thead><tbody>
+    <tr><td>Proizvod je pozicioniran samo za ZOP</td><td class="k">Opšti kopilot + prvi aktivni ZOP modul</td><td>Zajednički projekti, dokumenti, zadaci i revizije; druge stručne funkcije dolaze kasnije</td></tr><tr><td>Pregled se završava registrom nalaza</td><td class="k">Nalaz → ispravka → artefakt → provera</td><td>Korisnik dobija završen posao u podržanom obuhvatu</td></tr>
+    <tr><td>Izvoz i izmene su CUT; revizije su dodatak</td><td class="k">Sva tri su MUST</td><td>Dokumentacija mora da napusti aplikaciju u upotrebljivom obliku</td></tr>
+    <tr><td>Globalni ključ jedne činjenice</td><td class="k">Opažanja vezana za element i reviziju</td><td>Isti naziv može pripadati različitim spratovima i verzijama</td></tr>
+    <tr><td>Shema kao garancija tačnosti</td><td class="k">Tipovi + dokaz + primenljivost + provera</td><td>Ispravan JSON može sadržati pogrešnu tvrdnju</td></tr>
+    <tr><td>Roster vezan za nove platforme</td><td class="k">Tri odgovornosti i provereni pristupi</td><td>Tehnologija mora dokazati doprinos na stvarnom primeru</td></tr>
+    <tr><td>30 pravila i procena novčane uštede</td><td class="k">Potvrđene provere i izmereni rezultati</td><td>Širina bez potvrde ne povećava kvalitet</td></tr>
+    <tr><td>Rok 20:00</td><td class="k">Predaja 18:30; javni rok 19:00</td><td>Plan se oslanja na provereni javni vodič</td></tr>
+  </tbody></table></div>
+  <p>Revizija koda pokazala je prihvatanje neodgovarajućih tipova i praznih dokaza, problem sa <code>null</code>, povoljne pretpostavke pri nedostajućim podacima i pogrešno mapiranje zahteva u B06. Postojeći engine služi kao osnova za popravku. Detalji i reprodukcija su u <a href="5-nezavisna-revizija-konteksta.md">nezavisnoj reviziji</a>.</p>
+  <p>CrossBeam već ima <code>city-review</code> i provere između listova. Preuzimamo njegovu organizaciju znanja i završne radne pakete, uz razvoj sopstvenog lokalnog procesa. <a href="https://github.com/mikeOnBreeze/cc-crossbeam">Izvorni projekat</a>.</p>
+</section>
+
+<section id="primer">
+  <div class="lab">03 — Trenutak za demonstraciju</div><h3>Jedna odluka povezuje sve potrebne izmene</h3>
+  <p><strong>Ilustracija ponašanja, ne rezultat stvarnog pregleda:</strong> označeni element ima različitu specifikaciju u tehničkom opisu i tabeli. Korisnik potvrđuje merodavan podatak. Sistem priprema korekciju teksta i tabele, a grafičku izmenu vodi kao zaseban zadatak.</p>
+  <div class="reg" aria-label="Ilustrativni registar nalaza">
+    <div class="reg-h"><span>ID</span><span>Stanje</span><span>Dokaz i sledeći korak</span></div>
+    <div class="f"><div class="fid">N-01</div><div class="chip c">KONFLIKT</div><div class="fb"><div class="ft">Specifikacija istog elementa se razlikuje</div><div class="fa">Tehnički opis ↔ tabela elemenata</div><div class="fd">Otvori oba izvora, proveri reviziju i zatraži potvrdu merodavne specifikacije.</div><div class="fe">Pravilo i konkretne vrednosti dodaju se iz stručnog primera.</div></div></div>
+    <div class="f"><div class="fid">N-02</div><div class="chip m">IZMENA</div><div class="fb"><div class="ft">Povezani grafički prilog zahteva usaglašavanje</div><div class="fd">Pripremi anotaciju i precizan zadatak za projektanta. Nalaz ostaje otvoren dok nova revizija ne pruži dokaz.</div></div></div>
+    <div class="f"><div class="fid">N-03</div><div class="chip m">PITANJE</div><div class="fb"><div class="ft">Nedostaje podatak za nezavisnu proveru</div><div class="fd">Prikaži potreban podatak i razlog. Bez pretpostavljanja povoljne vrednosti.</div></div></div>
+  </div>
+  <div class="box"><span class="k">Vrhunac demoa</span><p>Korisnik prihvati jednu odluku, vidi sve povezane promene i preuzme novu verziju. Ponovna provera zatvara dokazano rešeni nalaz, dok nerešeni grafički zadatak ostaje vidljiv.</p></div>
+  <p>Ako se u novoj verziji samo ukloni problematična oznaka, očekivan rezultat je <strong>nedostajući dokaz</strong>. Brisanje podatka ne sme izgledati kao uspešna ispravka.</p>
+</section>
+
+<section id="tok">
+  <div class="lab">04 — Korisnički tok</div><h3>Šest koraka do proverene revizije</h3>
+  <div class="tl">
+    <div class="step"><div class="st">01</div><strong>Primi i mapiraj dokumentaciju</strong><div class="sd">Manifest čuva dokument, reviziju, fizičku PDF stranu, oznaku lista i vrstu sadržaja. Prikazati učitano, indeksirano, provereno i nečitljivo kao različita stanja.</div></div>
+    <div class="step"><div class="st">02</div><strong>Prikaži nalaz sa izvorom</strong><div class="sd">Jedan klik otvara relevantno mesto. Konflikt otvara dva izvora. Zahtev prikazuje i potvrđeni pravni osnov i preduslove primene.</div></div>
+    <div class="step"><div class="st">03</div><strong>Postavi odlučujuće pitanje</strong><div class="sd">Traži konkretnu činjenicu ili merodavnu verziju. Sačuvaj odgovor i identitet potvrde. Prednost imaju pitanja koja razjašnjavaju više povezanih provera.</div></div>
+    <div class="step hero"><div class="st">04</div><strong>Pripremi i prihvati povezane izmene</strong><div class="sd">Prikaži pre/posle, izvor merodavne vrednosti i sve pogođene dokumente. Razdvoji dokumentarnu korekciju od projektantske odluke.</div></div>
+    <div class="step hero"><div class="st">05</div><strong>Generiši novu verziju i paket</strong><div class="sd">Podržani tekst ili tabela stvarno se menjaju u kopiji. Korisnik dobija novi fajl, izveštaj, anotacije i preostale zadatke, povezane sa izvornom revizijom.</div></div>
+    <div class="step hero"><div class="st">06</div><strong>Ponovo pročitaj i proveri</strong><div class="sd">Ekstrakcija nove datoteke i zavisne provere daju razliku nalaza: rešeno, otvoreno, novo ili potrebno pojašnjenje. Prihvatanje predloga nije dokaz uspeha.</div></div>
+  </div>
+</section>
+
+<section id="interfejs">
+  <div class="lab">05 — Interfejs</div><h3>Dokument, dokaz i odluka na istom mestu</h3>
+  <p>Zajednički ekran projekta ima pregled, dokumente, zadatke, revizije i module. Unutar aktivnog ZOP modula otvara se radni prostor za dokumentaciju: leva lista sadrži prioritetne nalaze; sredina prikazuje original; desni panel vodi kroz dokaz, pitanje i izmenu. Na manjim ekranima iste celine smenjuju se kroz jasne tabove. Šira navigacija i budući moduli opisani su u odeljku 19.</p>
+  <div class="workspace-map" aria-label="Predlog organizacije korisničkog interfejsa">
+    <div class="workspace-bar">SAGLASNIK · PROJEKAT · REVIZIJA A → B <span>Pregled · Dokumenti · Zadaci · Revizije · Moduli</span><span>AKTIVNI MODUL: ZAŠTITA OD POŽARA · Dosije · obuhvat · preuzmi paket</span></div>
+    <div class="workspace-col"><div class="lab">Nalazi</div><p>Konflikti<br>Nedostajući dokazi<br>Predložene izmene<br>Otvoreni zadaci</p></div>
+    <div class="workspace-col"><div class="lab">Dokument</div><p>Originalna strana<br>Označeno mesto<br>Drugi izvor<br>Pregled razlika</p></div>
+    <div class="workspace-col"><div class="lab">Sledeća odluka</div><p>Zašto postoji problem<br>Primena pravila<br>Pitanje projektantu<br>Prihvati predlog</p></div>
+  </div>
+  <h4>Stanja koja korisnik mora razlikovati</h4>
+  <p><strong>Otkriveno → predloženo → prihvaćeno → primenjeno → ponovo provereno.</strong> Odbijen predlog čuva razlog. Nepouzdano čitanje i projektantski zadatak ostaju jasno vidljivi. Broj nalaza ne predstavlja broj proverenih pravila.</p>
+  <p>Obavezan je pregled obuhvata: koje strane i pravila su provereni, koje provere nisu primenljive i za koje nema podataka. Osvežavanje stranice mora sačuvati predmet, odgovore i rezultate.</p>
+</section>
+
+<section id="znanje">
+  <div class="lab">06 — Stručno znanje</div><h3>Iz iskustva pregledanja nastaje izvršiva zbirka</h3>
+  <p>Jedinica znanja je <strong>projekat pre + primedba + pravni osnov + prihvatljiva promena + projekat posle</strong>. Iz nje se izvlače postupak, pravilo i primer za proveru. Automatski predlog novog pravila ostaje nacrt dok ga stručnjak ne potvrdi.</p>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Šta svako odobreno pravilo mora sadržati</caption><thead><tr><th>Polje</th><th>Sadržaj</th></tr></thead><tbody>
+    <tr><td class="k">Izvor i verzija</td><td>Tačan propis, član/tabela, datum/verzija i sačuvan relevantni tekst</td></tr>
+    <tr><td class="k">Primenljivost</td><td>Vrsta objekta/elementa, preduslovi, izuzeci i slučajevi van obuhvata</td></tr>
+    <tr><td class="k">Potrebne činjenice</td><td>Tip, jedinica, dozvoljeni izvori i identitet elementa</td></tr>
+    <tr><td class="k">Postupak provere</td><td>Izvršiv račun ili eksplicitan stručni postupak sa očekivanim dokazima</td></tr>
+    <tr><td class="k">Akcija</td><td>Dokumentarna izmena, projektantski zadatak ili traženje podatka</td></tr>
+    <tr><td class="k">Primer i kontraprimer</td><td>Slučaj sa primedbom, prihvatljivo rešenje i sličan slučaj koji nije greška</td></tr>
+    <tr><td class="k">Potvrda</td><td>Ko je proverio pravilo, kada i nad kojim primerima</td></tr>
+  </tbody></table></div>
+  <p>Večeras izdvojiti 2–3 povezana slučaja. Za razvoj koristiti jedan, a drugi sačuvati za proveru. Revizije istog projekta ne razdvajati između primera za model i navodno nezavisnog testa. Pri pregledu početne verzije agent nema pristup njenom rešenju.</p>
+  <div class="box warn"><span class="k">Potvrđen resurs, još nepregledan sadržaj</span><p>Korisnik je potvrdio sve izvorne formate. Tek pregled fajlova određuje konkretan tip automatske izmene. Excel koji je trenutno u folderu sadrži šablon i primere; oznake DA u primerima nisu potvrđena stručna pravila.</p></div>
+</section>
+
+<section id="podaci">
+  <div class="lab">07 — Ugovor podataka</div><h3>Sačuvaj svako opažanje i njegovo poreklo</h3>
+  <p>Jedna globalna vrednost po ključu ne može predstavljati više elemenata i revizija. Činjenice se čuvaju kao opažanja, a njihovo povezivanje kao zaseban, proverljiv odnos.</p>
+<pre><b>Project</b>
+  id · name · discipline · phase · active_revision_id
+
+<b>DomainPack / ReviewRun / Dossier</b>
+  pack_id · pack_version · schema_version · input_hashes · coverage
+  <span class="d">Generički ugovor i povezivanje: odeljak 19.</span>
+
+<b>DocumentRevision</b>
+  document_id · revision_id · content_hash · format · page_manifest
+
+<b>Evidence</b>
+  evidence_id · revision_id · page · sheet_label · region_or_anchor
+  source_quote · extraction_method · verification_state
+
+<b>Observation</b>
+  observation_id · entity_id · property · typed_value · unit
+  scope { building, floor, compartment } · evidence_ids
+  state: <span class="t">observed | verified | unknown | conflicting</span>
+
+<b>Finding</b>
+  finding_id · rule_version · entity_id · evidence_ids
+  applicability · result · severity · missing_inputs
+
+<b>ChangeSet</b>
+  base_revision_hashes · proposed_patches · dependency_ids
+  approval_record · output_artifacts · verification_run_id</pre>
+  <h4>Validacija ima više slojeva</h4>
+  <ol><li>Tip vrednosti i jedinica odgovaraju svojstvu; numeričko polje ne prihvata proizvoljnu prozu.</li><li>Dokument i strana postoje; citat ili označeni region zaista pripada tom ulazu.</li><li>Opažanja se odnose na isti element, obuhvat i merodavnu reviziju.</li><li>Preduslovi pravila su potvrđeni; nepoznato vodi u pitanje ili nemogućnost provere.</li><li>Kritični nalazi imaju dodatno čitanje izvora i stručnu evaluaciju tokom razvoja.</li></ol>
+  <p>JSON shema proverava oblik, dok referencijalna validacija proverava poreklo. Semantička tačnost i primenljivost traže dodatne provere. Samoprijavljeni confidence modela je pomoćni signal.</p>
+  <div class="box"><span class="k">Stanja provere</span><p><code>PASS</code> samo kada su podaci i primenljivost potvrđeni; <code>FAIL</code> za dokazano odstupanje; <code>UNKNOWN</code> za nedovoljan dokaz; <code>NOT_APPLICABLE</code> sa razlogom; <code>CONFLICT</code> za neusaglašene izvore. Sve provere ostaju evidentirane.</p></div>
+</section>
+
+<section id="agenti">
+  <div class="lab">08 — Agenti i izvršivi alati</div><h3>Jasne odgovornosti, ograničeni konteksti</h3>
+  <div class="roster">
+    <div class="ag eng"><div class="ag-n">Koordinator</div><div class="ag-m">programski workflow</div><div class="ag-b"><p>Vodi stanje predmeta, redosled faza, čekanje na čoveka, pokušaje i budžet. Svaki korak ima ulaz, izlaz i uslov nastavka. Sačuvani artefakti omogućavaju nastavak posle prekida.</p></div></div>
+    <div class="ag"><div class="ag-n">Pregled</div><div class="ag-m">ciljana ekstrakcija</div><div class="ag-b"><p>Pronalazi relevantne strane, čita oznake i povezuje iste elemente. Koristi manifest, pretragu teksta, isečke crteža i tipska pravila. Vraća opažanja i dokaze.</p></div></div>
+    <div class="ag"><div class="ag-n">Predlog ispravke</div><div class="ag-m">plan povezanih izmena</div><div class="ag-b"><p>Na osnovu potvrđenih činjenica i odgovora korisnika priprema promene u svim pogođenim dokumentima. Ne izmišlja merodavnu vrednost da bi uklonio konflikt.</p></div></div>
+    <div class="ag"><div class="ag-n">Provera</div><div class="ag-m">odvojeno čitanje</div><div class="ag-b"><p>Ponovo čita relevantni izvor ili novi artefakt, pa proverava predlog i zavisne zahteve. Za kritične tvrdnje najpre formira sopstveno čitanje, bez oslanjanja na zaključak prethodnog agenta.</p></div></div>
+    <div class="ag eng"><div class="ag-n">Izvršni alati</div><div class="ag-m">Python / TypeScript</div><div class="ag-b"><p>Parsiranje, normalizacija jedinica, izvršenje potvrđenih pravila, precizne izmene, render i kontrola artefakata. Deterministički račun je ponovljiv; kvalitet zavisi i od pravilnog ulaza i pravila.</p></div></div>
+  </div>
+  <p>Skills i referentni fajlovi opisuju stručni postupak. Agenti izvršavaju zadatke nad tim znanjem. Nezavisni dokumenti mogu se čitati paralelno, uz ograničenje broja poziva i troška. Slaganje dva modela nije zamena za istinit izvor.</p>
+  <p>Osnovu čine strukturisani pozivi alatima. Agent SDK dodaje se kada stvarni primer zahteva adaptivnu pretragu i izvršenje, uz proverenu autentifikaciju. Managed Agents ili Mozaik imaju mesto ako reše konkretnu prepreku i postoji uspešan mali test integracije.</p>
+</section>
+
+<section id="arhitektura">
+  <div class="lab">09 — Arhitektura</div><h3>Svaki korak ostavlja trag koji može da se ponovi</h3>
+<pre><span class="t">React / Tailwind radni prostor</span>
+       │ upload · dokazi · pitanja · prihvatanje · revizije
+       ▼
+<b>Convex</b> — projekti, verzije, dosijei, događaji, odgovori, rezultati
+       │ job + snapshot ulaza + verzija pravila
+       ▼
+<b>Koordinator</b> — eksplicitan tok i nastavak posle prekida
+       ├── <b>Modelni adapter</b> → ekstrakcija / predlog / provera
+       ├── <b>Potvrđena zbirka</b> ← Exa + Firecrawl + stručni pregled
+       ▼
+<b>Daytona</b> — izolovani posao nad dokumentima
+       manifest → tekst / isečci → provere → izmene → render
+       ▼
+<span class="g">Nova revizija + paket + ponovno čitanje</span>
+       └──────────────────────────────→ Convex → UI
+
+<span class="d">Render: javni frontend i, po potrebi, servis koordinatora.</span></pre>
+  <h4>Obavezna ponašanja infrastrukture</h4>
+  <ul><li>Posao ima jedinstveni ID i otiske ulaza. Ponovni pokušaj ne pravi duple nalaze ili artefakte.</li><li>Prihvatanje je vezano za konkretnu osnovnu reviziju. Ako se izvor promenio, predlog zahteva novu proveru.</li><li>Prekid modela ili sandboxa ostavlja jasan status i mogućnost nastavka; delimičan rezultat nije kompletan pregled.</li><li>Keš zavisi od sadržaja, modela, prompta i verzije pravila. Promena pravila ne sme vratiti stari rezultat kao nov.</li><li>Daytona job i ulazni/izlazni artefakti povezani su u evidenciji. Sandbox završava rad posle čuvanja rezultata.</li></ul>
+  <p>Python obrada radi u proverenom sandboxu ili kontejneru. Ne pretpostavljati da Convex Node action ima Python interpreter. Niži Daytona nivo može imati ograničenu mrežu; potreban pristup proverava se na stvarnom nalogu. <a href="https://docs.convex.dev/functions/runtimes">Convex runtime</a> · <a href="https://www.daytona.io/docs/en/network-limits/">Daytona mreža</a>.</p>
+</section>
+
+<section id="stack">
+  <div class="lab">10 — Partner stack</div><h3>Svaka integracija ima posao i dokaz doprinosa</h3>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Upotreba tokom izrade i u proizvodu</caption><thead><tr><th>Alat</th><th>Uloga</th><th>Kada je integracija uspela</th></tr></thead><tbody>
+    <tr><td class="k">Grok Bot / Cursor</td><td>Razvoj, pravila projekta i MCP pristupi</td><td>Agent završava konkretan implementacioni zadatak</td></tr>
+    <tr><td class="k">Claude Code / Codex</td><td>Implementacija, pregled i testovi</td><td>Izmenjeni deo prolazi odgovarajuću proveru</td></tr>
+    <tr><td class="k">x.ai</td><td>Tekst/slika → strukturisana opažanja</td><td>Stvarna strana daje tačan podatak sa dokazom</td></tr>
+    <tr><td class="k">Daytona</td><td>Parsiranje, račun, izmene i render</td><td>Novi fajl je napravljen i ponovo pročitan</td></tr>
+    <tr><td class="k">Convex</td><td>Stanje predmeta i događaji uživo</td><td>Refresh i drugi prozor čuvaju pregled i odluke</td></tr>
+    <tr><td class="k">Wonder</td><td>React/Tailwind radni prostor</td><td>Korisnik razume dokaz i sledeći korak</td></tr>
+    <tr><td class="k">Exa</td><td>Pronalaženje tačnog javnog izvora</td><td>Pronađen je relevantan izvor za stručnu proveru</td></tr>
+    <tr><td class="k">Firecrawl</td><td>Strukturisanje odabranih web izvora</td><td>Tekst, poreklo i datum/verzija ulaze u zbirku</td></tr>
+    <tr><td class="k">Render</td><td>Javni frontend i potrebni servisi</td><td>Tok radi van računara autora</td></tr>
+    <tr><td class="k">Wispr Flow</td><td>Diktiranje stručnih objašnjenja i zadataka</td><td>Brže zabeležen razlog primedbe; potvrđuje ga stručnjak</td></tr>
+    <tr><td class="k">Fal.ai</td><td>Opcioni medijski deo prezentacije</td><td>Doprinosi razumevanju bez generisanja navodnog projektnog dokaza</td></tr>
+  </tbody></table></div>
+  <p><a href="https://hackathon.cursorserbia.com/hackathon/stack">Zvanična lista partnera</a> razlikuje alate za razvoj, modele, infrastrukturu i medije. Wispr je namenjen diktiranju tokom izrade. Fal je dodatak kada postoji koristan medijski zadatak i jezgro već radi.</p>
+  <p>Exa i Firecrawl služe pripremi i dopuni znanja. Pregled koristi sačuvanu, potvrđenu verziju propisa. Modelni adapter prvo se povezuje sa potvrđenim API pristupom; konkretan model bira se kratkim testom na stvarnim dokumentima.</p>
+</section>
+
+<section id="artefakti">
+  <div class="lab">11 — Izmene i izlazni paket</div><h3>Fajl koji se menja mora ponovo da se proveri</h3>
+  <div class="two"><div class="col y"><h5>Podržana automatska izmena</h5><ul><li>Merodavna vrednost je potvrđena.</li><li>Tačno mesto u Word/Excel izvoru je identifikovano.</li><li>Korisnik vidi pre/posle i prihvata predlog.</li><li>Menja se kopija; original i prethodna revizija ostaju sačuvani.</li><li>Novi izlaz je renderovan i ponovo pročitan.</li></ul></div><div class="col n"><h5>Projektantski zadatak</h5><ul><li>Izmena geometrije ili tehničkog rešenja traži stručnu odluku.</li><li>Sistem pravi precizan zadatak i anotaciju.</li><li>Podržani tekstualni deo može biti pripremljen zasebno.</li><li>Grafički nalaz ostaje otvoren do nove revizije.</li><li>Dostupan DWG nije dokaz da njegovo uređivanje već radi.</li></ul></div></div>
+  <h4>Izlaz koji korisnik preuzima</h4>
+<pre><b>paket-revizije/</b>                  <span class="d">predlog strukture</span>
+  izvestaj.pdf                 nalazi, izvori, obuhvat i stanje
+  pregled-izmena.html          pre / posle i prihvaćene odluke
+  dokumenti/                  stvarno izmenjeni podržani izvori
+  anotirani-prilozi/           označena mesta i zadaci
+  otvoreni-zadaci.csv          šta projektant još treba da uradi
+  manifest.json               veze ulaza, izlaza i provere</pre>
+  <p>Tačan format izlaza prati pregledane izvore. Za prvo izdanje dovoljno je pouzdano podržati jednu vrstu izmene dokumenta, uz kompletan paket za ostatak obuhvata.</p>
+  <h4>Uslov za zatvaranje nalaza</h4>
+  <p>Izlaz postoji i otvara se; relevantno mesto sadrži prihvaćenu promenu; novo čitanje nalazi očekivanu činjenicu; zavisne provere su ponovljene; nije ostao nerešen preduslov. Greška pri renderu ili gubitak podatka vraća zadatak na proveru.</p>
+</section>
+
+<section id="kvalitet">
+  <div class="lab">12 — Evaluacija</div><h3>Brojevi se dobijaju na očevim primerima</h3>
+  <p>Trenutni prototip nema izmerenu end-to-end tačnost nad stvarnim projektima. Evaluacioni ekran prikazuje stvarne rezultate uz broj projekata i provera. Dok merenje nije izvršeno, prikazuje se „nije izmereno“.</p>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Prihvatni testovi proizvoda</caption><thead><tr><th>Provera</th><th>Očekivano ponašanje</th></tr></thead><tbody>
+    <tr><td class="k">Poznate stručne primedbe</td><td>Pronađene primedbe odgovaraju problemu i primenljivom osnovu; prikazan imenilac</td></tr>
+    <tr><td class="k">Dodatni nalazi</td><td>Stručnjak proverava da li su tačni; postojeća lista primedbi ne mora biti iscrpna</td></tr>
+    <tr><td class="k">Identitet elementa</td><td>Isti element se povezuje kroz izvore; različiti spratovi i obuhvati se ne mešaju</td></tr>
+    <tr><td class="k">Dodaj naslovnu stranu / promeni ime</td><td>Dokaz i dalje vodi do pravog sadržaja</td></tr>
+    <tr><td class="k">Ukloni odlučujući podatak</td><td>UNKNOWN ili precizno pitanje, bez povoljnog podrazumevanja</td></tr>
+    <tr><td class="k">Različite revizije</td><td>Istorijska razlika se ne prikazuje kao konflikt iste verzije</td></tr>
+    <tr><td class="k">Primeni izmenu</td><td>Novi fajl i zavisne provere potvrđuju šta je rešeno</td></tr>
+    <tr><td class="k">Samo izbriši oznaku</td><td>Nedostajući dokaz, a ne uspešna korekcija</td></tr>
+    <tr><td class="k">Prekid i ponovni pokušaj</td><td>Jasno stanje, nastavak i bez duplih rezultata</td></tr>
+    <tr><td class="k">Javni URL iz drugog browsera</td><td>Primer, novo pokretanje i preuzimanje rade</td></tr>
+  </tbody></table></div>
+  <p>Meriti trajanje i trošak celog pregleda, kvalitet nalaza, dokazivost i uspešnost konkretnih izmena. Rezultat malog skupa važi za taj skup; ne predstavlja pokrivenost svih propisa.</p>
+  <div class="box stop"><span class="k">Tvrdnje koje izostaju iz prezentacije</span><p>„100% tačno po konstrukciji“, „40.000 projekata u sekundi“, procenjeni novac predstavljen kao ostvarena ušteda i garantovana saglasnost. Prikazati merene rezultate i stvarni obuhvat.</p></div>
+</section>
+
+<section id="obuhvat">
+  <div class="lab">13 — MUST / SHOULD / CUT</div><h3>Čuvamo kvalitet i završetak procesa</h3>
+  <h4>MUST — definicija prvog kompletnog proizvoda</h4>
+  <ol><li>Univerzalni projektni radni prostor, aktivni ZOP modul i pošteno označeni planirani moduli.</li><li>Stvaran odobreni anonimizovani primer, manifest dokumenata i vidljiv obuhvat.</li><li>Ekstrakcija sa dokazima i stručno potvrđena pravila iz odabranih grupa.</li><li>Jedan smislen međudokumentni konflikt i jedno precizno pitanje korisniku.</li><li>Plan povezanih promena, pregled razlika i prihvatanje.</li><li>Stvarna izmena podržanog izvornog dokumenta, render i preuzimanje paketa.</li><li>Ponovno čitanje nove revizije, zavisne provere i razlika nalaza.</li><li>Proveren neizvestan/nepotpun slučaj, očuvano stanje i smislen oporavak od greške.</li><li>Javni URL, javni repo sa objašnjenim novim radom, kratak video i stvarna evaluacija dostupnog materijala.</li></ol>
+  <h4>SHOULD — nakon što kompletan tok radi</h4>
+  <p>Više potvrđenih pravila i izdvojenih test projekata; dodatni dokumentni adapter; ograničen paralelni pregled; pregled i odobravanje novih pravila; bolji izvoz i distribucija zadataka. Širenje ide preko dokazanih ulaza.</p>
+  <h4>CUT za sutra</h4>
+  <p>Stručni engine za druge discipline, univerzalna ZOP pokrivenost svih objekata i propisa, slobodno menjanje proizvoljnog DWG-a, autonomno redizajniranje objekta, puna naplata i organizaciona administracija, dekorativna 3D rekonstrukcija, generatori medija na putu stručnog dokaza i migracija na novu infrastrukturu bez potvrđene potrebe.</p>
+  <div class="box"><span class="k">Redosled prilagođavanja obuhvata</span><p>Ako vreme postane tesno, smanjiti broj podržanih slučajeva i formata, pa završiti ispravku, izvoz i proveru. Konačan proizvod mora pošteno pokazati šta je uspešno implementirano.</p></div>
+</section>
+
+<section id="izvodjenje">
+  <div class="lab">14 — Plan za subotu</div><h3>Integracija počinje od prvog stvarnog dokumenta</h3>
+  <p><strong>Večeras:</strong> pregledati očev primer, potvrditi pravila i jednu izmenu, pripremiti anonimizovan materijal, proveriti naloge, alat za render i mali modelni poziv. Sačuvati početno stanje repozitorijuma kako bi novi rad tokom događaja bio jasan.</p>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Dve paralelne celine, jedan zajednički tok</caption><thead><tr><th>Vreme</th><th>Obrada, model i provera</th><th>Radni prostor, stanje i izlaz</th><th>Presek</th></tr></thead><tbody>
+    <tr><td class="d">11:00–11:30</td><td>API test, Daytona posao, ugovor podataka</td><td>Javni deploy, Convex predmet i osnovni ekran</td><td>Potvrđeni pristupi</td></tr>
+    <tr><td class="d">11:30–13:00</td><td>Manifest, stvarna ekstrakcija i prvi nalaz</td><td>Učitavanje, izvorna strana i dokaz</td><td class="k">Nalaz kroz javni URL</td></tr>
+    <tr><td class="d">13:00–14:30</td><td>Povezivanje izvora i potvrđena pravila</td><td>Pitanje, odgovor i osnovni izvoz</td><td>Više dokumenata povezano</td></tr>
+    <tr><td class="d">14:30–16:00</td><td>Predlog, primena i ponovno čitanje</td><td>Pre/posle, prihvatanje i paket</td><td class="k">Kompletan ciklus</td></tr>
+    <tr><td class="d">16:00–17:00</td><td>Izdvojeni slučaj, pogrešni nalazi i zavisnosti</td><td>Neizvesna stanja, reset i polish</td><td>Dokaz kvaliteta</td></tr>
+    <tr><td class="d">17:00–18:00</td><td>Stabilnost, prekidi i provera javne putanje</td><td>Snimanje videa i proba prezentacije</td><td>Spremna prijava</td></tr>
+    <tr><td class="d">18:00–18:30</td><td>Provera repoa i rada iz drugog browsera</td><td>Predaja URL-a i videa</td><td class="k">Predato</td></tr>
+    <tr><td class="d">18:30–19:00</td><td colspan="3">Rezerva za problem sa predajom ili javnim deployem</td></tr>
+  </tbody></table></div>
+  <p>Najiskusniji član preuzima najneizvesniju zavisnost. Ugovor podataka i događaja je zajednički; privremeni primeri omogućavaju razvoj UI-ja, a stvarna integracija se proverava od početka.</p>
+  <div class="box warn"><span class="k">Tačke odluke</span><p><strong>13:00:</strong> ako nema stvarnog nalaza, usmeriti rad na podržani tip ulaza i pouzdane provere. <strong>16:00:</strong> ako nema kompletnog ciklusa, suziti broj slučajeva i završiti artefakt/reviziju. <strong>17:00:</strong> prioritet imaju stabilnost, video i predaja.</p></div>
+  <p>Raspored je ambiciozan plan, ne garancija. Rok 19:00 je proveren na <a href="https://hackathon.cursorserbia.com/hackathon/guide">javnom vodiču</a>; direktna izmena organizatora ima prednost kada bude potvrđena.</p>
+</section>
+
+<section id="demo">
+  <div class="lab">15 — Demo od tri minuta</div><h3>Prikaži radnju, novi fajl i dokaz</h3>
+  <div class="tl">
+    <div class="step"><div class="st">0:00</div><strong>Jedan radni prostor, prvi stručni modul</strong><div class="sd">Otvori tehnički projekat u univerzalnom kopilotu, pa aktivni ZOP modul. Pokaži odobreni anonimizovani primer i jasno navedi obuhvat.</div></div>
+    <div class="step"><div class="st">0:20</div><strong>Otkrivena primedba i dva izvora</strong><div class="sd">Pokreni pregled ili otvori jasno označen prethodno izvršen rezultat. Prikaži mesto problema i primenljiv osnov.</div></div>
+    <div class="step"><div class="st">0:55</div><strong>Odgovor projektanta</strong><div class="sd">Sistem postavlja presudno pitanje. Potvrda otkriva sve povezane promene.</div></div>
+    <div class="step hero"><div class="st">1:25</div><strong>Prihvati i preuzmi izmenjen dokument</strong><div class="sd">Prikaži stvarnu razliku i novi artefakt. Otvori paket koji korisnik može da nastavi da koristi.</div></div>
+    <div class="step hero"><div class="st">2:05</div><strong>Proveri novu reviziju</strong><div class="sd">Jedan nalaz je dokazano rešen; preostali projektantski zadatak je i dalje otvoren.</div></div>
+    <div class="step"><div class="st">2:35</div><strong>Pokaži provereni rezultat</strong><div class="sd">Veličina test skupa, stručna potvrda i trajanje. Kratko objasni doprinos Daytona/Convex/model toka i novi rad sa hakatona.</div></div>
+  </div>
+  <p>Ubrzani delovi videa se označavaju. Javni demo ima pregled već dobijenog primera i pravo novo pokretanje. Trajanje modelnog rada određuje montažu; rezultat se ne predstavlja kao trenutno obrađen ako nije.</p>
+</section>
+
+<section id="sudije">
+  <div class="lab">16 — Jasnoća za sudije</div><h3>Četiri perspektive, jedan ubedljiv dokaz</h3>
+  <p>Sledeći akcenti su razumna priprema prema javnim profesionalnim biografijama, ne psihološka dijagnoza ili prognoza ocena. <a href="https://hackathon.cursorserbia.com/hackathon/mentors">Biografije sudija</a>.</p>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Pitanje na koje proizvod odgovara</caption><thead><tr><th>Sudija</th><th>Šta pokazati</th></tr></thead><tbody>
+    <tr><td class="k">Ben Kim</td><td>Korisnik, završni radni paket i pristup prvim projektnim biroima</td></tr>
+    <tr><td class="k">Milan Lazarević</td><td>Tačan izvor, stvaran test, neizvestan slučaj i smislen odgovor na promenu ulaza</td></tr>
+    <tr><td class="k">Agrim Singh</td><td>AI izvršava konkretnu radnju i pravi novi proverljiv rezultat</td></tr>
+    <tr><td class="k">Marija Mladenović</td><td>Jasna odluka, kontrola prihvatanja i pregled posledica promene</td></tr>
+  </tbody></table></div>
+  <div class="box"><span class="k">Poruka prezentacije</span><p>„Stručno iskustvo pretvaramo u proverljiv tok rada: od dokumenta i primedbe do koordinisane ispravke i provere nove revizije.“</p></div>
+</section>
+
+<section id="resursi">
+  <div class="lab">17 — Pristup i preostale zavisnosti</div><h3>Razlikujemo najavljeno, aktivirano i provereno</h3>
+  <div class="scroll" tabindex="0" role="region" aria-label="Tabela — horizontalno pomeranje na manjim ekranima"><table><caption>Stanje na kraju razgovora 11. septembra</caption><thead><tr><th>Resurs</th><th>Potvrđeno</th><th>Sledeća provera</th></tr></thead><tbody>
+    <tr><td class="k">Očevi projekti i izvori</td><td>Korisnik potvrđuje kompletan materijal i večerašnji unos</td><td>Pregledati povezani primer i kvalitet Word/Excel/DWG/PDF izvora</td></tr>
+    <tr><td class="k">Stručne primedbe i propisi</td><td>Postoje kod oca</td><td>Potvrditi preduslove, izuzetke i prihvatljive izmene</td></tr>
+    <tr><td class="k">Plaćeni razvojni planovi</td><td>Oba člana imaju osnovni ChatGPT i Claude/Claude Code plan</td><td>Proveriti raspoloživu upotrebu; javni API planirati odvojeno</td></tr>
+    <tr><td class="k">Partnerske promocije</td><td>Postoji javna lista i raniji dosije ponuda</td><td>Aktivacija, dostupni modeli, stvarni limiti i mali poziv</td></tr>
+    <tr><td class="k">Sandbox i hosting</td><td>Predložena arhitektura</td><td>Upload → obrada → izlaz kroz javnu aplikaciju</td></tr>
+    <tr><td class="k">Automatska izmena</td><td>Deo prihvaćenog glavnog obuhvata</td><td>Izabrati i proveriti jedan adapter nad stvarnim izvorom</td></tr>
+  </tbody></table></div>
+  <p>Ne računati na neograničene pozive iz razvojnih pretplata. Za javni modelni tok potreban je potvrđen API pristup, ograničenje potrošnje i rezerva za ponavljanja. Anthropic API uključiti ako stvarni test opravda razliku i postoji budžet.</p>
+  <p>Već plaćeni Claude plan nije standardni Console API budžet. Najavljeni posebni SDK kredit ima pauziranu promenu u aktuelnoj napomeni; ne unositi ga kao raspoloživ novac. <a href="https://support.claude.com/en/articles/8325606-what-is-the-pro-plan">Claude Pro</a> · <a href="https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan">SDK napomena</a>.</p>
+  <p>Javni repo sadrži odobrene ili jasno označene sintetičke primere; ključevi su serverski. Demo ima reset i ograničenje učestalosti, a ulazni originali i istorija revizija ostaju sačuvani.</p>
+</section>
+
+<section id="izvori">
+  <div class="lab">18 — Osnova odluke</div><h3>Šta preuzimamo iz istraživanja</h3>
+  <p>CrossBeam daje obrazac stručnog znanja i završenog radnog paketa. MaestrIA pokazuje vrednost lokalnog iskustva; Tekton sledljivih dokaza i provera. Njihovi plasmani i rezultati daju smernice, a ne procenat naše verovatnoće pobede. <a href="https://claude.com/blog/meet-the-winners-of-our-built-with-opus-4-6-claude-code-hackathon">Opus 4.6</a> · <a href="https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon">Opus 4.7</a> · <a href="https://claude.com/blog/meet-the-winners-of-our-claude-opus-4-8-build-day-hackathon">Opus 4.8</a>.</p>
+  <p>Istraživanja tehničkih šema opravdavaju razdvajanje ekstrakcije, strukturisanih dokaza i zaključivanja. Njihova tačnost se ne prenosi na ZOP dokumentaciju; potrebno je sopstveno merenje. <a href="https://arxiv.org/abs/2609.05880">Grounded P&amp;ID reasoning</a> · <a href="https://arxiv.org/abs/2603.23910">AnalogAgent</a> · <a href="https://arxiv.org/abs/2607.19568">P&amp;ID → process graphs</a>.</p>
+  <p>Konkurencija već nudi preglede i međudokumentne provere. Saglasnik se razlikuje lokalnim potvrđenim postupkom i dokazanim tokom ispravki. <a href="https://support.bluebeam.com/revu/how-to/use-smart-review.html">Bluebeam Smart Review</a> · <a href="https://codecomply.ai/ai-compliance-design/">CodeComply</a>.</p>
+  <div class="box"><span class="k">Zaključak istraživanja</span><h4>Jedna odluka. Povezane izmene. Proverena revizija.</h4><p>Prvi sledeći korak je pregled očevog povezanog slučaja. Iz njega biramo početna pravila, konkretan dokument koji menjamo i dokaz uspeha. Ovaj dokument definiše proizvod koji treba izgraditi; implementirana pokrivenost biće potvrđena testovima.</p></div>
+</section>
+<section id="platforma" class="ops">
+<div class="lab">19 — Dogovor posle sastanka</div>
+
+<h3>Saglasnik je kopilot za sve tehničke discipline</h3>
+<p><strong>Proizvod ima zajednički radni prostor; prvi izvršivi stručni modul je ZOP.</strong> Ovo je novi dogovor koji ima prednost nad ZOP-specifičnim pozicioniranjem starih dokumenata. Univerzalnost se sada ostvaruje kroz interfejs, model podataka i priključivanje domenskih paketa. Stručne funkcije za druge discipline razvijaju se posle hakatona.</p>
+<p>Početni ekran kaže <strong>„Vaši projekti“</strong>, a glavno dugme <strong>„Novi projekat“</strong>. Kreiranje traži naziv, vrstu/disciplinu, fazu i dokumentaciju. Korisnik može otvoriti arhitektonski, građevinski, elektro, mašinski, hidrotehnički ili drugi tehnički projekat. Za svaki dobija dokumente, verzije, ručne zadatke i istoriju. ZOP pregled pokreće samo kada potvrđeni paket odgovara projektu i postoje potrebni ulazi.</p>
+<div class="scroll" tabindex="0" role="region" aria-label="Tabela"><table>
+<thead>
+<tr>
+<th>Nivo</th>
+<th>Korisnik vidi</th>
+<th>Stvarno ponašanje na hakatonu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Portfolio</td>
+<td>Projekti, pretraga, vrsta, poslednja revizija</td>
+<td>Kreiranje i otvaranje sa trajnim stanjem</td>
+</tr>
+<tr>
+<td>Projekat</td>
+<td>Pregled · Dokumenti · Zadaci · Revizije · Moduli</td>
+<td>Zajednička navigacija i rad sa predmetom</td>
+</tr>
+<tr>
+<td>Moduli</td>
+<td>Zaštita od požara — aktivno; ostale stručne provere — planirano</td>
+<td>Samo ZOP može da pokrene stručni workflow</td>
+</tr>
+<tr>
+<td>ZOP dosije</td>
+<td>Obuhvat, nalazi, izvori, pitanja i predlozi</td>
+<td>Dokazani pregled i kompletna petlja ispravke</td>
+</tr>
+<tr>
+<td>Kontekstualni kopilot</td>
+<td>Predložene radnje vezane za otvoreni predmet</td>
+<td>„Otvori dokaz“, „Odgovori“, „Pripremi izmene“, „Uporedi revizije“</td>
+</tr>
+</tbody></table></div>
+<p><strong>Vrsta projekta i modul pregleda nisu isto polje.</strong> Arhitektonski projekat može koristiti ZOP modul. <code>project.discipline</code> opisuje projekat; <code>review.domain_pack_id</code> bira postupak pregleda. Naziv ZOP ne sme biti ukucan u svaku rutu, status, tabelu i komponentu. On pripada implementiranom paketu.</p>
+<p>Kartice budućih modula imaju oznaku <strong>Planirano</strong>, kratak opis i neaktivno pokretanje. Backend odbija nepodržan <code>domain_pack_id</code>; skriveno dugme nije dovoljna zaštita. Ne prikazivati izmišljene rezultate elektro/statike niti ukupni procenat usklađenosti svih disciplina. Pregled projekta kaže, na primer, „ZOP: pregledan u navedenom obuhvatu; druge stručne provere: nisu implementirane“.</p>
+<h3>Dosije iz ažuriranog runbooka postaje zajednički objekat</h3>
+<p>Preuzet je koristan koncept verzionisanog <strong>Dossier-a</strong>, sa kratkim pregledom za donošenje odluka i detaljima za inženjera. Preuzeti su i domenski paketi, ciljana ekstrakcija i kontrola integriteta. U novi plan se dodaju ChangeSet, prihvatanje, stvarna izmena i ponovna verifikacija; u ažuriranom runbooku ti delovi još nemaju isti prioritet kao u dogovorenom proizvodu.</p>
+<pre><code class="language-text">Project { id, name, discipline, phase, active_revision_id }
+DomainPack {
+  id, version, status: draft | approved,
+  applicability, source_registry, semantic_hints,
+  slots, executable_rules, action_templates, evaluation_cases
+}
+ReviewRun { project_id, revision_id, domain_pack_id, pack_version,
+            model_config_hash, prompt_version, input_hashes, status }
+Dossier { schema_version, review_run_id, summary, coverage,
+          observations, findings, questions, next_actions,
+          integrity_report, change_set_ids }
+ChangeSet { base_hashes, patches, design_tasks, dependencies,
+            approval, artifact_ids, verification_run_id }
+</code></pre>
+<p><strong>Dva sloja domenskog znanja:</strong> semantički deo govori gde i kako tražiti podatak, a izvršivi deo sadrži potvrđene preduslove, račun i odluku. Pravilo bez stručne potvrde ostaje nacrt. Broj slotova iz starog runbooka nije obavezan broj za svaki budući domen.</p>
+<p>Manifest i numeraciju fizičkih strana pravi ingest. Model mapira sadržaj na postojeće ID-eve; ne izmišlja broj strane. Verifikator dobija region, traženo svojstvo i kriterijum, a svoje početno čitanje radi bez vrednosti prethodnog ekstraktora. Prioritet dodatne provere zavisi od ozbiljnosti moguće greške <strong>i</strong> težine čitanja. Proizvoljan prag confidence-a ne garantuje tačnost.</p>
+<p>Integrity gate proverava veze, tipove, primenljivost, obuhvat i otiske revizije. Pozitivna tvrdnja traži stvaran izvor. Tvrdnja da nešto nedostaje traži dokumentovan obuhvat pretrage. Konflikt traži dva suprotna opažanja, koja mogu biti i na istoj strani. <strong>Integritet dosijea ne znači da je svaka tvrdnja semantički tačna.</strong></p>
+<p><code>next_action</code> je kontrolisan tip (<code>ask</code>, <code>propose_patch</code>, <code>design_task</code>, <code>verify_revision</code>); tekst predloga modela prolazi zaseban ugovor i odobrenje. Promena broja u dokumentu ne dokazuje da je fizičko rešenje objekta promenjeno.</p>
+</section>
+
+<section id="setup-pocetak" class="ops">
+<div class="lab">20 — Setup / redosled i nalozi</div>
+
+<h3>Prvo dokažite da ceo stack može da izvrši jedan posao</h3>
+<p><strong>A</strong> je početno zadužen za pipeline, pravila i verifikaciju; <strong>B</strong> za platformu, interfejs, artefakte i release. To su radne oznake: dogovorite ko je A pre kopiranja promptova. Iskusniji član prirodno može preuzeti A, ali ownership se može promeniti eksplicitnim preuzimanjem issue-a.</p>
+<p>Redosled: <strong>alatke → repo → lokalni UI → lični Convex → API test → Daytona → prvi javni shell → zajednički fixture → stvarni dokument → ispravka/revizija</strong>. Exa/Firecrawl se uključuju u pripremu zbirke; mediji tek kada postoji snimljiv proizvod. Večeras pripremati naloge, podatke i dozvoljenu osnovu, a obim koda pre događaja uskladiti sa pravilima organizatora i jasno evidentirati početni commit.</p>
+<div class="scroll" tabindex="0" role="region" aria-label="Tabela"><table>
+<thead>
+<tr>
+<th>Servis</th>
+<th>Korak u nalogu</th>
+<th>Gde se koristi</th>
+<th>Dokaz spremnosti</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GitHub</td>
+<td>B pravi repo, poziva A; A prihvata</td>
+<td>Kod, issues, PR</td>
+<td>Obojica mogu push na svoju granu i review</td>
+</tr>
+<tr>
+<td>Convex</td>
+<td>Zajednički tim/projekat, lični dev deployment-i</td>
+<td>Baza, storage, workflow</td>
+<td>Svako ima svoj dev URL; produkcija odvojena</td>
+</tr>
+<tr>
+<td>Daytona</td>
+<td>Claim događaja, proveriti kvotu, API key</td>
+<td>Sandbox i render</td>
+<td>Snapshot spreman; import i render prolaze</td>
+</tr>
+<tr>
+<td>x.ai</td>
+<td>Claim kredita, API key, izabrati dostupan model sa potrebnim ulazima</td>
+<td>Serverski modelni adapter</td>
+<td>Strukturisan odgovor i stvarna strana prolaze</td>
+</tr>
+<tr>
+<td>Render</td>
+<td>GitHub povezivanje i pravo nad repo-om</td>
+<td>Produkcioni frontend</td>
+<td>HTTPS URL i refresh duboke rute rade</td>
+</tr>
+<tr>
+<td>Exa / Firecrawl</td>
+<td>Aktivirati pristup, napraviti ključeve</td>
+<td>Pronalaženje i strukturisanje izvora</td>
+<td>Jedan rezultat i sačuvan dokument sa poreklom</td>
+</tr>
+<tr>
+<td>Wonder</td>
+<td>Otvoriti nalog i projekat preko partner uputstva</td>
+<td>UI razvoj</td>
+<td>Izvezen React kod radi u vašem repo-u</td>
+</tr>
+<tr>
+<td>Grok Bot / Cursor</td>
+<td>Prijava, claim i otvaranje istog repo-a</td>
+<td>Razvoj i integracije</td>
+<td>Agent menja dodeljeni fajl i vidi provere</td>
+</tr>
+<tr>
+<td>Wispr Flow</td>
+<td>Instalacija, mikrofon i jezik</td>
+<td>Diktiranje stručnih beleški</td>
+<td>Srpski tekst upisan i ručno potvrđen</td>
+</tr>
+<tr>
+<td>Fal.ai</td>
+<td>Ključ i odabran model samo ako pravite koristan medijski dodatak</td>
+<td>Video/prezentacija</td>
+<td>Izlaz pregledan i označen kao ilustracija</td>
+</tr>
+<tr>
+<td>Claude Code / ChatGPT</td>
+<td>Postojeći nalozi za razvoj; API pristup proveriti zasebno</td>
+<td>Kod i review</td>
+<td>Lokalna sesija radi; API budžet nije pretpostavljen</td>
+</tr>
+</tbody></table></div>
+<p>Krediti, limiti i claim kodovi proveravaju se na <a href="https://hackathon.cursorserbia.com/hackathon/stack">zvaničnoj stranici stacka</a> i u vašem nalogu. Ovaj dokument ne potvrđuje da je ijedan ključ aktiviran. Kreirajte <code>docs/SETUP-STATUS.md</code> sa kolonama servis, vlasnik, datum testa, rezultat i blokada — bez tajnih vrednosti.</p>
+<h3>Lokalni alati — oba računara</h3>
+<p>Instalirati Git, GitHub CLI, podržani Node.js, Python 3.12 i razvojni editor. Koristite istu Node verziju; proverite <code>engines</code> instaliranog Vite-a. PowerShell je dovoljan. Ako Windows blokira <code>npm.ps1</code>, koristite <code>npm.cmd</code> i <code>npx.cmd</code>; nije potrebno menjati globalnu execution policy.</p>
+<pre><code class="language-powershell">git --version
+gh --version
+node --version
+npm --version
+py -3.12 --version
+gh auth login
+gh auth status
+</code></pre>
+<p>Proverite Git identitet (<code>git config user.name</code>, <code>git config user.email</code>); koristite svoj identitet i GitHub noreply adresu ako želite. <code>gh auth login</code> završava svaki član za sebe. Ključeve unosite kroz dashboard ili lokalni env fajl, bez slanja kroz chat, issue ili commit.</p>
+</section>
+
+<section id="setup-repo" class="ops">
+<div class="lab">21 — Setup / repo i osnovni projekat</div>
+
+<h3>B pravi jedan repo; A ga klonira</h3>
+<p>Komande su za <strong>novu aplikaciju u zasebnom praznom direktorijumu</strong>. Ne pokretati scaffold preko istraživačkog foldera. <code>$setupSource</code> pokazuje na prateće fajlove ovog dokumenta. Zamenite GitHub owner i kasnije oba handle-a stvarnim vrednostima. Nakon svake komande proverite uspeh; ako komanda prijavi grešku, ne nastavljajte slepo sa sledećom.</p>
+<pre><code class="language-powershell"># B: iz zeljenog roditeljskog direktorijuma za novi repo
+$setupSource = &#39;D:\Faks sav materijal\Hakaton\dokumenti\saglasnik-v3-setup&#39;
+$repo = &#39;YOUR_OWNER/saglasnik&#39;
+npm create vite@latest saglasnik -- --template react-ts
+Set-Location -LiteralPath &#39;.\saglasnik&#39;
+npm install
+npm install convex @convex-dev/workflow @daytonaio/sdk
+npm install tailwindcss @tailwindcss/vite
+npm install -D vitest @playwright/test
+New-Item -ItemType Directory -Force -Path &#39;scripts/setup&#39;,&#39;docs/handoffs&#39;,&#39;.github/ISSUE_TEMPLATE&#39;,&#39;.github/workflows&#39;,&#39;contracts&#39;,&#39;engine&#39;,&#39;domains&#39;,&#39;evals&#39;,&#39;sandbox/ingest&#39;,&#39;sandbox/compute&#39;,&#39;sandbox/artifacts&#39;
+Copy-Item -Path (Join-Path $setupSource &#39;*&#39;) -Destination &#39;scripts/setup&#39; -Force
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;.env.example&#39;) -Destination &#39;.env.example&#39;
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;CLAUDE.md&#39;) -Destination &#39;CLAUDE.md&#39;
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;CLAUDE-B.local.md&#39;) -Destination &#39;CLAUDE.local.md&#39;
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;pr-template.md&#39;) -Destination &#39;.github/pull_request_template.md&#39;
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;issue-template.md&#39;) -Destination &#39;.github/ISSUE_TEMPLATE/task.md&#39;
+Copy-Item -LiteralPath (Join-Path $setupSource &#39;ci.bootstrap.yml&#39;) -Destination &#39;.github/workflows/ci.yml&#39;
+Get-Content -LiteralPath (Join-Path $setupSource &#39;.gitignore.append&#39;) | Add-Content -LiteralPath &#39;.gitignore&#39;
+Copy-Item -LiteralPath &#39;.env.example&#39; -Destination &#39;.env.local&#39;
+Copy-Item -LiteralPath &#39;scripts/setup/team.example.json&#39; -Destination &#39;scripts/setup/team.json&#39;
+</code></pre>
+<p>Popunite <code>scripts/setup/team.json</code> sa <code>repo</code>, <code>builderA</code> i <code>builderB</code>. Taj fajl sadrži javne GitHub identitete, bez tajni, i ide u repo. Lokalni <code>CLAUDE.local.md</code> sadrži B ulogu i ne ide u commit. Kopirani GitHub issue šablon je spreman za ručne zadatke. Pokretanjem generatora dobijate već pripremljen početni backlog i kriterijume.</p>
+<p>U <code>vite.config.ts</code> zadržite postojeći React plugin i dodajte <code>import tailwindcss from &#39;@tailwindcss/vite&#39;</code>, pa <code>plugins: [react(), tailwindcss()]</code>. U glavni CSS dodajte <code>@import &quot;tailwindcss&quot;;</code> i uklonite Vite demo stilove koji nameću uski centrirani ekran. <a href="https://tailwindcss.com/docs/installation/using-vite">Tailwind + Vite</a>.</p>
+<p>Zatim upišite <code>docs/PRODUCT.md</code> iz delova 01–19 ovog dokumenta, <code>docs/CONTRACTS.md</code> iz dogovorenih tipova i kratak README sa stvarnim statusom. Pokrenite <code>npm run lint</code> i <code>npm run build</code> pre prvog commita.</p>
+<pre><code class="language-powershell">git init -b main
+git add -- .gitignore .env.example CLAUDE.md README.md index.html package.json package-lock.json tsconfig.json tsconfig.app.json tsconfig.node.json vite.config.ts eslint.config.js src public scripts docs .github
+git diff --cached --check
+git diff --cached --stat
+git status --short
+git commit -m &#39;chore: initialize Saglasnik project&#39;
+gh repo create $repo --public --source . --remote origin --push
+</code></pre>
+<p>Ako scaffold promeni nazive konfiguracionih fajlova, staging prilagodite stvarnim fajlovima; ne skrivajte neuspešan <code>git add</code>. Pre commita pregledajte i staged sadržaj. B u GitHub <strong>Settings → Collaborators</strong> dodaje A; A prihvata poziv. Repo dobija opis, javni URL kada postoji i početni tag/commit kao granicu prethodne pripreme. <a href="https://cli.github.com/manual/gh_repo_create">GitHub CLI — kreiranje repo-a</a>.</p>
+<pre><code class="language-powershell"># A: u svom direktorijumu, na svom racunaru
+gh repo clone YOUR_OWNER/saglasnik
+Set-Location -LiteralPath &#39;.\saglasnik&#39;
+npm ci
+Copy-Item -LiteralPath &#39;.env.example&#39; -Destination &#39;.env.local&#39;
+Copy-Item -LiteralPath &#39;scripts/setup/CLAUDE-A.local.md&#39; -Destination &#39;CLAUDE.local.md&#39;
+git status --short
+npm run build
+</code></pre>
+<p>Posle inicijalnog scaffolda uključiti zaštitu <code>main</code>: PR obavezan, jedan review, odbacivanje zastarelih odobrenja kada se kod promeni, uspešni CI checkovi, bez force push-a i brisanja glavne grane. Izabrati stvarne check nazive nakon prvog CI izvršavanja. Branch protection i CI sprovode pravila; <code>CLAUDE.md</code> daje instrukcije agentu, ali sam ne zaključava GitHub.</p>
+</section>
+
+<section id="setup-convex" class="ops">
+<div class="lab">22 — Setup / Convex i lokalni frontend</div>
+
+<h3>Jedan projekat, odvojeni razvojni deployment-i</h3>
+<p>B kreira tim/projekat i poziva A u Convex dashboardu. Svako zatim u svom klonu pokreće:</p>
+<pre><code class="language-powershell">npx convex dev
+</code></pre>
+<p>U interaktivnom izboru izaberite dogovoreni tim i projekat, pa <strong>svoj razvojni deployment</strong>. Proverite oznaku u dashboardu: A i B ne smeju imati isti razvojni deployment. CLI upisuje lokalnu konfiguraciju u <code>.env.local</code>; ne prepisujte njene postojeće vrednosti ponovnim kopiranjem <code>.env.example</code>. Ako već postoji drugi izbor, ponovo pokrenite konfiguraciju prema CLI pomoći. Watcher ostaje u posebnom terminalu.</p>
+<p>U React entry fajlu inicijalizujte <code>ConvexReactClient(import.meta.env.VITE_CONVEX_URL)</code> i omotajte aplikaciju u <code>ConvexProvider</code>. Javni URL nije API tajna; ipak ne zamenjuje autorizaciju pristupa predmetima. Pokrenite drugi terminal sa <code>npm run dev</code>, napravite predmet i proverite da ga refresh zadržava. <a href="https://docs.convex.dev/quickstart/react">Convex React quickstart</a>.</p>
+<p>B implementira schema i CRUD, A workflow. U <code>convex/convex.config.ts</code> registrovati komponentu:</p>
+<pre><code class="language-typescript">import { defineApp } from &quot;convex/server&quot;;
+import workflow from &quot;@convex-dev/workflow/convex.config.js&quot;;
+const app = defineApp();
+app.use(workflow);
+export default app;
+</code></pre>
+<p>Posle codegen-a A kreira <code>WorkflowManager(components.workflow)</code>. Aktuelni oblik je <code>workflow.define({ args: ... }).handler(async (step, args) =&gt; ...)</code>; pratiti instalirane tipove, a ne stari primer koji pretpostavlja <code>handler</code> unutar <code>define</code> objekta. Prvi workflow treba da zapiše početak, izvrši jednu idempotentnu akciju i sačuva kraj. Zatim dodati čekanje na odluku korisnika i nastavak. <a href="https://github.com/get-convex/workflow">Convex Workflow — izvor i primeri</a>.</p>
+<p>Minimalne tabele: projects, documents, revisions, reviewRuns, dossiers, findings, questions, answers, changeSets, approvals, artifacts i events; nazive i normalizaciju završiti kroz S01. Storage čuva original, rendere i izlaze. Klijent dobija podatke preko query/mutation/action funkcija, uz provere vlasništva/demo sesije. Otvoreni javni demo koristi odobren primer i ograničene sesije; proizvoljni privatni upload ne puštati javno bez kontrole pristupa.</p>
+<p><strong>Serverski env u svakom potrebnom Convex deployment-u:</strong> <code>XAI_API_KEY</code>, <code>XAI_MODEL</code>, <code>DAYTONA_API_KEY</code>, <code>DAYTONA_SNAPSHOT</code>; <code>ANTHROPIC_*</code> samo ako izabrani drugi adapter stvarno radi. Exa/Firecrawl ključevi su tamo samo ako dopuna znanja ide iz aplikacije; za pripremu offline zbirke dovoljan je lokalni env. Unos kroz dashboard, uz pažljiv izbor dev/prod. Ne praviti <code>VITE_XAI_API_KEY</code> ili drugi javni ključ za server servis.</p>
+</section>
+
+<section id="setup-modeli" class="ops">
+<div class="lab">23 — Setup / modeli i zbirka izvora</div>
+
+<h3>Potvrda pristupa pre izbora glavnog modela</h3>
+<p>A popunjava lokalni <code>.env.local</code> odgovarajućim ključem i <strong>tačnim model ID-em dostupnim svom nalogu</strong>. Za slikovne izvore testirati model koji prima slike. Kod ispod proverava autentifikaciju, strukturisan izlaz i jednu tačnu vrednost; to nije test čitanja crteža. Svaka komanda šalje jedan stvaran zahtev i može potrošiti kredit.</p>
+<pre><code class="language-powershell">node --env-file=.env.local scripts/setup/smoke-api.mjs xai
+# Samo ako postoji zaseban Anthropic API pristup i plan da ga koristite:
+node --env-file=.env.local scripts/setup/smoke-api.mjs anthropic
+</code></pre>
+<p>Skripta završava sa neuspešnim izlaznim kodom ako odgovor nije očekivani JSON. Ne ispisuje ključeve ni puni sirovi odgovor. Za 401 proverite ključ i okruženje, za 403 pristup modelu, za 429 kvotu i ograničenje poziva. Ne uvoditi beskonačan retry. <a href="https://docs.x.ai/developers/model-capabilities/text/structured-outputs">x.ai strukturisani izlazi</a> · <a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">Anthropic strukturisani izlazi</a>.</p>
+<p>Posle toga testirati stvarnu odobrenu stranu: jedan poznat podatak, izvorni citat/region, jedinicu i identitet elementa, pa primer gde podatak nedostaje. U <code>docs/MODEL-EVAL.md</code> zapisati model ID, datum, ulazni hash, rezultat, vreme i prijavljenu upotrebu. Izaberite adapter po kvalitetu tih rezultata. Različiti modeli mogu imati različite uloge; rezervni adapter se smatra spremnim tek kada prođe isti ugovor.</p>
+<h3>Exa → Firecrawl → stručna potvrda → verzionisani paket</h3>
+<ol>
+<li>Aktivirati naloge preko partner uputstva i napraviti <code>EXA_API_KEY</code> i <code>FIRECRAWL_API_KEY</code>.</li>
+<li>Pokrenuti po jedan javni test ispod.</li>
+<li>Exa upit vezati za tačan naziv propisa i očekivani zvanični izvor; pronađeni link ručno potvrditi.</li>
+<li>Firecrawl koristiti nad odabranim URL-om. Sačuvati tekst, originalni URL, datum preuzimanja, naslov/verziju i hash. PDF koji ne može pouzdano obraditi ide kroz dokumentni ingest.</li>
+<li>Otac potvrđuje izvor, primenljivost i interpretaciju. Tek onda verzionisati approved paket. Rezultat pretrage sam po sebi nije pravno pravilo.</li>
+</ol>
+<pre><code class="language-powershell">node --env-file=.env.local scripts/setup/smoke-api.mjs exa
+node --env-file=.env.local scripts/setup/smoke-api.mjs firecrawl
+</code></pre>
+<p><a href="https://exa.ai/docs/reference/search">Exa API</a> · <a href="https://docs.firecrawl.dev/api-reference/endpoint/scrape">Firecrawl Scrape API</a>. Pregled projekta koristi sačuvanu verziju paketa; internet pretraga nije skriveni uslov svakog pregleda.</p>
+<details><summary>Kompletan smoke-api.mjs — kopiranje i pregled</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>// Run explicitly: node --env-file=.env.local scripts/setup/smoke-api.mjs xai|anthropic|exa|firecrawl
+// Each run makes one real API request and may consume credits. No private documents are sent.
+const service = process.argv[2];
+function need(name) {
+  const value = process.env[name];
+  if (!value || /YOUR_|REPLACE_|&lt;.*&gt;/.test(value)) throw new Error(`Popuni ${name}`);
+  return value;
+}
+const schema = {type:'object', properties:{answer:{type:'integer'}}, required:['answer'], additionalProperties:false};
+let url, headers, body;
+switch (service) {
+  case 'xai':
+    url='https://api.x.ai/v1/chat/completions';
+    headers={Authorization:`Bearer ${need('XAI_API_KEY')}`};
+    body={model:need('XAI_MODEL'), messages:[{role:'user',content:'Compute 2 + 2. Return answer as an integer in JSON.'}],
+      response_format:{type:'json_schema',json_schema:{name:'smoke',strict:true,schema}}};
+    break;
+  case 'anthropic':
+    url='https://api.anthropic.com/v1/messages';
+    headers={'x-api-key':need('ANTHROPIC_API_KEY'),'anthropic-version':'2023-06-01'};
+    body={model:need('ANTHROPIC_MODEL'),max_tokens:128,messages:[{role:'user',content:'Compute 2 + 2. Return answer as an integer in JSON.'}],output_config:{format:{type:'json_schema',schema}}};
+    break;
+  case 'exa':
+    url='https://api.exa.ai/search'; headers={'x-api-key':need('EXA_API_KEY')};
+    body={query:'Firecrawl official documentation scrape',includeDomains:['docs.firecrawl.dev'],numResults:1};
+    break;
+  case 'firecrawl':
+    url='https://api.firecrawl.dev/v2/scrape'; headers={Authorization:`Bearer ${need('FIRECRAWL_API_KEY')}`};
+    body={url:'https://docs.firecrawl.dev/introduction',formats:['markdown'],onlyMainContent:true};
+    break;
+  default: throw new Error('Izaberi xai, anthropic, exa ili firecrawl.');
+}
+try {
+  const started=Date.now();
+  const response=await fetch(url,{method:'POST',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(120000)});
+  if (!response.ok) throw new Error(`HTTP ${response.status}; proveri nalog, model, kvotu i dashboard. Sadrzaj odgovora nije ispisan.`);
+  const data=await response.json();
+  if (service==='xai' || service==='anthropic') {
+    const content=service==='xai' ? data.choices?.[0]?.message?.content : data.content?.filter(x=&gt;x.type==='text').map(x=&gt;x.text).join('');
+    const parsed=JSON.parse(content);
+    if (parsed.answer!==4 || Object.keys(parsed).length!==1) throw new Error('Model nije prosao proveru vrednosti i oblika.');
+  }
+  if (service==='exa' &amp;&amp; !data.results?.[0]?.url) throw new Error('Nema pronadjenog URL-a.');
+  if (service==='firecrawl' &amp;&amp; (!data.success || !data.data?.markdown?.trim())) throw new Error('Nema markdown rezultata.');
+  console.log(JSON.stringify({service,status:'PASS',elapsed_ms:Date.now()-started,usage:data.usage??null}));
+} catch (error) {
+  console.error(`${service}: ${error.message}`);
+  process.exitCode=1;
+}
+</code></pre></div>
+</details>
+
+</section>
+
+<section id="setup-daytona" class="ops">
+<div class="lab">24 — Setup / Daytona i obrada dokumenata</div>
+
+<h3>Jedan potvrđen image, odvojeni poslovi</h3>
+<p>A u Daytona dashboardu proverava org, kvotu, dopuštenu mrežu i kreira ključ. Niži nivo naloga može imati ograničen izlaz ka internetu. Pakete instalirajte u snapshot-u; job koristi gotov image. Potrebnu mrežnu dostupnost testirajte sa nalogom koji stvarno imate. <a href="https://www.daytona.io/docs/en/network-limits/">Mrežna ograničenja</a>.</p>
+<p>U <code>.env.local</code> popuniti <code>DAYTONA_API_KEY</code> i izabrati jedinstven naziv <code>DAYTONA_SNAPSHOT</code>, npr. <code>saglasnik-docs-v1</code>. Prvi helper napravi image sa Python-om, parserima, Poppler-om i LibreOffice-om. Drugi kreira nov test sandbox i briše samo taj sandbox kada završi. To su stvarne cloud operacije; pokreće ih A kada proveri nalog.</p>
+<pre><code class="language-powershell">node --env-file=.env.local scripts/setup/create-snapshot.mjs
+# Sacekati da snapshot u dashboardu bude spreman.
+node --env-file=.env.local scripts/setup/daytona-smoke.mjs
+</code></pre>
+<p>Posle uspešnog testa sačuvati stvarne verzije (<code>pip freeze</code>, verzije render alata i SDK-a), napraviti lock/listu zavisnosti i sledeći snapshot graditi iz njih. Početni helper namerno služi otkrivanju funkcionalne kombinacije; ne predstavlja već testiran produkcioni image. <code>PyYAML</code> i <code>jsonschema</code> se instaliraju eksplicitno.</p>
+<p>Na očevom odobrenom primeru proveriti: PDF → manifest/tekst/slike, DOCX → izmenjena kopija → PDF, XLSX → izmenjena kopija → preračun/render, zatim otvaranje svih izlaza. <code>openpyxl</code> sam ne preračunava formule; novi rezultat proveriti preko odgovarajućeg računskog/render alata. Proveriti fontove, prelom strana, srpske znakove i gubitak sadržaja. DWG zadržati kao izvor i projektantski zadatak dok poseban adapter ne dokaže podršku.</p>
+<p>Workflow razmenjuje ulaz/izlaz preko storage-a, proverava hash i ograničenja veličine, a u sandbox šalje samo odobrene fajlove konkretnog posla. API ključeve drugih servisa ne ugrađivati u image. Sačuvati rezultate pre gašenja. Detaljne putanje i pozivi idu u A adapter <code>convex/lib/daytona/</code>; B koristi njegov ugovor za <code>sandbox/artifacts/</code>.</p>
+<p><a href="https://www.daytona.io/docs/en/typescript-sdk/image/">Daytona Image API</a> · <a href="https://www.daytona.io/docs/en/typescript-sdk/snapshot/">Snapshot API</a> · <a href="https://www.daytona.io/docs/en/typescript-sdk/process/">Process API</a>.</p>
+<details><summary>create-snapshot.mjs</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>// Explicitly creates a billable team snapshot. Run once by A after checking account credits.
+import {Daytona, Image} from '@daytonaio/sdk';
+if (!process.env.DAYTONA_API_KEY || !process.env.DAYTONA_SNAPSHOT) throw new Error('Popuni DAYTONA_API_KEY i DAYTONA_SNAPSHOT.');
+const daytona=new Daytona({apiKey:process.env.DAYTONA_API_KEY});
+const image=Image.debianSlim('3.12')
+  .runCommands('apt-get update &amp;&amp; apt-get install -y --no-install-recommends poppler-utils libreoffice-writer libreoffice-calc fonts-dejavu-core')
+  .pipInstall(['pymupdf','pdfplumber','python-docx','openpyxl','Pillow','pydantic','PyYAML','jsonschema','pytest']);
+await daytona.snapshot.create({name:process.env.DAYTONA_SNAPSHOT,image},{onLogs:(line)=&gt;console.log(line)});
+console.log('Snapshot create zavrsen; proveri Active/ready status pre smoke testa.');
+</code></pre></div>
+</details>
+<details><summary>daytona-smoke.mjs</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>// Creates and deletes ONLY this fresh smoke sandbox. No user project is loaded.
+import {Daytona} from '@daytonaio/sdk';
+if (!process.env.DAYTONA_API_KEY || !process.env.DAYTONA_SNAPSHOT) throw new Error('Popuni Daytona env.');
+const daytona=new Daytona({apiKey:process.env.DAYTONA_API_KEY});
+const sandbox=await daytona.create({snapshot:process.env.DAYTONA_SNAPSHOT,language:'python',autoStopInterval:15});
+try {
+  const result=await sandbox.process.executeCommand('python -c &quot;import fitz, docx, openpyxl, yaml, jsonschema; print(\'SAGLASNIK_IMPORTS_OK\')&quot; &amp;&amp; pdftoppm -v &amp;&amp; libreoffice --version',undefined,undefined,60);
+  if (result.exitCode!==0) throw new Error(`Sandbox provera nije prosla, exitCode=${result.exitCode}`);
+  console.log('PASS: Python biblioteke, Poppler i LibreOffice dostupni. Sledeci korak je stvarni render fixture-a.');
+} finally {
+  await daytona.delete(sandbox);
+}
+</code></pre></div>
+</details>
+
+</section>
+
+<section id="setup-ui" class="ops">
+<div class="lab">25 — Setup / Wonder, razvojni alati i mediji</div>
+
+<h3>Prompt za prvi UI u Wonder-u</h3>
+<p>B otvara projekat kroz dostupni partner pristup, unosi sledeći brief, izvozi kod u svoju feature granu i proverava diff pre ugradnje. Wonder ne sme prepisati Convex backend, ugovore i lockfile bez B integracije. Fiktivni podaci služe jasno označenom fixture režimu dok pravi podaci ne stignu.</p>
+<pre><code class="language-text">Build Saglasnik, a professional Serbian-language copilot for technical projects.
+Use React, TypeScript and Tailwind. Design a complete working workspace, not a landing page.
+The product supports multiple engineering disciplines through a shared project shell.
+Only the Fire Protection (ZOP) review module is implemented for this release.
+
+Create these views: project portfolio; new project (name, discipline, phase);
+project overview; documents with revisions; tasks; revision history; module catalog;
+ZOP dossier; evidence viewer; questions/answers; proposed changes with approval;
+artifact download and verified revision comparison.
+
+Shared navigation: Pregled, Dokumenti, Zadaci, Revizije, Moduli.
+Module catalog: Zastita od pozara / Aktivno. Architecture, structural,
+electrical, mechanical and hydrotechnical specialist checks / Planirano.
+Do not invent results, compliance percentages, or working actions for planned modules.
+
+ZOP dossier: readable overview plus engineering detail. Findings left, cited original
+document center, contextual actions right. A conflict opens both source observations.
+Show coverage, unknowns, original page identity, rule source and outstanding design tasks.
+State chain: proposed, accepted, applied, verified. Never conflate acceptance with resolution.
+The copilot offers contextual actions tied to actual data and enabled backend capabilities.
+
+Use an understated document-focused visual system, excellent typography, accessible
+contrast, keyboard controls and responsive layout. Prioritize legibility of technical
+drawings. Empty/loading/error/partial states must exist. Components receive typed props
+and callbacks; never put model API secrets in frontend code. Label all initial sample
+results as demo fixtures. Preserve the existing shared contracts and backend.
+</code></pre>
+<p>Grok Bot/Cursor i Claude Code otvaraju <strong>isti lokalni repo</strong>, ali ne puštati dva agenta da istovremeno menjaju isti fajl. Jedan agent izvršava dodeljeni issue; drugi alat može služiti za review. MCP pristupe aktivirati samo za potrebni servis i proveriti jednim ograničenim zadatkom. Ne pretpostavljati da neki plugin ima pristup plaćenom API-ju zato što je editor prijavljen.</p>
+<p>Wispr: instalacija → dozvola mikrofona → izbor jezika/automatskog prepoznavanja → kratko diktiranje tipske primedbe → stručna ispravka → unos u draft zbirku. Audio nije potreban kao runtime funkcija aplikacije.</p>
+<p>Fal: ako ostane smislen medijski zadatak, odabrati konkretan model u playground-u, proveriti cenu, generisati jednu kratku apstraktnu ilustraciju toka dokumentacije i izvesti je za video. Ne koristiti generisane crteže kao dokaz funkcionalnosti. Snimak stvarne aplikacije ima prednost u demonstraciji. Fal nema obaveznu zavisnost u ZOP pipeline-u.</p>
+</section>
+
+<section id="setup-deploy" class="ops">
+<div class="lab">26 — Setup / CI, Render i produkcija</div>
+
+<h3>Javni shell rano; konačna predaja iz pregledanog main-a</h3>
+<p>B pravi Render <strong>Static Site</strong>, povezuje repo i bira <code>main</code>. Publish directory je <code>dist</code>. Za potpuno povezanu produkciju build command je:</p>
+<pre><code class="language-text">npm ci &amp;&amp; npx convex deploy --cmd-url-env-var-name VITE_CONVEX_URL --cmd &quot;npm run build&quot;
+</code></pre>
+<p>Ovde je <code>&amp;&amp;</code> deo Linux build komande u Render-u. U Render Environment se dodaje <strong>produkcioni</strong> <code>CONVEX_DEPLOY_KEY</code> iz Convex projekta. Komanda prosleđuje odgovarajući javni Convex URL frontend build-u. Serverske model/Daytona ključeve dodati u Convex production env. Feature preview ne dobija produkcioni deploy key. <a href="https://docs.convex.dev/production/hosting/custom">Convex hosting</a> · <a href="https://render.com/docs/static-sites">Render Static Sites</a>.</p>
+<p>U Redirects/Rewrites dodati <code>/*</code> → <code>/index.html</code>, tip <strong>Rewrite</strong>, za React SPA duboke rute. Proveriti stvaran nested URL i osvežavanje stranice. <a href="https://render.com/docs/redirects-rewrites">Render rewrites</a>.</p>
+<p>Rani shell može koristiti samo <code>npm ci &amp;&amp; npm run build</code>; dok nema pravi backend mora jasno prikazivati početno/prazno stanje. Kada se produkcija poveže, anonimizovani demo fixture učitati namerno u produkcioni deployment. Lokalni dev podaci ne prenose se sami. B vodi deploy i beleži commit SHA; oba člana proveravaju isti URL.</p>
+<h3>CI koji proverava stvarno implementiran kod</h3>
+<p>S00 uključuje lint i build. Čim S01 doda ugovore/testove, uključiti Vitest; kada Python pravila postoje, uključiti pytest i schema/fixture proveru. Za ključnu petlju uključiti Playwright proveru upload → nalaz → odluka → izlaz → revizija. Nijedna faza ne sme biti proglašena uspešnom samo zato što test još ne postoji.</p>
+<p>Bootstrap već kopira sledeći CI fajl. On koristi Node 24; isti izbor koristite lokalno i zabeležite tačnu verziju. Dodavanje testova je prihvatni uslov odgovarajućih implementacionih zadataka, a početni zeleni build nije dokaz kompletne aplikacije.</p>
+<p>Prateće akcije: <a href="https://github.com/actions/checkout/tree/v4">checkout v4</a> i <a href="https://github.com/actions/setup-node/tree/v4">setup-node v4</a>. Konačne verzije zavisnosti ostaju zaključane u repo-u.</p>
+<details><summary>ci.bootstrap.yml — početni GitHub Actions workflow</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Initial CI for S00. Add contract, engine and end-to-end checks as they are implemented.
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  web:
+    name: web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+</code></pre></div>
+</details>
+
+<p>Workflow u <code>.github/workflows/ci.yml</code> treba da ima checkout, Node identičan razvojnom, <code>npm ci</code>, <code>npm run lint</code>, <code>npm run build</code>, pa odgovarajuće TS testove; Python posao koristi Python 3.12, zaključane zavisnosti i <code>python -m pytest</code>. Konfiguraciju piše B uz A pomoć za Python. Na PR-u bez cloud ključeva koriste se odobreni lokalni fixture-i i mockovi granice API-ja; plaćeni integracioni test se pokreće namerno i rezultat vezuje za commit. Produkcioni ključ ne izlagati PR job-u.</p>
+<p>Pre merge-a uraditi proveru tajni redigovanim izlazom, npr. kroz podešen secret scanner; ako alat nije instaliran, to se prijavi i staged sadržaj se pažljivo pregleda. Ako ključ procuri, prvo ga opozvati/rotirati, zatim kontrolisano ukloniti iz koda/istorije prema GitHub uputstvu. Brisanje repoa ne opoziva ključ.</p>
+<p>Završna provera: desktop i manji ekran; novi browser; deep-link refresh; jedan novi pregled; jedan nečitljiv/nepotpun ulaz; ponovljeni klik bez dupliranja; preuzeti dokument se otvara; nova revizija ima stvarnu proveru; planirani moduli ne rade lažno. U README upisati šta je merено, šta je demonstracioni primer i šta ostaje van obuhvata.</p>
+</section>
+
+<section id="backlog" class="ops">
+<div class="lab">27 — Posao, story points i zavisnosti</div>
+
+<h3>Ravnoteža po odgovornosti i kritičnom putu</h3>
+<p><strong>18 početnih issues, ukupno 43 SP: A 22, B 21.</strong> Ovo je predlog relativne veličine, ne obećanje da je 43 poena osam sati. Za tim bez izmerene brzine, rok se proverava kroz radne preseke. Večeras zajednički procenite zadatke na osnovu materijala; promena procene beleži se u issue-u.</p>
+<div class="scroll" tabindex="0" role="region" aria-label="Tabela"><table>
+<thead>
+<tr>
+<th>SP</th>
+<th>Značenje u ovom planu</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Mali, poznat zahvat sa jasnim dokazom završetka</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Jedna zaokružena komponenta ili integracija sa ograničenim rizikom</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Više povezanih koraka ili nepoznat format/API; proverljiv rezultat</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Preveliko za jednu kratku granu; razbiti pre početka</td>
+</tr>
+</tbody></table></div>
+<div class="scroll" tabindex="0" role="region" aria-label="Tabela"><table><caption>Početni backlog — integracioni uslovi su obavezni za zatvaranje</caption><thead><tr><th>ID / vlasnik / SP</th><th>Ishod</th><th>Zavisi od</th></tr></thead><tbody><tr><td><strong>S00 · B · 2 SP</strong></td><td><strong>Bootstrap, repo, CI i javni shell</strong><br>Jedan repo, oba clana imaju pristup, lokalni build i javni shell rade; main i licni dev deployment-i su odvojeni.</td><td>—</td></tr><tr><td><strong>S01 · A · 2 SP</strong></td><td><strong>Genericki contracts i kompletan fixture dosijea</strong><br>Project, DomainPack, Evidence, Observation, Dossier, ChangeSet i Revision imaju zajednicke tipove, verziju i validan fixture.</td><td>S00</td></tr><tr><td><strong>S02 · B · 3 SP</strong></td><td><strong>Kopilot za sve discipline: shell i modul registry</strong><br>Projekat ima genericku navigaciju; ZOP aktivan, ostale discipline Planirano; nema laznih ocena ni pokretanja neaktivnog modula.</td><td>S01</td></tr><tr><td><strong>S03 · B · 3 SP</strong></td><td><strong>Upload, dokumenti, revizije i trajno stanje</strong><br>Stvarni ulaz ulazi u storage, povezan je sa revizijom i refresh cuva stanje; nevalidan ulaz daje jasnu poruku.</td><td>S01</td></tr><tr><td><strong>S04 · A · 3 SP</strong></td><td><strong>Daytona ingest, manifest i dokaz strane</strong><br>PDF daje manifest, tekst/isecke i stabilnu mapu strane; output sacuvan, job zavrsen i nije ostao sandbox bez razloga.</td><td>S01, S03</td></tr><tr><td><strong>S05 · A · 2 SP</strong></td><td><strong>Odobreni ZOP pack sa primerima i izuzecima</strong><br>Pravila imaju pravni izvor, primenljivost, nepoznate preduslove, primer i kontraprimer; nepotvrdjeno je draft.</td><td>S01</td></tr><tr><td><strong>S06 · A · 3 SP</strong></td><td><strong>Mapa i ciljana ekstrakcija stvarnih dokaza</strong><br>Stvaran projekat daje tipizovana opazanja sa identitetom elementa i revizijom; nedostajuci podatak ostaje unknown.</td><td>S04, S05</td></tr><tr><td><strong>S07 · A · 2 SP</strong></td><td><strong>Odvojena verifikacija kriticnih dokaza</strong><br>Verifikator cita izvor bez ekstraktorove vrednosti; neslaganje ostaje sporno i ne dobija lazni FAIL/PASS.</td><td>S06</td></tr><tr><td><strong>S08 · A · 2 SP</strong></td><td><strong>Engine, integrity gate i verzionisani dosije</strong><br>Svako pravilo ima status; provera porekla koristi stvarni manifest; odsustvo ima obuhvat pretrage; semanticka tacnost se ne poistovecuje sa integritetom.</td><td>S05, S06</td></tr><tr><td><strong>S09 · B · 3 SP</strong></td><td><strong>Dosije i dokazi A/B u istom radnom prostoru</strong><br>Nalaz otvara tacnu stranu i dva dokaza za konflikt; pokrivenost, neizvesnost i sledeca radnja su vidljivi.</td><td>S02, S08</td></tr><tr><td><strong>S10 · B · 2 SP</strong></td><td><strong>Pitanja, odluke i prihvatanje ChangeSet-a</strong><br>Odgovor i odobrenje su trajni i vezani za osnovnu reviziju; promenjen izvor ponistava zastareli predlog.</td><td>S09</td></tr><tr><td><strong>S11 · A · 3 SP</strong></td><td><strong>Plan povezanih ispravki</strong><br>Potvrdjena odluka daje strukturisane promene i zavisnosti; dokumentarna korekcija i projektantski zadatak su odvojeni.</td><td>S08</td></tr><tr><td><strong>S12 · B · 3 SP</strong></td><td><strong>Izmena izvornog dokumenta, render i paket</strong><br>Podrzani Word/Excel izvor se stvarno menja u kopiji, otvara/renderuje i izvozi uz anotacije i otvorene zadatke.</td><td>S10, S11</td></tr><tr><td><strong>S13 · A · 3 SP</strong></td><td><strong>Ponovno citanje revizije i zavisne provere</strong><br>Nova datoteka se ponovo cita; reseni, otvoreni i novi nalazi se racunaju; brisanje dokaza ne postaje resenje.</td><td>S12</td></tr><tr><td><strong>S14 · B · 2 SP</strong></td><td><strong>Razlike revizija i zavrsni korisnicki tok</strong><br>UI pokazuje pre/posle, preuzimanje i stvarni ishod ponovne provere; stanja prihvaceno i reseno su odvojena.</td><td>S12, S13</td></tr><tr><td><strong>S15 · A · 2 SP</strong></td><td><strong>Strucna evaluacija i negativni slucajevi</strong><br>RESULTS sadrzi izmerene vrednosti, imenioce i poreklo skupa; obuhvata nepoznato, pogresan izvor i proveru ispravke.</td><td>S07, S08, S13</td></tr><tr><td><strong>S16 · B · 2 SP</strong></td><td><strong>Produkcioni deploy i provera oporavka</strong><br>Javni tok radi iz drugog browsera; deep-link refresh, reset i ogranicenje upotrebe rade; produkcija vezana za pregledani main.</td><td>S14</td></tr><tr><td><strong>S17 · B · 1 SP</strong></td><td><strong>Video, README i predaja</strong><br>Video do tri minuta jasno oznacava prethodno izvrsene rezultate; repo, URL i video provereni; predaja do 18:30.</td><td>S15, S16</td></tr></tbody></table></div>
+<p><strong>Svaki issue ima jednog vlasnika i drugog člana kao reviewera.</strong> Story poeni pripadaju issue-u, ne dele se pola-pola zbog review-a i ne služe oceni doprinosa. Ako obojica implementiraju različite celine, razbijte issue na dva sa jasnim ugovorom. Nakon preuzimanja promeniti assignee i handoff. Prenositi ceo ograničeni zadatak, ne paralelno menjati isti fajl.</p>
+<p>Zavisnosti u tabeli znače da integracioni uslov mora biti gotov pre zatvaranja zadatka. Do tada UI može raditi sa zajedničkim fixture-om, a A sa odobrenim lokalnim ulazom. Ne čekati pasivno da ceo upstream bude gotov. S01 odmah daje minimalni validan dosije B-u; B zatim pravi shell/upload, dok A razvija ingest i pravila. S12 adapter može se razvijati nad dogovorenim ChangeSet fixture-om pre nego što pravi predlog bude integrisan.</p>
+<p><strong>Kritični put:</strong> ugovor → stvarni ingest/pravilo → dokazani dosije → odluka/ChangeSet → stvarna izmena → novo čitanje → revizija/izvoz → predaja. Do 13:00 vidljiv stvarni nalaz; do 16:00 kompletna petlja; posle toga kvalitet, dodatna pravila i demonstracija. Ako presek kasni, sužavajte broj slučajeva/formata, a zadržite završen tok. Opšta navigacija i pošteno stanje planiranih modula ostaju obavezni.</p>
+<h3>Kreiranje issues bez ručnog prepisivanja</h3>
+<p>B jednom pokreće generator iz repo root-a. <code>team.json</code> mora već biti popunjen, a oba naloga prihvatila pristup. Prva komanda samo prikazuje plan. Druga pravi labele i 18 dodeljenih issues sa SP i poveznicama zavisnosti. Skripta preskače postojeći isti naslov, prekida pri neizvesnom rezultatu i ne radi merge/deploy.</p>
+<pre><code class="language-powershell">pwsh -File scripts/setup/create-issues.ps1
+pwsh -File scripts/setup/create-issues.ps1 -Create
+</code></pre>
+<p>Ako nemate PowerShell 7 (<code>pwsh</code>), pokrenite iz odgovarajućeg PowerShell-a <code>&amp; .\scripts\setup\create-issues.ps1</code>; ne menjati globalnu policy. <code>status:ready</code> znači upisano u backlog; pre početka proveravaju se i zavisnosti. U GitHub-u napravite board po statusu ako vam ubrzava pregled, ali ne vodite drugu nezavisnu listu statusa.</p>
+<details><summary>create-issues.ps1 — kompletna skripta</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>param([switch]$Create)
+$ErrorActionPreference = 'Stop'
+$team = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'team.json') -Raw | ConvertFrom-Json
+$items = Get-Content -LiteralPath (Join-Path $PSScriptRoot 'backlog.json') -Raw | ConvertFrom-Json
+if ($team.repo -notmatch '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$' -or $team.repo -match 'YOUR_OWNER') { throw 'Popuni stvarni repo u team.json.' }
+if ($team.builderA -match 'GITHUB_HANDLE' -or $team.builderB -match 'GITHUB_HANDLE') { throw 'Popuni stvarne GitHub naloge.' }
+if (-not $Create) {
+  $items | Select-Object id,owner,sp,title | Format-Table -AutoSize
+  Write-Output &quot;Preview: $($items.Count) issue-a za $($team.repo). Pokreni sa -Create za upis.&quot;
+  exit 0
+}
+function Invoke-GhChecked([string[]]$CliArgs) {
+  $result = &amp; gh @CliArgs
+  if ($LASTEXITCODE -ne 0) { throw &quot;GitHub CLI nije uspeo: $($CliArgs[0]) $($CliArgs[1])&quot; }
+  return $result
+}
+Invoke-GhChecked @('auth','status') | Out-Null
+$repo = [string]$team.repo
+$labels = @{
+  'priority:P0'='B60205'; 'priority:P1'='FBCA04';
+  'status:ready'='0E8A16'; 'status:in-progress'='1D76DB';
+  'status:review'='5319E7'; 'status:blocked'='D93F0B'; 'status:done'='BFDADC';
+  'owner:A'='0052CC'; 'owner:B'='006B75'
+}
+foreach ($n in 1,2,3,5) { $labels[&quot;sp:$n&quot;]='C5DEF5' }
+foreach ($area in ($items.area | Sort-Object -Unique)) { $labels[&quot;area:$area&quot;]='D4C5F9' }
+foreach ($label in $labels.GetEnumerator()) {
+  Invoke-GhChecked @('label','create',$label.Key,'--repo',$repo,'--color',$label.Value,'--force') | Out-Null
+}
+$existing = @(Invoke-GhChecked @('issue','list','--repo',$repo,'--state','all','--limit','1000','--json','number,title') | ConvertFrom-Json)
+$map = @{}
+foreach ($item in $items) {
+  $title = &quot;[$($item.id)] $($item.title)&quot;
+  $found = @($existing | Where-Object title -eq $title)
+  if ($found.Count -gt 1) { throw &quot;Dupli naslovi za $($item.id); proveri rucno.&quot; }
+  if ($found.Count -eq 1) { $map[$item.id]=$found[0].number; continue }
+  $owner = if ($item.owner -eq 'A') { $team.builderA } else { $team.builderB }
+  $dependencies = @($item.depends | ForEach-Object {
+    if (-not $map.ContainsKey($_)) { throw &quot;Neresena zavisnost $_&quot; }
+    &quot;#$($map[$_])&quot;
+  }) -join ', '
+  if (-not $dependencies) { $dependencies='nema' }
+  $body = &quot;## Ishod`n$($item.accept)`n`n## Plan`nVlasnik: $($item.owner)`nSP: $($item.sp)`nZavisnosti: $dependencies`n`n## Prihvatni kriterijumi`n- [ ] Implementiran navedeni ishod`n- [ ] Proveren negativan/nepotpun slucaj`n- [ ] PR pregledan i mergovan`n`n## Dokaz`nUpisati komande, rezultat i PR.`n&quot;
+  $bodyFile = Join-Path $PSScriptRoot 'issue-body.local.md'
+  [IO.File]::WriteAllText($bodyFile,$body,[Text.UTF8Encoding]::new($false))
+  Invoke-GhChecked @('issue','create','--repo',$repo,'--title',$title,'--body-file',$bodyFile,
+    '--assignee',[string]$owner,'--label',&quot;priority:P0,owner:$($item.owner),sp:$($item.sp),area:$($item.area),status:ready&quot;) | Out-Null
+  $lookup = @(Invoke-GhChecked @('issue','list','--repo',$repo,'--state','all','--limit','1000','--json','number,title') | ConvertFrom-Json)
+  $created = @($lookup | Where-Object title -eq $title)
+  if ($created.Count -ne 1) { throw 'Neizvestan rezultat; proveri GitHub pre ponavljanja.' }
+  $map[$item.id]=$created[0].number
+  Write-Output &quot;$($item.id) -&gt; #$($created[0].number)&quot;
+}
+$map | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $PSScriptRoot 'issue-map.local.json') -Encoding utf8
+Write-Output 'Gotovo. Zavisnosti su u opisima; status ready ne znaci da su sve zavisnosti zatvorene.'
+</code></pre></div>
+</details>
+
+</section>
+
+<section id="git-protokol" class="ops">
+<div class="lab">28 — Git / radna pravila i tačne komande</div>
+
+<h3>Kratka grana po issue-u, jedna pregledana promena</h3>
+<p>Obojica imaju svoj klon. Ne radite u zajedničkom mrežnom direktorijumu. Pre zadatka čist status; postojeće tuđe/nepovezane izmene sačuvati i razjasniti, bez automatskog brisanja ili stash-a. Zamenite brojeve i handle u primeru stvarnim vrednostima.</p>
+<pre><code class="language-powershell">git status --short
+git switch main
+git pull --ff-only origin main
+git switch -c feat/A/12-evidence-contract
+gh issue edit 12 --add-label &#39;status:in-progress&#39; --remove-label &#39;status:ready&#39;
+</code></pre>
+<p><code>pull --ff-only</code> je za čisti <code>main</code>. Na feature grani sinhronizacija ide eksplicitnim fetch + merge, naročito posle partnerovog merge-a i promene ugovora. Nema obaveznog timera za push nedovršenog koda niti direktnog prepisivanja <code>main</code>.</p>
+<pre><code class="language-powershell">git fetch origin
+git merge origin/main
+git diff --check
+# Relevantni testovi prema promeni; zatim:
+git add -- contracts docs/CONTRACTS.md
+git diff --cached
+git diff --cached --check
+git commit -m &#39;feat(contracts): add grounded evidence contract (#12)&#39;
+git push -u origin feat/A/12-evidence-contract
+</code></pre>
+<p>PR opis napišite u <code>docs/pr-body.local.md</code>, stvarnim novim redovima. Sadržaj: problem/rezultat, <code>Closes #12</code>, obavljene provere, promene ugovora/env/zavisnosti i slika za UI. Taj lokalni fajl je ignorisan; GitHub čuva poslati opis.</p>
+<pre><code class="language-powershell">gh pr create --base main --head feat/A/12-evidence-contract --title &#39;Evidence contract with source validation&#39; --body-file docs/pr-body.local.md --reviewer GITHUB_HANDLE_B
+gh issue edit 12 --add-label &#39;status:review&#39; --remove-label &#39;status:in-progress&#39;
+</code></pre>
+<p>Reviewer čita trenutni diff i dokaz, proverava negativni slučaj i označava potrebne izmene. <strong>A ne odobrava sopstveni PR.</strong> Novi commit posle review-a traži pregled novog diff-a. Autor spaja tek nakon partnerovog odobrenja i uspešnih obaveznih provera.</p>
+<pre><code class="language-powershell"># Autor: upisi stvarni PR broj.
+$prNumber = 14
+gh pr checks $prNumber --watch
+gh pr view $prNumber --json reviewDecision,headRefOid
+$reviewedSha = gh pr view $prNumber --json headRefOid --jq .headRefOid
+# Nastaviti tek kada je ovaj SHA pregledan i checks uspesni.
+gh pr merge $prNumber --squash --delete-branch --match-head-commit $reviewedSha
+git switch main
+git pull --ff-only origin main
+gh issue edit 12 --add-label &#39;status:done&#39; --remove-label &#39;status:review&#39;
+</code></pre>
+<p><code>--match-head-commit</code> sprečava spajanje druge glave grane od izabrane, dok pravilo odobrenja i status checks obezbeđuje GitHub zaštita. Ne koristiti <code>--admin</code> za zaobilaženje. <code>Closes #12</code> zatvara issue pri merge-u u podrazumevanu granu. <a href="https://cli.github.com/manual/gh_pr_merge">GitHub PR merge</a> · <a href="https://cli.github.com/manual/gh_issue_create">GitHub issues</a>.</p>
+<h3>Konflikt rešava namera obe promene</h3>
+<p>Ako merge stane, pročitati obe verzije i kontaktirati vlasnika. Ne uzimati ceo <code>--ours</code>/<code>--theirs</code>. A vodi ugovore, ali promena koja utiče na B dobija fixture i usklađen consumer. B vodi npm manifest/lock; dependencies se usaglašavaju u <code>package.json</code>, regeneriše lock, pa <code>npm ci</code> i build. A vodi Python zavisnosti i image. Generated fajlovi se regenerišu odgovarajućim alatom.</p>
+<p>Na svakom preseku upisati sopstveni <code>docs/handoffs/A.md</code> ili <code>B.md</code>: issue, gotovo, promenjeni ugovor, dokaz, blokada, sledeće. Ako je neko blokiran 15 minuta bez novog saznanja, prijaviti preciznu prepreku i tražiti odluku ili preuzeti nezavisan zadatak. Prioritet je integrisano ponašanje, a ne broj otvorenih grana.</p>
+</section>
+
+<section id="claude-promptovi" class="ops">
+<div class="lab">29 — Gotovi promptovi / oba člana</div>
+
+<h3>Jedan zajednički CLAUDE.md i lokalna uloga po računaru</h3>
+<p><strong>Obojica u repo-u imaju isti zajednički <code>CLAUDE.md</code>.</strong> Svako kopira svoj dodatak kao <code>CLAUDE.local.md</code>. Time oba agenta poštuju isti Git protokol, a ne prepisuju jedan drugom ulogu u deljenom fajlu. Zajednički fajl se commituje; lokalna uloga je u <code>.gitignore</code>. Claude Code podržava ovaj raspored; proverite učitan kontekst preko <code>/context</code> i fajlove preko <code>/memory</code>. <a href="https://code.claude.com/docs/en/memory">Claude Code memory</a>.</p>
+<p>U <code>docs/PRODUCT.md</code> mora biti dogovoreni proizvod, u <code>docs/CONTRACTS.md</code> aktuelni ugovor, a u <code>scripts/setup/team.json</code> stvarni GitHub identiteti. Ovi promptovi ne mogu sami znati vaše handle-ove, stanje naloga ili sadržaj očevih još neučitanih materijala.</p>
+<details open><summary>Zajednički CLAUDE.md — obojica koriste ceo blok</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Saglasnik — zajednički protokol
+
+## Proizvod i autoritet
+Saglasnik je kopilot za tehničke projekte različitih disciplina.
+Zajednički UI i model: predmet, dokumenti, revizije, dosije, dokazi, zadaci i izmene.
+Za hakaton implementiramo samo stručni modul fire_protection (ZOP).
+Ostali moduli imaju oznaku Planirano i ne proizvode rezultate ni ocene.
+Obavezna petlja: upload -&gt; pregled -&gt; dokaz -&gt; pitanje -&gt; predlog -&gt; prihvatanje
+-&gt; stvarna izmena podržanog izvora -&gt; izvoz -&gt; ponovna provera nove revizije.
+Korisnik prihvata projektantsku odluku; sistem ne izdaje saglasnost.
+Prati najnovije odluke korisnika, docs/PRODUCT.md, docs/CONTRACTS.md i issue.
+Stariji runbook je kontekst, a ne autoritet nad novim dogovorom.
+Predaja se planira do 18:30, prema javnom roku 19:00, osim potvrđene izmene organizatora.
+
+## Početak svake sesije
+1. Pročitaj CLAUDE.local.md i potvrdi svoju ulogu A ili B. Ako nedostaje, pitaj samo za ulogu.
+2. Proveri cwd, git status --short, trenutnu granu i git remote -v.
+3. Proveri gh auth status, zatim git fetch origin. Ne ispisuj tokene ili env vrednosti.
+4. Pročitaj dodeljeni issue, njegove zavisnosti i docs/handoffs/ drugog člana.
+5. Saopšti šta preuzimaš, koje fajlove menjaš i čime ćeš dokazati završetak.
+6. Ako postoje nepovezane lokalne izmene, sačuvaj ih; ne resetuj, ne briši i ne stashuj automatski.
+
+## Uloge i ownership
+A: contracts/, engine/, domains/, evals/, sandbox/ingest/, sandbox/compute/,
+   convex/workflows/, convex/lib/perception/, convex/lib/providers/, convex/lib/daytona/.
+B: src/, public/, sandbox/artifacts/, convex/schema.ts, convex CRUD fajlovi,
+   hosting, .github/, package.json, package-lock.json, video i release.
+A je integrator za Python dependencies i sandbox image; B za npm dependencies.
+Shared contracts se menjaju uz dogovor oba člana i usklađen fixture/consumer u istom PR-u.
+Generated fajlove ne uređuj ručno. Bilo koji izuzetak ownership-a zapiši u issue pre rada.
+Podela je mehanizam saradnje, ne pravilo da se tuđa namera odbaci pri konfliktu.
+
+## Issues i story points
+GitHub je izvor istine za status. Svaki zadatak ima jednog vlasnika, SP, prioritet,
+zavisnosti, prihvatne kriterijume i dokaz završetka.
+Story points su relativna složenost/rizik (1,2,3,5), ne sati ili ocena programera.
+5 SP rastavi pre početka. Ne uzimaj novi issue dok trenutni nije u review ili blokiran.
+Status: ready -&gt; in-progress -&gt; review -&gt; done; blocked navodi razlog i sledeću akciju.
+Done znači: implementirano, provereno, pregledano i mergovano. Mock nije završena integracija.
+Ne proglašavaj rezultat proverenim zato što je cilj napisan u specifikaciji.
+
+## Git: početak zadatka
+Radi u svom klonu. Nakon čistog statusa:
+git switch main
+git pull --ff-only origin main
+git switch -c feat/&lt;A-ili-B&gt;/&lt;issue-broj&gt;-kratak-opis
+Koristi novu kratkotrajnu granu za svaki issue. Ne koristi trajnu pipeline/ui granu
+posle squash merge-a. Ne radi direktan push na main posle početnog scaffolda.
+Fetch radi na početku zadatka, pre PR-a, posle partnerovog merge-a i pri promeni ugovora.
+Na feature grani uskladi sa git merge origin/main; ne radi git pull naslepo.
+Ne radi force push, reset --hard, git clean niti destruktivno rešavanje konflikata.
+
+## Commit, push i PR
+1. Proveri git diff i relevantne testove. git diff --check mora proći.
+2. Dodaj samo namenske putanje (git add -- ...), pa pregledaj staged diff.
+3. Pokreni dostupnu proveru tajni sa redigovanim izlazom; ne štampaj pronađene vrednosti.
+4. Napravi smislen commit sa referencom issue-a, npr. feat(evidence): show source pair (#12).
+5. git push -u origin &lt;trenutna-feature-grana&gt;.
+6. PR prema main: konkretan problem i ponašanje, Closes #N, validacija,
+   promena contracts/env/dependencies i slika/video kada je UI menjan.
+7. Za višelinijski opis koristi UTF-8 fajl i gh pr create --body-file &lt;putanja&gt;.
+8. Zatraži pregled od drugog člana. Svaki novi commit zahteva pregled aktuelnog diff-a.
+9. Merge radi autor tek posle partnerovog pregleda i uspešnih relevantnih provera.
+   Koristi squash i --match-head-commit sa upravo pregledanim SHA.
+10. Posle merge-a: čist status, switch main, pull --ff-only, osveži dependencies/codegen
+    kada je potrebno i otvori novu granu za sledeći issue.
+Ako nema dostupnog partnera za review, označi blokadu; ne izmišljaj odobrenje.
+
+## Konflikti i ugovori
+Ako merge konflikt postoji, pročitaj obe namere, uključi vlasnika fajla i sačuvaj oba
+potrebna ponašanja. --ours/--theirs nije standardno rešenje.
+package-lock se usklađuje iz usaglašenog package.json, npm install, zatim npm ci i build.
+Ne menjaj ugovor castovima any/as unknown da bi sakrio neslaganje.
+Contracts su stabilni, ali popravljivi kroz mali koordinisani PR sa verzijom i fixture-om.
+Ne odlaži ispravku očiglednog ugovornog buga do proizvoljnog vremenskog prozora.
+
+## Razvoj i deployment
+Svaki član koristi svoj Convex dev deployment. Ne pokreći dva convex dev watcher-a
+iz različitih grana prema istom deployment-u.
+B vodi produkcioni deploy iz main. Feature grane ne dobijaju production deploy key.
+Cloud akcije/SDK pozive proveri u aktuelnoj zvaničnoj dokumentaciji i instaliranim tipovima.
+Postojeće testove pokreni prema promeni; dodaj smislene testove za pravila, dokaze,
+revizije, promene datoteka i oporavak. Ne testiraj samo kopiju implementacije.
+Spoljni API pozivi idu iz server action-a; Python obrada u Daytona sandbox/kontejner.
+Privatni izvorni projekti ostaju van javnog repoa. Samo odobreni anonimizovani demo ulazi.
+
+## Kvalitet proizvoda
+Činjenice imaju tip, jedinicu, identitet elementa, reviziju i proverljiv izvor.
+Nepoznat preduslov ne postaje PASS/FAIL; konflikt mora imati dokaz za obe tvrdnje.
+Dokaz odsustva je obuhvat pretrage, ne izmišljen citat nepostojećeg podatka.
+Predlog, prihvatanje, primena i potvrđeno rešenje su odvojena stanja.
+Izlazni fajl se ponovo čita i proveravaju se zavisna pravila.
+Šema i integrity gate nisu dokaz semantičke tačnosti. Rezultati se mere, ne pretpostavljaju.
+
+## Handoff i autonomija
+Piši kratak docs/handoffs/A.md ili B.md: ISSUE, DONE, CONTRACT, VALIDATION, NEEDS, NEXT.
+Ne prepisuj partnerov handoff. Preuzimanje posla potvrdi kroz assignee/issue komentar.
+Ako si blokiran 15 minuta bez novog saznanja, prijavi razlog i predloži konkretan korak.
+Nastavi autorizovani rad bez ponovnog traženja potvrde za rutinske lokalne izmene.
+Ne kontaktiraj klijente niti šalji njihove dokumente bez odgovarajuće dozvole.
+Ne kreiraj druge discipline, nove servise ili dodatne agente samo radi složenosti.
+Na kraju napiši šta je urađeno, šta je stvarno provereno, PR/commit i šta ostaje.
+</code></pre></div>
+</details>
+<details open><summary>Član A — kopirati kao CLAUDE.local.md</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Lokalna uloga: Builder A
+
+Ja sam Builder A. U ovoj sesiji vodi percepciju, stručna pravila,
+integritet i ponovnu proveru. Prati zajednički CLAUDE.md.
+Pre prvog remote koraka pročitaj scripts/setup/team.json za stvarne GitHub naloge i naziv repoa.
+
+Moj prioritet: contracts -&gt; ingest -&gt; ZOP pack -&gt; ciljano čitanje -&gt; provera dokaza
+-&gt; engine/gate -&gt; predlog izmena -&gt; provera nove revizije -&gt; stručna evaluacija.
+Pregledani dosije mora biti domenski neutralan; samo fire_protection pack je aktivan.
+Koordiniraj kontrakte sa B pre nego što promeniš tip koji koristi UI/izvoz.
+Ne preuzimaj src/ ili export implementaciju bez eksplicitnog handoff-a u issue-u.
+Vlasnik sam Python dependencies i Daytona image-a; zahteve B za biblioteke za izvoz
+uključi u isti potvrđeni environment. Ne dodaj modele prema nazivu iz stare specifikacije.
+
+Zadatak za početak: pregledaj stanje i svoj sledeći ready issue bez nerešenih zavisnosti.
+Ako repo još ne postoji, B radi bootstrap; pripremi ugovor i kriterijume bez paralelnog
+kreiranja drugog repoa. Ne izmišljaj issue broj, GitHub handle ili aktivan API budžet.
+Posle svog PR-a pregledaj sledeći B-ov PR na aktuelnom SHA i relevantnim testovima.
+Handoff piši u docs/handoffs/A.md. Svaki nalaz potkrepi tačnim izvorom.
+</code></pre></div>
+</details>
+<details open><summary>Član B — kopirati kao CLAUDE.local.md</summary>
+
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Lokalna uloga: Builder B
+
+Ja sam Builder B. U ovoj sesiji vodi zajednički UI, stanje predmeta, dokumentne
+artefakte i javnu isporuku. Prati zajednički CLAUDE.md.
+Pre prvog remote koraka pročitaj scripts/setup/team.json za stvarne GitHub naloge i naziv repoa.
+
+Moj prioritet: jedan bootstrap -&gt; generički project shell -&gt; upload/revizije
+-&gt; dosije sa dokazima -&gt; pitanja/odobrenja -&gt; stvarna izmena podržanog izvora i izvoz
+-&gt; poređenje revizija -&gt; javni demo/video.
+UI je kopilot za arhitekturu, konstrukciju, elektro, mašinske i druge tehničke projekte.
+ZOP je jedini aktivan stručni modul; ostali su Planirano, sa jasnim opisom budućeg obuhvata.
+Nemoj hardkodovati ZOP kao identitet cele aplikacije niti prikazivati lažne rezultate.
+Interfejs mora sačuvati razliku predloženo/prihvaćeno/primenjeno/provereno.
+
+Vlasnik sam package.json/package-lock.json, CI i produkcione isporuke. Samo ja radim
+početni Vite scaffold i kreiram repo po dogovorenom nazivu; A potom klonira isti repo.
+Za Python biblioteke i sandbox image otvori zahtev A-u, umesto paralelnog menjanja lock-a.
+Drži lokalne grane na svom Convex dev deployment-u. Produkcija ide iz main preko
+dogovorenog builda. Ne puštaj partnerov lokalni watcher na produkcionu/integracionu bazu.
+
+Počni pregledom repo stanja i svog sledećeg ready issue-a. Koristi fixtures prema
+contracts, jasno označene kao razvojne; prebaci na stvaran tok čim A objavi rezultat.
+Posle svog PR-a pregledaj sledeći A-ov PR na aktuelnom SHA i relevantnim testovima.
+Handoff piši u docs/handoffs/B.md. Proveri desktop, telefon i javni URL iz drugog browsera.
+</code></pre></div>
+</details>
+
+<p>Prva poruka nakon pokretanja sesije: <strong>„Pročitaj projektne instrukcije, proveri svoju ulogu i preuzmi prvi spreman issue dodeljen mom GitHub nalogu. Prvo potvrdi granice fajlova i kriterijum završetka, zatim radi po protokolu.“</strong> Za bootstrap B prvo izvršava setup iz ovog dokumenta; tek kada repo i issues postoje, agent može preuzeti stvaran issue.</p>
+</section>
+
+<section id="paket-setup" class="ops">
+<div class="lab">30 — Prateći fajlovi i predaja</div>
+
+<h3>Sve instrukcije su u dokumentu; fajlovi su spremni za kopiranje</h3>
+<p>Preuzmite <a href="saglasnik-v3-setup.zip">setup paket ZIP</a>. Sadrži zajednički i lokalne Claude promptove, backlog, issue generator, šablone, env primer i smoke testove. HTML sadrži ključne promptove i skripte u celini; prateći fajlovi uklanjaju ručno prepisivanje.</p>
+<ul><li><a download href="saglasnik-v3-setup/CLAUDE.md">CLAUDE.md</a></li><li><a download href="saglasnik-v3-setup/CLAUDE-A.local.md">CLAUDE-A.local.md</a></li><li><a download href="saglasnik-v3-setup/CLAUDE-B.local.md">CLAUDE-B.local.md</a></li><li><a download href="saglasnik-v3-setup/team.example.json">team.example.json</a></li><li><a download href="saglasnik-v3-setup/issue-template.md">issue-template.md</a></li><li><a download href="saglasnik-v3-setup/pr-template.md">pr-template.md</a></li><li><a download href="saglasnik-v3-setup/backlog.json">backlog.json</a></li><li><a download href="saglasnik-v3-setup/create-issues.ps1">create-issues.ps1</a></li><li><a download href="saglasnik-v3-setup/.env.example">.env.example</a></li><li><a download href="saglasnik-v3-setup/.gitignore.append">.gitignore.append</a></li><li><a download href="saglasnik-v3-setup/smoke-api.mjs">smoke-api.mjs</a></li><li><a download href="saglasnik-v3-setup/create-snapshot.mjs">create-snapshot.mjs</a></li><li><a download href="saglasnik-v3-setup/daytona-smoke.mjs">daytona-smoke.mjs</a></li><li><a download href="saglasnik-v3-setup/ci.bootstrap.yml">ci.bootstrap.yml</a></li></ul><details><summary>.env.example — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Lokalni serverski smoke testovi. Popuni u .env.local; bez VITE_ prefiksa za tajne.
+XAI_API_KEY=
+XAI_MODEL=
+ANTHROPIC_API_KEY=
+ANTHROPIC_MODEL=
+DAYTONA_API_KEY=
+DAYTONA_SNAPSHOT=saglasnik-docs-v1
+EXA_API_KEY=
+FIRECRAWL_API_KEY=
+# Opcioni medijski alat, koristi se tokom izrade prezentacije.
+FAL_KEY=
+# Convex CLI dodaje CONVEX_DEPLOYMENT i VITE_CONVEX_URL za tvoj dev deployment.
+# Production CONVEX_DEPLOY_KEY se unosi samo u hosting secret settings.
+</code></pre></div></details><details><summary>.gitignore.append — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>.env
+.env.*
+!.env.example
+CLAUDE.local.md
+.venv/
+__pycache__/
+.pytest_cache/
+private-data/
+artifacts-local/
+*.local.json
+issue-body.local.md
+docs/pr-body.local.md
+</code></pre></div></details><details><summary>team.example.json — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>{
+  &quot;repo&quot;: &quot;YOUR_OWNER/saglasnik&quot;,
+  &quot;builderA&quot;: &quot;GITHUB_HANDLE_A&quot;,
+  &quot;builderB&quot;: &quot;GITHUB_HANDLE_B&quot;
+}
+</code></pre></div></details><details><summary>issue-template.md — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>---
+name: Saglasnik zadatak
+about: Isporuciv zadatak sa vlasnikom, SP i dokazom
+---
+
+## Korisnički rezultat
+Šta korisnik može da uradi kada je ovaj issue gotov?
+
+## Obuhvat
+Vlasnik: A ili B
+Story points: 1 / 2 / 3 (5 prvo razbiti)
+Prioritet: P0 / P1
+Putanje koje se menjaju:
+Zavisnosti: brojevi stvarnih issue-a
+
+## Prihvatni kriterijumi
+- [ ] Konkretno ponašanje na stvarnom ili jasno označenom test ulazu
+- [ ] Negativan/nepotpun slučaj
+- [ ] Usklađen contract i fixture
+- [ ] Dokaz testa ili snimak UI-ja
+
+## Dokaz završetka
+PR:
+Provere:
+Ograničenja:
+</code></pre></div></details><details><summary>pr-template.md — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>## Promena
+Konkretan problem i novo ponašanje.
+
+Closes #REPLACE_WITH_REAL_ISSUE
+
+## Provera
+- Komanda i stvarni rezultat
+- Slika/video ako se menja UI
+- Slučaj nedostajućeg podatka ili greške
+
+## Integracija
+Contracts: nepromenjeni / verzija i promena
+Dependencies / env: nepromenjeni / spisak naziva bez tajnih vrednosti
+Migracija / deploy: koraci ako su potrebni
+Ograničenja: šta nije provereno
+</code></pre></div></details><details><summary>backlog.json — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>[
+ {&quot;id&quot;:&quot;S00&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;platform&quot;,&quot;title&quot;:&quot;Bootstrap, repo, CI i javni shell&quot;,&quot;depends&quot;:[],&quot;accept&quot;:&quot;Jedan repo, oba clana imaju pristup, lokalni build i javni shell rade; main i licni dev deployment-i su odvojeni.&quot;},
+ {&quot;id&quot;:&quot;S01&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;contract&quot;,&quot;title&quot;:&quot;Genericki contracts i kompletan fixture dosijea&quot;,&quot;depends&quot;:[&quot;S00&quot;],&quot;accept&quot;:&quot;Project, DomainPack, Evidence, Observation, Dossier, ChangeSet i Revision imaju zajednicke tipove, verziju i validan fixture.&quot;},
+ {&quot;id&quot;:&quot;S02&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;ui&quot;,&quot;title&quot;:&quot;Kopilot za sve discipline: shell i modul registry&quot;,&quot;depends&quot;:[&quot;S01&quot;],&quot;accept&quot;:&quot;Projekat ima genericku navigaciju; ZOP aktivan, ostale discipline Planirano; nema laznih ocena ni pokretanja neaktivnog modula.&quot;},
+ {&quot;id&quot;:&quot;S03&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;platform&quot;,&quot;title&quot;:&quot;Upload, dokumenti, revizije i trajno stanje&quot;,&quot;depends&quot;:[&quot;S01&quot;],&quot;accept&quot;:&quot;Stvarni ulaz ulazi u storage, povezan je sa revizijom i refresh cuva stanje; nevalidan ulaz daje jasnu poruku.&quot;},
+ {&quot;id&quot;:&quot;S04&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Daytona ingest, manifest i dokaz strane&quot;,&quot;depends&quot;:[&quot;S01&quot;,&quot;S03&quot;],&quot;accept&quot;:&quot;PDF daje manifest, tekst/isecke i stabilnu mapu strane; output sacuvan, job zavrsen i nije ostao sandbox bez razloga.&quot;},
+ {&quot;id&quot;:&quot;S05&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;domain&quot;,&quot;title&quot;:&quot;Odobreni ZOP pack sa primerima i izuzecima&quot;,&quot;depends&quot;:[&quot;S01&quot;],&quot;accept&quot;:&quot;Pravila imaju pravni izvor, primenljivost, nepoznate preduslove, primer i kontraprimer; nepotvrdjeno je draft.&quot;},
+ {&quot;id&quot;:&quot;S06&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Mapa i ciljana ekstrakcija stvarnih dokaza&quot;,&quot;depends&quot;:[&quot;S04&quot;,&quot;S05&quot;],&quot;accept&quot;:&quot;Stvaran projekat daje tipizovana opazanja sa identitetom elementa i revizijom; nedostajuci podatak ostaje unknown.&quot;},
+ {&quot;id&quot;:&quot;S07&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Odvojena verifikacija kriticnih dokaza&quot;,&quot;depends&quot;:[&quot;S06&quot;],&quot;accept&quot;:&quot;Verifikator cita izvor bez ekstraktorove vrednosti; neslaganje ostaje sporno i ne dobija lazni FAIL/PASS.&quot;},
+ {&quot;id&quot;:&quot;S08&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Engine, integrity gate i verzionisani dosije&quot;,&quot;depends&quot;:[&quot;S05&quot;,&quot;S06&quot;],&quot;accept&quot;:&quot;Svako pravilo ima status; provera porekla koristi stvarni manifest; odsustvo ima obuhvat pretrage; semanticka tacnost se ne poistovecuje sa integritetom.&quot;},
+ {&quot;id&quot;:&quot;S09&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;ui&quot;,&quot;title&quot;:&quot;Dosije i dokazi A/B u istom radnom prostoru&quot;,&quot;depends&quot;:[&quot;S02&quot;,&quot;S08&quot;],&quot;accept&quot;:&quot;Nalaz otvara tacnu stranu i dva dokaza za konflikt; pokrivenost, neizvesnost i sledeca radnja su vidljivi.&quot;},
+ {&quot;id&quot;:&quot;S10&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;ui&quot;,&quot;title&quot;:&quot;Pitanja, odluke i prihvatanje ChangeSet-a&quot;,&quot;depends&quot;:[&quot;S09&quot;],&quot;accept&quot;:&quot;Odgovor i odobrenje su trajni i vezani za osnovnu reviziju; promenjen izvor ponistava zastareli predlog.&quot;},
+ {&quot;id&quot;:&quot;S11&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Plan povezanih ispravki&quot;,&quot;depends&quot;:[&quot;S08&quot;],&quot;accept&quot;:&quot;Potvrdjena odluka daje strukturisane promene i zavisnosti; dokumentarna korekcija i projektantski zadatak su odvojeni.&quot;},
+ {&quot;id&quot;:&quot;S12&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;artifacts&quot;,&quot;title&quot;:&quot;Izmena izvornog dokumenta, render i paket&quot;,&quot;depends&quot;:[&quot;S10&quot;,&quot;S11&quot;],&quot;accept&quot;:&quot;Podrzani Word/Excel izvor se stvarno menja u kopiji, otvara/renderuje i izvozi uz anotacije i otvorene zadatke.&quot;},
+ {&quot;id&quot;:&quot;S13&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:3,&quot;area&quot;:&quot;pipeline&quot;,&quot;title&quot;:&quot;Ponovno citanje revizije i zavisne provere&quot;,&quot;depends&quot;:[&quot;S12&quot;],&quot;accept&quot;:&quot;Nova datoteka se ponovo cita; reseni, otvoreni i novi nalazi se racunaju; brisanje dokaza ne postaje resenje.&quot;},
+ {&quot;id&quot;:&quot;S14&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;ui&quot;,&quot;title&quot;:&quot;Razlike revizija i zavrsni korisnicki tok&quot;,&quot;depends&quot;:[&quot;S12&quot;,&quot;S13&quot;],&quot;accept&quot;:&quot;UI pokazuje pre/posle, preuzimanje i stvarni ishod ponovne provere; stanja prihvaceno i reseno su odvojena.&quot;},
+ {&quot;id&quot;:&quot;S15&quot;,&quot;owner&quot;:&quot;A&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;eval&quot;,&quot;title&quot;:&quot;Strucna evaluacija i negativni slucajevi&quot;,&quot;depends&quot;:[&quot;S07&quot;,&quot;S08&quot;,&quot;S13&quot;],&quot;accept&quot;:&quot;RESULTS sadrzi izmerene vrednosti, imenioce i poreklo skupa; obuhvata nepoznato, pogresan izvor i proveru ispravke.&quot;},
+ {&quot;id&quot;:&quot;S16&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:2,&quot;area&quot;:&quot;release&quot;,&quot;title&quot;:&quot;Produkcioni deploy i provera oporavka&quot;,&quot;depends&quot;:[&quot;S14&quot;],&quot;accept&quot;:&quot;Javni tok radi iz drugog browsera; deep-link refresh, reset i ogranicenje upotrebe rade; produkcija vezana za pregledani main.&quot;},
+ {&quot;id&quot;:&quot;S17&quot;,&quot;owner&quot;:&quot;B&quot;,&quot;sp&quot;:1,&quot;area&quot;:&quot;release&quot;,&quot;title&quot;:&quot;Video, README i predaja&quot;,&quot;depends&quot;:[&quot;S15&quot;,&quot;S16&quot;],&quot;accept&quot;:&quot;Video do tri minuta jasno oznacava prethodno izvrsene rezultate; repo, URL i video provereni; predaja do 18:30.&quot;}
+]
+</code></pre></div></details>
+<h3>Završni presek</h3>
+<p>Do 18:00 završiti snimanje stabilnog toka; do 18:30 proveriti i predati repo, javni URL i video kroz formular događaja. Ako organizator potvrdi drugačiji rok, ažurirati jednu odluku u proizvodnom dokumentu i plan. U videu prvo pokazati univerzalni radni prostor i aktivni ZOP modul, zatim najveći deo vremena dati dokazu, odluci, stvarnoj izmeni i proveri revizije.</p>
+<p><strong>Šta se ovim isporučuje:</strong> specifikacija i operativni plan sa pratećim šablonima. Aplikacija, nalozi, repo na GitHub-u, cloud snapshot i plaćene integracije nisu kreirani izvršavanjem ovog dokumenta. Komande se proveravaju lokalno po sintaksi i prema dokumentaciji; njihov uspeh na vašim nalozima potvrđuje setup timskim testovima.</p>
+</section>
+
+<footer>
+  Saglasnik · specifikacija i runbook v3 · 11.09.2026 · ažurirano prema sastanku tima i runbooku 4 · vizuelni format v2.<br>
+  Dokumenti: <a href="5-nezavisna-revizija-konteksta.md">nezavisna revizija</a> · <a href="6-preporuka-za-hakaton.md">detaljna preporuka</a> · <a href="3-saglasnik-spec-v2.html">arhivirana specifikacija v2</a>.<br>
+  Svi prikazani demo nalazi su ilustracije ponašanja. Stvarni izvori, pragovi i rezultati unose se nakon pregleda i stručne potvrde materijala.<br>
+  <a href="#vrh">Nazad na početak ↑</a>
+</footer>
+</main>
+
+<script>
+document.querySelectorAll('.copy-code').forEach(button => button.addEventListener('click', async () => {
+ const code=button.parentElement.querySelector('code');
+ try { await navigator.clipboard.writeText(code.textContent); button.textContent='Kopirano'; }
+ catch { const range=document.createRange();range.selectNodeContents(code);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);button.textContent='Ctrl+C'; }
+ setTimeout(()=>button.textContent='Kopiraj',1800);
+}));
+let printClosed=[];
+window.addEventListener('beforeprint',()=>{printClosed=[...document.querySelectorAll('details:not([open])')];printClosed.forEach(d=>d.open=true)});
+window.addEventListener('afterprint',()=>printClosed.forEach(d=>d.open=false));
+</script>
+</body>
+</html>

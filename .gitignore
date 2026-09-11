@@ -1,0 +1,19 @@
+# Local credentials and role selection
+.env
+.env.*
+!.env.example
+CLAUDE.local.md
+*.local.json
+issue-body.local.md
+docs/pr-body.local.md
+
+# Development output and private project inputs
+node_modules/
+dist/
+.venv/
+__pycache__/
+.pytest_cache/
+private-data/
+artifacts-local/
+test-results/
+playwright-report/

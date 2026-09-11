@@ -1,0 +1,582 @@
+<title>Saglasnik</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=Roboto+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --paper:#EFF2F4; --card:#FBFCFC; --sunk:#E2E7EA;
+    --ink:#101A22; --ink2:#38474F; --mute:#65757E;
+    --rule:#CBD3D7; --hard:#9FAAB0;
+    --acc:#0F5560; --accs:#DBE8EA;
+    --fail:#A3301C; --fails:#F5E3DE;
+    --miss:#8A6209; --misss:#F6EEDC;
+    --pass:#1F6146; --passs:#DFEBE4;
+    --m:66ch;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --paper:#0C1216;--card:#141C21;--sunk:#1B242A;
+    --ink:#E9EEF0;--ink2:#BCC7CC;--mute:#7E8C93;
+    --rule:#263238;--hard:#3B4A52;
+    --acc:#7FC0C9;--accs:#12262A;
+    --fail:#E09480;--fails:#2A1712;
+    --miss:#D9B15F;--misss:#271F10;
+    --pass:#7FC2A0;--passs:#122219;
+  }}
+  :root[data-theme="dark"]{
+    --paper:#0C1216;--card:#141C21;--sunk:#1B242A;
+    --ink:#E9EEF0;--ink2:#BCC7CC;--mute:#7E8C93;
+    --rule:#263238;--hard:#3B4A52;
+    --acc:#7FC0C9;--accs:#12262A;
+    --fail:#E09480;--fails:#2A1712;
+    --miss:#D9B15F;--misss:#271F10;
+    --pass:#7FC2A0;--passs:#122219;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:Spectral,Georgia,serif;font-size:17.5px;line-height:1.62;
+    padding-inline:20px;padding-block:0;-webkit-font-smoothing:antialiased;
+  }
+  .w{max-width:940px;margin:0 auto}
+
+  .top{padding-block:40px 22px;border-bottom:1px solid var(--hard)}
+  .eyebrow{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:500;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:13px;
+  }
+  h1{
+    font-family:"Barlow Semi Condensed",Arial,sans-serif;font-weight:700;
+    font-size:clamp(38px,7vw,68px);line-height:.94;letter-spacing:-.015em;
+    margin:0 0 6px;text-transform:uppercase;
+  }
+  .sub{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:500;font-size:clamp(17px,2.6vw,22px);
+    letter-spacing:.01em;color:var(--acc);margin:0 0 16px;
+  }
+  .dek{font-size:19.5px;color:var(--ink2);margin:0;max-width:62ch}
+  .meta{
+    margin-top:18px;font-family:"Roboto Mono",monospace;font-size:11px;color:var(--mute);
+    display:flex;flex-wrap:wrap;gap:5px 18px;
+  }
+
+  .lede{
+    margin-block:28px;background:var(--card);border:1px solid var(--hard);
+    border-left:5px solid var(--acc);padding:24px 26px;
+  }
+  .lede h2{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;
+    font-size:clamp(22px,3.6vw,31px);line-height:1.1;letter-spacing:-.008em;
+    margin:0 0 13px;text-wrap:balance;
+  }
+  .lede p{margin:11px 0 0;max-width:var(--m)}
+  .lede p:first-of-type{color:var(--ink)}
+  .lede p+p{color:var(--ink2)}
+
+  section{padding-block:36px;border-top:1px solid var(--rule)}
+  h3{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;font-size:30px;
+    line-height:1.08;letter-spacing:-.008em;margin:0 0 6px;text-transform:uppercase;
+    text-wrap:balance;
+  }
+  h4{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:20px;
+    letter-spacing:.005em;margin:28px 0 2px;
+  }
+  .lab{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:500;
+    letter-spacing:.15em;text-transform:uppercase;color:var(--acc);margin-bottom:9px;
+  }
+  p{margin:12px 0;max-width:var(--m)}
+  ul,ol{max-width:var(--m);margin:12px 0;padding-left:1.2em}
+  li{margin:7px 0}
+  code{font-family:"Roboto Mono",monospace;font-size:.84em;background:var(--sunk);padding:1px 4px}
+  .mono{font-family:"Roboto Mono",monospace;font-size:.87em}
+  a{color:var(--acc);text-decoration-thickness:1px;text-underline-offset:2px}
+  a:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  strong{font-weight:600}
+
+  pre{
+    margin:16px 0;padding:16px 18px;overflow-x:auto;background:var(--card);
+    border:1px solid var(--hard);font-family:"Roboto Mono",monospace;
+    font-size:12.5px;line-height:1.75;color:var(--ink2);font-variant-numeric:tabular-nums;
+  }
+  pre b{color:var(--ink);font-weight:700}
+  pre .g{color:var(--pass);font-weight:700}
+  pre .r{color:var(--fail);font-weight:700}
+  pre .y{color:var(--miss);font-weight:700}
+  pre .d{color:var(--mute)}
+  pre .t{color:var(--acc);font-weight:700}
+
+  .reg{margin-top:18px;border:1px solid var(--hard);background:var(--card)}
+  .reg-h{
+    display:grid;grid-template-columns:56px 96px 1fr;gap:0 14px;
+    padding:10px 16px;background:var(--sunk);border-bottom:1px solid var(--hard);
+    font-family:"Roboto Mono",monospace;font-size:10px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--mute);
+  }
+  .f{display:grid;grid-template-columns:56px 96px 1fr;gap:2px 14px;padding:13px 16px;border-bottom:1px solid var(--rule)}
+  .f:last-child{border-bottom:none}
+  .fid{font-family:"Roboto Mono",monospace;font-size:12px;font-weight:700;color:var(--mute);padding-top:2px}
+  .chip{
+    align-self:start;font-family:"Roboto Mono",monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.09em;padding:3px 6px;text-align:center;white-space:nowrap;
+  }
+  .chip.c,.chip.f{background:var(--fails);color:var(--fail)}
+  .chip.m{background:var(--misss);color:var(--miss)}
+  .chip.p{background:var(--passs);color:var(--pass)}
+  .fb{min-width:0}
+  .ft{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:16.5px;letter-spacing:.01em}
+  .fa{font-family:"Roboto Mono",monospace;font-size:11px;color:var(--acc);margin-top:1px}
+  .fd{font-size:15.5px;color:var(--ink2);margin-top:4px;max-width:64ch}
+  .fe{font-family:"Roboto Mono",monospace;font-size:11.5px;color:var(--mute);margin-top:3px}
+
+  .scroll{overflow-x:auto;margin-top:18px;border:1px solid var(--hard)}
+  table{border-collapse:collapse;width:100%;min-width:580px;background:var(--card)}
+  caption{
+    caption-side:top;text-align:left;padding:11px 15px;background:var(--sunk);
+    font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--rule);
+  }
+  th,td{padding:10px 15px;text-align:left;vertical-align:top;font-size:15.5px;border-bottom:1px solid var(--rule)}
+  thead th{
+    font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:14px;
+    letter-spacing:.02em;background:var(--sunk);border-bottom:1px solid var(--hard);
+  }
+  tbody tr:last-child td{border-bottom:none}
+  td.k{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:15.5px}
+  td.d,th.d{font-family:"Roboto Mono",monospace;font-size:12px;white-space:nowrap;color:var(--acc);font-weight:500}
+  td.n,th.n{text-align:right;font-family:"Roboto Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:14px}
+  .ok{color:var(--pass);font-weight:600}
+  .no{color:var(--fail);font-weight:600}
+  .mid{color:var(--mute)}
+
+  .box{margin:22px 0;padding:19px 21px;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--acc)}
+  .box .k{
+    font-family:"Roboto Mono",monospace;font-size:10.5px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--acc);display:block;margin-bottom:8px;
+  }
+  .box p{margin:0;max-width:64ch}
+  .box p+p{margin-top:9px}
+  .box.warn{border-left-color:var(--miss)}
+  .box.warn .k{color:var(--miss)}
+  .box.stop{border-left-color:var(--fail)}
+  .box.stop .k{color:var(--fail)}
+
+  .roster{margin-top:20px;border:1px solid var(--hard)}
+  .ag{display:grid;grid-template-columns:150px 1fr;gap:3px 18px;padding:15px 18px;background:var(--card);border-bottom:1px solid var(--rule)}
+  .ag:last-child{border-bottom:none}
+  .ag-n{font-family:"Barlow Semi Condensed",sans-serif;font-weight:700;font-size:17px;letter-spacing:.01em;grid-row:1;grid-column:1}
+  .ag-m{font-family:"Roboto Mono",monospace;font-size:10.5px;color:var(--acc);grid-row:2;grid-column:1}
+  .ag-b{grid-row:1/3;grid-column:2;min-width:0}
+  .ag-b p{margin:0;font-size:15.5px;color:var(--ink2);max-width:62ch}
+  .ag-b p+p{margin-top:6px}
+  .ag.eng{background:var(--accs)}
+  .ag.eng .ag-n{color:var(--acc)}
+
+  .gap{border-top:1px solid var(--rule);padding:18px 0 4px;display:grid;grid-template-columns:42px 1fr;gap:0 16px}
+  .gap:last-of-type{border-bottom:1px solid var(--rule);padding-bottom:18px}
+  .gn{font-family:"Roboto Mono",monospace;font-weight:700;font-size:19px;color:var(--acc);font-variant-numeric:tabular-nums;padding-top:1px}
+  .gb h4{margin-top:0}
+  .gb p{margin-top:5px}
+
+  .tl{margin-top:20px}
+  .step{display:grid;grid-template-columns:74px 1fr;gap:2px 18px;padding:14px 0;border-top:1px solid var(--rule)}
+  .step:last-child{border-bottom:1px solid var(--rule)}
+  .st{font-family:"Roboto Mono",monospace;font-weight:700;font-size:14px;color:var(--acc);font-variant-numeric:tabular-nums;grid-row:1;grid-column:1}
+  .step strong{font-family:"Barlow Semi Condensed",sans-serif;font-weight:600;font-size:17px;letter-spacing:.01em;grid-row:1;grid-column:2}
+  .sd{grid-row:2;grid-column:2;font-size:15.5px;color:var(--ink2);max-width:62ch;margin-top:2px}
+  .step.hero strong{color:var(--acc)}
+
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:0;margin-top:20px;border:1px solid var(--hard)}
+  .col{padding:18px 20px;background:var(--card)}
+  .col+.col{border-left:1px solid var(--rule)}
+  .col h5{font-family:"Roboto Mono",monospace;font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin:0 0 11px}
+  .col.y h5{color:var(--pass)}
+  .col.n h5{color:var(--fail)}
+  .col ul{margin:0;padding-left:1.1em;max-width:none}
+  .col li{font-size:15.5px}
+
+  footer{
+    border-top:1px solid var(--hard);margin-top:6px;padding-block:24px 46px;
+    color:var(--mute);font-family:"Roboto Mono",monospace;font-size:11px;line-height:1.85;
+  }
+  footer a{color:var(--mute)}
+
+  @media (max-width:600px){
+    body{font-size:17px}
+    .f,.reg-h{grid-template-columns:1fr;gap:5px}
+    .reg-h{display:none}
+    .step,.gap,.ag{grid-template-columns:1fr;gap:4px}
+    .ag-n,.ag-m,.ag-b{grid-row:auto;grid-column:auto}
+    .col+.col{border-left:none;border-top:1px solid var(--rule)}
+  }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="w">
+
+<header class="top">
+  <div class="eyebrow">Verzija 2 · prepisano na platformu od 11.09.2026 · Grok Bot Serbia Hackathon</div>
+  <h1>Saglasnik</h1>
+  <p class="sub">Pregled glavnog projekta zaštite od požara pre nego što ode na pregled.</p>
+  <p class="dek">CrossBeamov README je pisan za Opus 4.6 u februaru. Od tada je izašlo toliko toga da pola njegove arhitekture više ne treba da postoji. Ovo je isti proizvod, prepisan na ono što danas stvarno imamo.</p>
+  <div class="meta">
+    <span>CrossBeam građen 10–16.02.2026</span>
+    <span>danas: Opus 5, Managed Agents, Convex Workflow</span>
+    <span>izmereno: rule engine 0,025 ms · shema 0,745 ms</span>
+  </div>
+</header>
+
+<div class="lede">
+  <h2>Sedam meseci platforme deli njegov README od našeg. Tri njegova najteža problema su u međuvremenu postala tuđi posao.</h2>
+  <p>CrossBeamu je trebao <strong>Cloud Run orkestrator</strong> jer agent radi 10–30 minuta a serverless puca na 300 sekundi. Trebao mu je <strong>Vercel Sandbox</strong> za izolaciju. Trebao mu je <strong>dvoskilni pipeline sa ručnom pauzom</strong> da dobije čoveka u petlji. I trebale su mu ručno napisane <em>„mandatory subagent rules"</em> da agenti ne pojedu kontekstni prozor.</p>
+  <p>Danas je prvo <a href="https://www.convex.dev/components/workflow">Convex Workflow komponenta</a>, drugo je <a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes">self-hosted sandbox na Daytoni</a>, treće je server-side <strong>permission policy koja pauzira za odobrenje</strong> — objavljena 10. septembra, juče — a četvrto rešava <strong>multiagent orchestration sa izolovanim kontekstom po agentu</strong>, pa pravilo u promptu više nije potrebno.</p>
+  <p>Ti si tražio da razmislim o tome da delove koje je on radio skillovima mi delegiramo agentima. Odgovor je da, i to nije kozmetika — to je <strong>jedina promena koja istovremeno briše orkestrator, rešava kontekst, i daje nam broj o sopstvenoj tačnosti</strong>. Ostatak dokumenta je kako.</p>
+</div>
+
+<section>
+  <div class="lab">01 — Delta</div>
+  <h3>Šta je izašlo posle njegovog README-a</h3>
+  <p>Ovo su samo stvari koje menjaju <em>našu</em> arhitekturu. Datum je datum objave.</p>
+
+  <div class="scroll">
+    <table>
+      <caption>Platforma, februar → septembar 2026</caption>
+      <thead><tr><th class="d">Datum</th><th>Šta je izašlo</th><th>Šta briše u CrossBeamu</th></tr></thead>
+      <tbody>
+        <tr><td class="d">17.02.</td><td>programmatic tool calling i web search izlaze iz bete; <strong>tool search tool</strong>; memory tool bez beta headera; code execution besplatan uz web search</td><td class="mid">potrošnju konteksta</td></tr>
+        <tr><td class="d">19.02.</td><td><strong>automatsko keširanje</strong> — jedan <code>cache_control</code>, sistem sam upravlja cache tačkama</td><td class="mid">ručno keširanje</td></tr>
+        <tr><td class="d">13.03.</td><td>1M kontekst standardno, rate limiti za 1M ukinuti, <strong>600 slika/PDF strana po zahtevu</strong></td><td class="ok">batch-ovanje strana</td></tr>
+        <tr><td class="d">08.04.</td><td><strong>Claude Managed Agents</strong> — upravljan agent harness, sandbox, ugrađeni alati, SSE stream</td><td class="ok">Cloud Run orkestrator</td></tr>
+        <tr><td class="d">09.04.</td><td><strong>Advisor tool</strong> — jači model kao savetnik u toku generisanja</td><td class="mid">ručnu eskalaciju</td></tr>
+        <tr><td class="d">16.04.</td><td>Opus 4.7: <strong>slike do 2576 px</strong>, <code>xhigh</code> effort, <strong>task budgets</strong> sa brojačem koji model vidi</td><td class="ok">„200 DPI gubi kontekst"</td></tr>
+        <tr><td class="d">23.04.</td><td>Memory za Managed Agents</td><td class="mid">hladan start drugog skilla</td></tr>
+        <tr><td class="d">06.05.</td><td><strong>Multiagent orchestration</strong>, <strong>Outcomes</strong>, webhooks, Dreams</td><td class="ok">ručnu orkestraciju subagenata</td></tr>
+        <tr><td class="d">19.05.</td><td><strong>Self-hosted sandboxes</strong> i MCP tunnels; spillover velikog izlaza u fajlove</td><td class="ok">Vercel Sandbox</td></tr>
+        <tr><td class="d">28.05.</td><td>Opus 4.8: 1M default; mid-conversation system messages</td><td class="mid">—</td></tr>
+        <tr><td class="d">18.06.</td><td>code execution <code>20260120</code> — <strong>REPL state persistence</strong>, minimum za programmatic tool calling</td><td class="mid">—</td></tr>
+        <tr><td class="d">30.06.</td><td>Sonnet 5; <strong><code>agent_with_overrides</code></strong> po sesiji (model, prompt, alati, skills)</td><td class="mid">—</td></tr>
+        <tr><td class="d">22.07.</td><td><strong>Session seeding</strong> — do 50 <code>initial_events</code> pri kreiranju sesije</td><td class="mid">—</td></tr>
+        <tr><td class="d">24.07.</td><td><strong>Opus 5</strong> — 1M default i maksimum, thinking uključen po difoltu, effort do <code>max</code>, mid-conversation tool changes, minimum za keš 512 tokena</td><td class="ok">model iz README-a</td></tr>
+        <tr><td class="d">07.08.</td><td><strong>Session budgets</strong> (hard cap na potrošnju), session advisor u rosteru, <strong>GitHub repository skills</strong> (auto-discover iz <code>.claude/skills</code>)</td><td class="ok">njegov skills direktorijum radi kakav je</td></tr>
+        <tr><td class="d">18.08.</td><td><strong>Computer use iz bete</strong>; <strong>browser use tool</strong> (element reference, form input, tabovi); Files API i <strong>Agent Skills iz bete</strong> (<code>/v1/skills</code>); <code>max_content_tokens</code> na web_fetch</td><td class="ok">„Chrome MCP je previše spor"</td></tr>
+        <tr><td class="d">01.09.</td><td><strong>per-message effort</strong>; <strong>turn-scoped system messages</strong> — <code>clear_at: "next_user_message"</code>, podsetnik za jedan potez koji ne akumulira i ne ruši keš</td><td class="ok">„mandatory subagent rules"</td></tr>
+        <tr><td class="d">03.09.</td><td><strong><code>ant apply</code></strong> — agenti, okruženja, skills i memory iz fajlova; ispiše plan, pa <code>claude-lock.json</code></td><td class="mid">ručni setup</td></tr>
+        <tr><td class="d">10.09.</td><td><strong>permission policies <code>auto</code></strong> — server ocenjuje svaki tool call i može da <strong>pauzira za odobrenje</strong></td><td class="ok">dvoskilni pipeline sa ručnom pauzom</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <span class="k">Poslednji red je pointa</span>
+    <p>Ceo CrossBeamov dizajn — <code>adu-corrections-flow</code> koji staje, pa <code>adu-corrections-complete</code> koji <em>startuje hladno bez istorije razgovora</em> i čita artefakte s diska — postojao je zato da bi se dobio jedan čovek u petlji. Autor sam piše da kvalitet drugog skilla <em>„depends entirely on the quality of those files"</em>.</p>
+    <p>To je juče postalo jedan parametar. Permission policy u <code>auto</code> modu pauzira sesiju za odobrenje, sesija ostaje živa, kontekst ostaje ceo. <strong>Nema hladnog starta, nema dva skilla, nema artefakata na disku kao jedinog kanala.</strong></p>
+  </div>
+
+  <h4>Opus 5, samo ono što nas dotiče</h4>
+  <p>Objavljen 24. jula. <code>claude-opus-5</code>, <strong>1M kontekst kao default i maksimum</strong>, 128k izlaza, cena nepromenjena $5/$25 po milionu. Tri stvari menjaju kod:</p>
+  <ul>
+    <li><strong>Thinking je uključen po difoltu</strong> (adaptivan). Prelomna promena: prvi blok u odgovoru više nije tekst, pa se blokovi biraju po <code>type</code>. Ko piše <code>response.content[0].text</code> puca.</li>
+    <li><strong><code>output_config.effort</code></strong> je glavna kontrola: <code>low</code> → <code>medium</code> → <code>high</code> (default) → <code>xhigh</code> → <code>max</code>. Isključivanje thinkinga je dozvoljeno samo do <code>high</code>; na <code>xhigh</code> i <code>max</code> vraća 400.</li>
+    <li>Migracioni vodič izričito kaže: <strong>izbaci instrukcije za verifikaciju iz prompta, model sam verifikuje.</strong> CrossBeamovi skillovi su puni ručnog verifikacionog skelea koji sada radi protiv modela.</li>
+  </ul>
+  <p>I jedna stvar koja je direktno naša: Anthropic među poboljšanjima navodi <strong>„multi-agent coordination with writer-verifier patterns"</strong>. To je tačno obrazac kojim je Tekton pobedio na Opus 4.8 Build Day-u — verifikator u izolovanom kontekstu. Sada je to ono za šta je model podešen.</p>
+</section>
+
+<section>
+  <div class="lab">02 — Skills → agenti</div>
+  <h3>Ono što je on radio skillovima, mi delegiramo rosteru</h3>
+  <p>CrossBeam ima 28 referentnih fajlova i skillove koje čita <em>jedan</em> agent, plus ručno pravilo da subagenti ne pređu svoj opseg. Danas <a href="https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration">multiagent orchestration</a> daje koordinatora sa rosterom do <strong>20 agenata i 25 paralelnih nitova</strong>, gde svaki ima <em>svoj model, prompt, alate i skillove</em> i <strong>izolovan kontekst</strong>, a svi dele isti sandbox i fajl sistem.</p>
+  <p>To znači da problem pucanja konteksta više nije stvar discipline u promptu — <strong>platforma ga izoluje strukturno.</strong> I znači da na dosadne agente stavljamo jeftin model, a Opus 5 čuvamo za ono što je teško. Effort se zadaje po agentu, unutar <code>model</code> objekta.</p>
+
+  <div class="roster">
+    <div class="ag">
+      <div class="ag-n">koordinator</div><div class="ag-m">opus-5 · medium</div>
+      <div class="ag-b"><p>Planira, delegira, sastavlja. <strong>Ne čita dokumente.</strong> Njegov kontekst ostaje mali celog dana, pa nikad ne dođe do kompakcije.</p></div>
+    </div>
+    <div class="ag">
+      <div class="ag-n">popisivač</div><div class="ag-m">sonnet-5 · low</div>
+      <div class="ag-b"><p>Klasifikuje koji dokument je koji i koje strane su relevantne. Jeftin, visok obim. Ovo je CrossBeamova Faza 2 (manifest tabaka, ~90 s) svedena na jedan poziv.</p></div>
+    </div>
+    <div class="ag">
+      <div class="ag-n">ekstraktor ×N</div><div class="ag-m">grok-4.6 ili opus-5 · high</div>
+      <div class="ag-b"><p>Fan-out po dokumentu. Svaki puni <strong>zatvorenu shemu</strong> sa <code>strict: true</code>. Limit od 600 strana po zahtevu znači da ceo projekat ulazi u jedan poziv, bez batch-ovanja.</p>
+      <p>Grok 4.6 ima 500k konteksta i razumevanje slika za $2/$6 — a hakaton daje ~$35 x.ai kredita po timu. Masovno čitanje strana ide na Grok, teško na Opus 5.</p></div>
+    </div>
+    <div class="ag">
+      <div class="ag-n">grafičar</div><div class="ag-m">opus-5 · high</div>
+      <div class="ag-b"><p>Samo grafički prilozi, samo činjenice koje <em>moraju</em> da dođu iz crteža — one koje hrane <code>C</code> pravila za međudokumentnu konzistentnost. Koristi high-res ulaz do 2576 px, koji je izašao u aprilu i direktno rešava ono na čemu se CrossBeam mučio.</p></div>
+    </div>
+    <div class="ag">
+      <div class="ag-n">verifikator</div><div class="ag-m">opus-5 · xhigh</div>
+      <div class="ag-b"><p>Writer-verifier obrazac. Svaku činjenicu sa pouzdanošću ispod granice <strong>ponovo proverava na strani, u izolovanom kontekstu.</strong> Ovo je Tektonov pobednički potez i sada je prvorazredna funkcija platforme.</p></div>
+    </div>
+    <div class="ag">
+      <div class="ag-n">advisor</div><div class="ag-m">opus-5 · po pozivu</div>
+      <div class="ag-b"><p><code>{"type":"advisor","model":"claude-opus-5"}</code> u rosteru. Konsultuje ga <em>samo</em> koordinator, i to samo kad pravilo vrati <code>CONFLICT</code> a razrešenje nije očigledno. Radi u privremenom <code>anthropic.advisor</code> nitu.</p></div>
+    </div>
+    <div class="ag eng">
+      <div class="ag-n">rule engine</div><div class="ag-m">NIJE AGENT · Python</div>
+      <div class="ag-b"><p>Ovo je najvažniji red u tabeli. <strong>Presuda nije agent.</strong> To je 0,025 ms Pythona u sandboxu, pozvan kroz programmatic tool calling. Nijedan model ne sme da presudi — ni koordinator, ni verifikator, ni advisor.</p></div>
+    </div>
+  </div>
+
+  <h4>Outcomes: kriterijum „gotovo" koji možeš da pokažeš na ekranu</h4>
+  <p><a href="https://platform.claude.com/docs/en/managed-agents/define-outcomes">Outcomes</a> je izašao 6. maja. Definišeš opis i <strong>rubriku u markdownu</strong>, a platforma sama obezbedi <em>grader u odvojenom kontekstnom prozoru</em> koji ocenjuje rad i vraća po kriterijumu šta je prošlo a šta nije. Agent iterira dok ne bude <code>satisfied</code>, do <code>max_iterations</code> (default 3, maksimum 20).</p>
+
+<pre><b># Rubrika: nalaz o glavnom projektu ZOP</b>
+
+## Dokazivost
+- Svaki nalaz citira clan propisa <b>i</b> stranu dokumenta
+- Nijedan nalaz nije bez dokaza u <span class="t">evidence</span> polju
+- Nijedna presuda nije formulisana od strane modela
+
+## Ekstrakcija
+- Svaka cinjenica sa pouzdanoscu &lt; 0,70 je verifikovana ili
+  prosledjena kao pitanje, nikad kao pretpostavka
+- Slotovi bez vrednosti su <span class="t">unknown</span>, ne izmisljeni
+
+## Konzistentnost
+- Sva C-pravila su izvrsena nad parovima koji postoje
+- Konflikti navode obe vrednosti sa dokumentom i stranom</pre>
+
+  <p>Ovo je istovremeno tehnička kontrola i <strong>najčitljivija funkcija za sudije</strong> — rubrika se prikaže na ekranu i vidi se da sistem sam sebe ocenjuje. Sudija ne mora da ti veruje na reč.</p>
+</section>
+
+<section>
+  <div class="lab">03 — Ugovor</div>
+  <h3>Model vadi, kod sudi — i to je sada nametnuto, ne obećano</h3>
+  <p>U verziji 1 ovog dokumenta to je bila arhitekturna odluka. Testirao sam da li se može <em>nametnuti</em>, jer odluka koju model može da prekrši nije odluka.</p>
+
+<pre><b>$ python3 schema_test.py</b>
+
+slucaj                                      shema
+ispravan izlaz                              <span class="g">PRIHVACENO</span>
+model ne zna vrednost -> unknown            <span class="g">PRIHVACENO</span>
+model probao da PRESUDI                     <span class="r">ODBIJENO</span>   'verdict' was unexpected
+model izmislio slot                         <span class="r">ODBIJENO</span>   'procena_rizika_ukupna' is not one of [...]
+model izostavio stranu i citat              <span class="r">ODBIJENO</span>   'page' is a required property
+model vratio prozu umesto broja             <span class="r">ODBIJENO</span>   {'tekst': 'oko 15 m'} is not of type 'number'
+model dodao svoj komentar na vrhu           <span class="r">ODBIJENO</span>   'napomena' was unexpected
+
+<b>validacija 7 slucajeva: 0,745 ms</b>
+zatvorenih slotova: 26   <span class="t">additionalProperties: false</span> na oba nivoa</pre>
+
+  <div class="box">
+    <span class="k">Zašto je ovo jače od prompt inženjeringa</span>
+    <p>Sa <strong>structured outputs</strong> i <code>strict: true</code> ova shema se sprovodi na nivou API-ja — model <em>ne može</em> da vrati nevalidan odgovor. Ne „ne bi trebalo", nego ne može. Pokušaj da doda <code>verdict</code>, da izmisli slot, da izostavi stranu ili da vrati prozu umesto broja je mehanički odbijen.</p>
+    <p>A najvažnija dozvola je ono što je <em>prihvaćeno</em>: <code>value: null</code> sa pouzdanošću 0. <strong>„Ne znam" je legalan odgovor</strong>, i to je jedina odbrana od halucinirane brojke u dokumentu koji ide organu.</p>
+  </div>
+
+  <div class="box warn">
+    <span class="k">Ograničenje koje moraš znati unapred</span>
+    <p><strong>Programmatic tool calling se ne može kombinovati sa structured outputs</strong> (<code>strict: true</code>), ni sa <code>tool_choice</code> po alatu, ni sa isključenim paralelnim alatima. To je u dokumentaciji izričito.</p>
+    <p>Znači dva različita poziva, ne jedan: <em>ekstraktor</em> koristi structured outputs, a <em>orkestracija rule engine-a</em> koristi programmatic tool calling. Ako pokušaš oba u istom pozivu, potrošićeš sat na 400-ke.</p>
+  </div>
+
+  <h4>Programmatic tool calling je rešenje za njegov problem sa kontekstom</h4>
+  <p>Claude piše Python koji poziva naše alate <em>unutar sandbox kontejnera</em>, i <strong>međurezultati nikada ne ulaze u kontekst</strong> — vraća se samo finalni izlaz. Anthropicove objavljene mere: <strong>38% manje naplaćenih ulaznih tokena</strong> na agentu sa 75 alata bez gubitka tačnosti, tipično 20–40% u produkciji, i <strong>11% bolji rezultat uz 24% manje ulaznih tokena</strong> na istraživačkim benchmarkovima.</p>
+  <p>Za nas je uklapanje skoro nepristojno dobro: rule engine <em>je</em> Python. Claude napiše petlju koja pozove ekstrakciju po dokumentu, pusti engine, i vrati <strong>samo nalaze</strong>. Stotine strana i hiljade činjenica ostaju u kontejneru. Ono što je CrossBeam rešavao pravilom u promptu, ovde rešava mesto izvršavanja.</p>
+  <p>Jedna cifra da se zna: code execution ima <strong>90 sekundi po ćeliji</strong> (<code>code_execution_20260521</code>). Naš engine je 0,025 ms pa je nebitno — ali rasterizacija PDF-a nije. Ona ide u Daytona sandbox, ne u code execution ćeliju.</p>
+</section>
+
+<section>
+  <div class="lab">04 — Infrastruktura</div>
+  <h3>Daytona ostaje nosiva, a orkestrator nestaje</h3>
+  <p>Ovo je bila najlepša stvar koju sam našao. <strong>Self-hosted sandboxes</strong> za Managed Agents drže orkestraciju na Anthropicovoj strani, a izvršavanje alata u <em>tvojoj</em> infrastrukturi — agentov kod, fajl sistem i mreža nikad ne izlaze iz tvog sandboxa. I njihova dokumentacija <strong>eksplicitno navodi Daytonu</strong> među podržanim platformama, uz AWS Lambda MicroVMs, Cloudflare Workers, E2B, Fly.io, GKE, Modal i Vercel.</p>
+
+<pre><b>Anthropic control plane</b>              <b>Daytona sandbox (nase)</b>
+· rezonovanje modela         ◄────►    · izvrsavanje alata
+· skladiste skillova                    · rasterizacija PDF-a
+· memory stores                         · <span class="t">rule engine</span>
+· work queue                            · fajl sistem i mreza
+
+work queue: claim → download (session, skills, memory) →
+execute u /workspace → sync rezultata → release</pre>
+
+  <div class="box">
+    <span class="k">Šta ovo znači za nagradu</span>
+    <p>Managed Agents ima svoj cloud sandbox. Ako ga koristiš, Daytona ispada iz proizvoda i <strong>gubiš najveću nagradu na događaju</strong> — Daytona prvo mesto je $3.000 kredita, naspram ~$740 za glavno prvo mesto.</p>
+    <p>Self-hosted sandbox je odgovor: <em>orkestracija kod Anthropica, izvršavanje na Daytoni.</em> Daytona nije dekoracija ni pozvana da izvrši <code>echo</code> — u njoj se parsiraju PDF-ovi koje je uploadovao stranac i vrti se presuda. To je odbrana koja izdrži pitanje „zašto Daytona".</p>
+  </div>
+
+  <p>Njihov changelog iz 2026. dodaje tri stvari koje koristimo direktno: <strong>forkovanje sandboxa i kreiranje snapshota je 29.07. izašlo iz eksperimentalnog u stabilno</strong>, upravljanje snapshotima po ID-u ili imenu (11.08.), i polja warm pool-a na Sandbox objektima (24.08.). Warm pool plus fork znači sandbox po dokumentu u podsekundi, umesto hladnog starta po jobu.</p>
+
+  <h4>Convex: orkestrator je sada biblioteka, ne servis</h4>
+  <p><a href="https://www.convex.dev/components/workflow">Workflow komponenta</a> izvršava duge tokove <em>durabilno</em>: stanje se upisuje u bazu između koraka, pa ako funkcija pukne ili istekne, izvršavanje se nastavlja <strong>od poslednjeg završenog koraka, ne od početka</strong>. Retry politika po koraku sa backoff-om, koraci sekvencijalno ili paralelno sa limitom, otkazivanje, i <strong>reaktivno posmatranje statusa kroz više korisnika i osvežavanja stranice</strong>. Tokovi mogu da traju mesecima.</p>
+  <p>Pročitaj to ponovo naspram CrossBeamovog razloga za Cloud Run: <em>„agent runs take 10–30 minutes, Vercel serverless functions timeout at 60–300s"</em>. <strong>Ceo taj servis je jedan <code>npm install</code>.</strong></p>
+  <p>Uz to postoje <a href="https://docs.convex.dev/agents">Agent komponenta</a> (nitovi koje dele više korisnika <em>i</em> agenata, automatski kontekst sa hibridnim vector/text pretragom, streaming teksta i objekata, rate limiting, praćenje potrošnje, playground za debug) i <a href="https://www.convex.dev/components/rag">RAG komponenta</a> — koju koristimo nad korpusom propisa.</p>
+</section>
+
+<section>
+  <div class="lab">05 — Stack</div>
+  <h3>Mapiranje, sa obrazloženjem za svaki poziv</h3>
+  <div class="scroll">
+    <table>
+      <caption>Ništa forsirano, i disciplina se izgovara</caption>
+      <thead><tr><th>Partner</th><th>Uloga danas</th><th class="n">Nosivo</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Daytona</td><td><strong>self-hosted sandbox</strong> za Managed Agents: rasterizacija PDF-a, ekstrakcija, rule engine. Fork + warm pool za sandbox po dokumentu. Njihovi kriterijumi počinju kompletnošću MVP-a, pa happy path mora biti ceo.</td><td class="n ok">jezgro</td></tr>
+        <tr><td class="k">Convex</td><td><strong>Workflow</strong> (durabilna orkestracija, zamenjuje Cloud Run) + <strong>graf usklađenosti</strong> sa live nalazima i diffom krugova + <strong>RAG</strong> nad propisima. Fireview potez, ali na tri komponente.</td><td class="n ok">jezgro</td></tr>
+        <tr><td class="k">Claude Opus 5</td><td>koordinator, grafičar, verifikator. <code>effort</code> po agentu. Structured outputs za ekstraktor, programmatic tool calling za engine.</td><td class="n ok">jezgro</td></tr>
+        <tr><td class="k">x.ai Grok 4.6</td><td>masovno čitanje strana — 500k konteksta, razumevanje slika, $2/$6, a hakaton daje ~$35 po timu. Ekonomski ispravno mesto za obim.</td><td class="n ok">da</td></tr>
+        <tr><td class="k">Firecrawl</td><td>jednokratno u pripremi: tekstovi Zakona i Pravilnika sa javnih izvora → strukturirani članovi u Convex. Njegov <code>/extract</code> sa JSON shemom je tačno za to.</td><td class="n ok">da</td></tr>
+        <tr><td class="k">Render / Netlify</td><td>javni URL. <strong>Bez autha u demou</strong> — CrossBeam je zbog permission problema na pre-seed projektu dobio 403 pred sudijama.</td><td class="n ok">da</td></tr>
+        <tr><td class="k">Exa</td><td>provera da li je pravilnik menjan — „da li ovaj član još važi". Ide u <code>SHOULD</code>.</td><td class="n mid">bonus</td></tr>
+        <tr><td class="k">Wonder</td><td>samo u fazi gradnje, za UI. Ne runtime zavisnost.</td><td class="n mid">build-time</td></tr>
+        <tr><td class="k">Fal, Wispr</td><td>ne ulaze u proizvod. Izgovori to.</td><td class="n no">ne</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="box">
+    <span class="k">Dve platformske funkcije koje nikada nisu u pitchevima, a treba da su u našem</span>
+    <p><strong>Session budgets</strong> (07.08.) daju hard cap na potrošnju sesije sa <code>budget_reached</code> stop razlogom. Za proizvod koji investitor pušta na svoj projekat, „ovaj pregled ne može da pređe X" je stvarna funkcija, ne higijena.</p>
+    <p><strong>Turn-scoped system messages</strong> (01.09.) sa <code>clear_at: "next_user_message"</code> renderuju podsetnik za jedan potez, ostaju u istoriji bez troška tokena, i <em>ne ruše prompt keš</em>. Tu idu granice po agentu — ono što je CrossBeam morao da ubode kao stalno pravilo u skillu.</p>
+  </div>
+</section>
+
+<section>
+  <div class="lab">06 — Nepromenjeno</div>
+  <h3>Šta iz verzije 1 ostaje tačno</h3>
+  <p>Nova platforma ne menja domen. Ovo su nalazi koji su preživeli prepisivanje.</p>
+
+  <div class="gap"><div class="gn">1</div><div class="gb"><h4>Ti si se setio Flow 3</h4>
+    <p>CrossBeamov treći tok — pregled pre nego što primedbe stignu — autor opisuje kao <em>„not built, the open-source vision"</em>. Investitor ne plaća primedbu, plaća krug.</p></div></div>
+
+  <div class="gap"><div class="gn">2</div><div class="gb"><h4>Propis je nacionalan</h4>
+    <p>Jedan Zakon (111/2009, 20/2015, 87/2018) i jedan Pravilnik (22/2019, 59 članova, 12 glava). Nema 480 opština sa svojim sajtovima. Ceo korpus ide offline u Convex RAG.</p></div></div>
+
+  <div class="gap"><div class="gn">3</div><div class="gb"><h4>Činjenice su u tekstu i numeričke su</h4>
+    <p>Član 31 gradi projekat oko tehničkog izveštaja i računa. Koridor ≥ 1,20 m, stepenište ≥ 1,00 m, evakuacioni put ≤ 30 m, otpornost u časovima. Broj ne treba model da sudi.</p></div></div>
+
+  <div class="gap"><div class="gn">4</div><div class="gb"><h4>Međudokumentna konzistentnost je najveća rupa</h4>
+    <p>Tekst kaže stepen II, grafika kaže III. <strong>Nijedan prag nije prekršen, a projekat se vraća.</strong> CrossBeam ovu klasu arhitektonski ne vidi jer to nije stavka u dopisu nego relacija između dokumenata. Prototip ju je uhvatio tri puta u jednom sintetičkom projektu.</p></div></div>
+
+  <div class="gap"><div class="gn">5</div><div class="gb"><h4>Očev spisak je moat</h4>
+    <p>MaestrIA je dobila nagradu na Opus 4.7 hakatonu sa jednim JSON-om — 17 dijagnostičkih pravila, 16 termina dijalekta, 19 referentnih cena. Gusto domensko znanje pobeđuje veći model.</p></div></div>
+
+  <div class="gap"><div class="gn">6</div><div class="gb"><h4>Rule engine je 0,025 ms</h4>
+    <p>13 pravila nad projektom: 0,068 ms. Petsto projekata: 0,025 ms po projektu, oko 40.000 projekata u sekundi. „Radi na tosteru" je izmereno, ne rečeno.</p></div></div>
+
+  <h4>Registar nalaza, nepromenjen</h4>
+  <div class="reg">
+    <div class="reg-h"><span>ID</span><span>Status</span><span>Nalaz</span></div>
+    <div class="f"><span class="fid">C01</span><span class="chip c">CONFLICT</span>
+      <div class="fb"><div class="ft">Stepen otpornosti: tekst vs. grafika</div>
+        <div class="fa">čl. 31 Zakona o ZOP · blokirajuće</div>
+        <div class="fd">Tehnički opis navodi stepen II. Grafički prilog PS-01 prikazuje III. Nijedan prag nije prekršen — ali projekat se vraća.</div>
+        <div class="fe">Tehnički opis str. 7 → „II"  ·  PS-01 str. 1 → „III"</div></div></div>
+    <div class="f"><span class="fid">B06</span><span class="chip f">FAIL</span>
+      <div class="fb"><div class="ft">Otpornost nosivih zidova</div>
+        <div class="fa">Pravilnik 22/2019, gl. V · blokirajuće</div>
+        <div class="fd">Stepen II zahteva 1,5 h. U projektu je 1,0 h.</div>
+        <div class="fe">Tehnički opis str. 8 → otpornost_nosecih = 1.0 h</div></div></div>
+    <div class="f"><span class="fid">A01</span><span class="chip m">MISSING</span>
+      <div class="fb"><div class="ft">Obavezna poglavlja glavnog projekta</div>
+        <div class="fa">čl. 31 Zakona o ZOP · blokirajuće</div>
+        <div class="fd">Nedostaje: Račun kapaciteta i vremena evakuacije.</div></div></div>
+    <div class="f"><span class="fid">B03</span><span class="chip p">PASS</span>
+      <div class="fb"><div class="ft">Dužina evakuacionog puta do izlaza sa etaže</div>
+        <div class="fa">Pravilnik 22/2019, gl. VIII</div>
+        <div class="fd">27,5 m ≤ dozvoljeno 30,0 m.</div>
+        <div class="fe">Tehnički opis str. 11 → duzina_evak_puta = 27.5 m</div></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="lab">07 — Demo</div>
+  <h3>Tri minuta, sa novim materijalom</h3>
+  <div class="tl">
+    <div class="step"><span class="st">0:00</span><strong>Novac, ne propis</strong><div class="sd">„Investitor u Srbiji ne plaća primedbu. Plaća krug." Ako otac ima stvaran broj za jedan krug na konkretnom projektu, izgovori taj broj.</div></div>
+    <div class="step"><span class="st">0:20</span><strong>Ubaci projekat, roster se pali</strong><div class="sd">Convex live prikazuje nitove: popisivač, tri ekstraktora, grafičar. Nalazi počinju da sleću za manje od deset sekundi. Ne objašnjavaj arhitekturu — pusti registar.</div></div>
+    <div class="step hero"><span class="st">0:50</span><strong>Hero: konflikt C01</strong><div class="sd">„Tehnički opis kaže stepen II. Grafički prilog kaže III. <em>Nijedan prag nije prekršen</em> — a ovo je vraćen projekat. Ovu klasu ne proverava nijedan alat, jer nije stavka nego relacija između dokumenata."</div></div>
+    <div class="step"><span class="st">1:20</span><strong>Ekran poštenja</strong><div class="sd">Klik na nalaz: strana, član, račun. „Model nije rekao da ovo nije u redu. Model je našao 1,0 h na strani 8." Onda otvori shemu: „a da je probao da presudi, API bi ga odbio." Pokaži <code>'verdict' was unexpected</code>.</div></div>
+    <div class="step"><span class="st">1:50</span><strong>Rubrika se ocenjuje sama</strong><div class="sd">Prikaži Outcome rubriku i graderov rezultat po kriterijumu. „Ovo nije naš izveštaj o sebi — grader radi u odvojenom kontekstnom prozoru i vratio je <code>satisfied</code> u drugoj iteraciji."</div></div>
+    <div class="step"><span class="st">2:10</span><strong>Tabla</strong><div class="sd">Tačnost ekstrakcije na N označenih projekata, ispravnost engine-a 100% po konstrukciji, objavljeni baseline iz rada 2609.05880 (37% → 75%) kao referenca, i 0,025 ms po projektu.</div></div>
+    <div class="step"><span class="st">2:35</span><strong>Diff</strong><div class="sd">Ubaciš ispravljenu verziju. Convex Workflow nastavlja od poslednjeg koraka, tri nalaza se zatvore, trošak padne. Proizvod nije izveštaj — proizvod je krug koji se ne ponavlja.</div></div>
+    <div class="step"><span class="st">2:50</span><strong>Skaliranje</strong><div class="sd">„Propis je nacionalan. Isti engine radi za bilo koji propisani projekat — treba samo uneti pragove. Zaštita od požara je prvi jer nam je najpoznatiji."</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="lab">08 — Granice</div>
+  <h3>Šta se nikada ne tvrdi</h3>
+  <div class="box stop">
+    <span class="k">Izgovori ovo u demou, ne u fine printu</span>
+    <p><strong>Ovo nije saglasnost i ne zamenjuje ni licenciranog projektanta ni pregled nadležnog organa.</strong> Aplikacija proizvodi spisak nalaza pre podnošenja, a odlučuje licencirano lice po članu 32. Nikada „usklađeno" — nego „nije nađena primedba po pravilima koja imamo", i pokaži koliko tih pravila ima.</p>
+    <p>Pokrivenost brojkom: „82 provere od približno 400 iz Pravilnika". Poštena pokrivenost je jača od implicirane kompletnosti.</p>
+  </div>
+  <div class="box warn">
+    <span class="k">Očevi klijenti nisu demo materijal</span>
+    <p>Projekat je tuđa intelektualna svojina i nosi podatke o investitoru. Repo je obavezno javan. <strong>Anonimizuj ili napravi sintetički projekat</strong> — ime, adresa, katastarska parcela, broj predmeta, pečati. Uzmi izričitu dozvolu i za anonimizovanu verziju.</p>
+  </div>
+  <div class="two">
+    <div class="col y"><h5>Govori</h5><ul>
+      <li>„Investitor ne plaća primedbu, plaća krug."</li>
+      <li>„Model vadi brojeve. Presuđuje kod, i pokazuje račun."</li>
+      <li>„Da je model probao da presudi, shema bi ga odbila." — i pokaži.</li>
+      <li>„Orkestrator nam ne treba; Convex Workflow nastavlja od poslednjeg koraka."</li>
+      <li>„Daytona nije poziv za ukras — u njoj se parsira tuđi PDF i vrti presuda."</li>
+      <li>„Ovo je 82 od približno 400 provera. Evo kojih."</li>
+    </ul></div>
+    <div class="col n"><h5>Ne govori</h5><ul>
+      <li>Nikada „usklađeno", „odobreno", „garantujemo prolaz".</li>
+      <li>Ne tvrdi da zamenjuje projektanta ili nadzor.</li>
+      <li>Ne prikazuj procenu troška kao izmerenu — to je model koji treba kalibrisati.</li>
+      <li>Ne zovi to „multi-agent" ako je pipeline. Ovde <em>jeste</em> roster, pa smeš — ali pokaži nitove.</li>
+      <li>Ne pokazuj nalaz bez člana i strane.</li>
+    </ul></div>
+  </div>
+</section>
+
+<section>
+  <div class="lab">09 — Subota</div>
+  <h3>Devet sati na novom stacku</h3>
+  <div class="box">
+    <span class="k">Zamrznuti ugovor u 11:15</span>
+    <p>Dva oblika i ništa više: <code>Fact</code> (key, value, unit, doc, page, confidence, source_quote) i <code>Finding</code> (rule_id, status, article, title, detail, evidence, severity). Već su napisani i testirani — <code>saglasnik/rules.py</code> i <code>saglasnik/schema_test.py</code>. Builder B od 11:15 radi protiv fiksnog mock JSON-a i nikad ne čeka Buildera A.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <caption>Podela posla</caption>
+      <thead><tr><th class="n">Vreme</th><th>Builder A — agenti i engine</th><th>Builder B — Convex i UI</th></tr></thead>
+      <tbody>
+        <tr><td class="n">večeras</td><td>Daytona snapshot sa <code>ant</code> CLI i pdf alatima; self-hosted environment kreiran; Opus 5 i Grok ključevi rade</td><td>Convex projekat, Workflow i RAG komponente instalirane; anonimizovan projekat spreman</td></tr>
+        <tr><td class="n">11:00</td><td>roster u fajlovima, <code>ant apply</code>; jedan ekstraktor sa <code>strict: true</code></td><td>šema grafa; registar nalaza na mock podacima</td></tr>
+        <tr><td class="n">12:30</td><td><strong>Kill gate:</strong> facts iz pravog PDF-a, izvučeni u Daytona sandboxu, u Convexu</td><td>ceo happy path na mocku, klikabilan</td></tr>
+        <tr><td class="n">13:00</td><td>30 pravila iz očevog spiska po frekvenciji; programmatic tool calling za engine</td><td>ekran dokaza: strana + član + račun</td></tr>
+        <tr><td class="n">14:00</td><td>spajanje; C-pravila konzistentnosti; verifikator agent</td><td>live updates iz Workflow-a, brojači, procena troška</td></tr>
+        <tr><td class="n">15:00</td><td>Outcome rubrika i grader; fan-out po dokumentu</td><td>polish, mobilni prikaz, README dijagram</td></tr>
+        <tr><td class="n">16:30</td><td><strong>Javni URL živ, end-to-end.</strong> Posle ovoga se seče sve što nije MUST</td><td>diff krugova <em>samo ako je core zelen</em></td></tr>
+        <tr><td class="n">17:30</td><td>P0 bugovi, cache, backup artefakt</td><td>take 1 videa snimljen</td></tr>
+        <tr><td class="n">18:30</td><td><strong>Feature freeze + validan submission</strong></td><td>repo javan, secrets audit, video uploadovan</td></tr>
+        <tr><td class="n">19:00–20:00</td><td>pizza party je zvanično „polishing window" — take 2</td><td>čitanje unosa očima sudije, pa predaja</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4>MUST / SHOULD / CUT</h4>
+  <ul>
+    <li><strong>MUST:</strong> jedan anonimizovan projekat; ekstrakcija u shemu sa <code>strict: true</code>; engine sa 30 pravila; registar sa članom i stranom; <em>jedan konflikt između dokumenata</em>; jedan broj troška; tabla tačnosti; javni URL; video.</li>
+    <li><strong>SHOULD posle 15:00:</strong> Outcome grader, verifikator agent, Daytona fan-out, diff krugova, prior po kancelariji, tab za recenzenta.</li>
+    <li><strong>CUT prvo:</strong> login, više projekata, PDF izvoz, chat, generisanje ispravki u samom dokumentu, bilo koji drugi propis.</li>
+  </ul>
+
+  <h4>Rizici</h4>
+  <ul>
+    <li><strong>Anonimizovan projekat je jedina prava zavisnost dana.</strong> Uzmi ga danas.</li>
+    <li><strong>Novi stack je istovremeno i rizik.</strong> Managed Agents, self-hosted sandbox i Convex Workflow su tri stvari koje niste koristili. <em>Sve tri probaj večeras u „hello world" verziji.</em> Ako self-hosted sandbox ne proradi do 12:30, fallback je Daytona SDK direktno plus Convex Workflow — gubiš roster, čuvaš sve ostalo.</li>
+    <li><strong>Pragovi u prototipu su iz javnog pregleda propisa</strong> i moraju se proveriti sa ocem. Jedan pogrešan prag pred panelom je gori od deset pravila manje.</li>
+    <li><strong>Opus 5 vraća thinking blok prvi.</strong> Ko piše <code>content[0].text</code> gubi pola sata. Napiši helper u prvih deset minuta.</li>
+  </ul>
+</section>
+
+<footer>
+  Platforma: <a href="https://platform.claude.com/docs/en/release-notes/overview">release notes</a> · <a href="https://platform.claude.com/docs/en/models/opus-5/whats-new-opus-5">Opus 5</a> · <a href="https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration">multiagent orchestration</a> · <a href="https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes">self-hosted sandboxes</a> · <a href="https://platform.claude.com/docs/en/managed-agents/define-outcomes">outcomes</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling">programmatic tool calling</a> · <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-reference">tool reference</a><br>
+  Partneri: <a href="https://www.convex.dev/components/workflow">Convex Workflow</a> · <a href="https://docs.convex.dev/agents">Convex Agent</a> · <a href="https://www.convex.dev/components/rag">Convex RAG</a> · <a href="https://www.daytona.io/changelog">Daytona changelog</a> · <a href="https://docs.x.ai/developers/pricing">x.ai modeli i cene</a> · <a href="https://www.firecrawl.dev/blog/launch-week-iii-day-3-extract-v2">Firecrawl /extract v2</a><br>
+  Analizirano: <a href="https://github.com/mikeOnBreeze/cc-crossbeam">cc-crossbeam</a> — README, DEMO.md, progress.md, server/src (1.678 linija TS), server/skills, 330 md fajlova.<br>
+  Propisi: <a href="https://www.paragraf.rs/propisi/zakon_o_zastiti_od_pozara.html">Zakon o zaštiti od požara</a> 111/2009, 20/2015, 87/2018 — čl. 23, 31, 32, 33, 34 · <a href="https://www.paragraf.rs/propisi/pravilnik-tehnickim-normativima-zastitu-pozara-stambenih-poslovnih-objekata-objekata.html">Pravilnik</a> 22/2019, 59 članova, 12 glava. Pragovi u prototipu su iz javnog pregleda i traže potvrdu.<br>
+  Izmereno lokalno: rule engine 13 pravila 0,068 ms, 500 projekata 0,025 ms po projektu; shema 7 slučajeva 0,745 ms, svaki prekoračaj modela odbijen. Procena troška je model, ne merenje.
+</footer>
+
+</div>
