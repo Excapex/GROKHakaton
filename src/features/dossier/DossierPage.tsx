@@ -311,7 +311,7 @@ function ActionsColumn({
       {related.map((row) => (
         <div key={row._id}>
           <p className="dossier-hint">
-            ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
+            Paket izmena {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
             {row.approvalState}. Prihvati je na Zadacima; ovde se meri primena i
             provera, bez izmišljenog ID-a nalaza.
           </p>

@@ -99,7 +99,7 @@ export function copiesOnNewerRevision(
     return {
       ok: false,
       reason:
-        "Original iz ChangeSet-a nije u listi dokumenata. Kopija se ne pretpostavlja.",
+        "Original iz paketa izmena nije u listi dokumenata. Kopija se ne pretpostavlja.",
     };
   }
   if (!original.revisionId) {
@@ -295,7 +295,7 @@ export function evaluateMarkVerified(input: {
   if (!input.findingId) {
     return {
       ok: false,
-      reason: "Nalaz nije vezan za ovaj ChangeSet. ID se ne izmišlja.",
+      reason: "Nalaz nije vezan za ovaj paket izmena. ID se ne izmišlja.",
     };
   }
   if (!findingClosedOnReread(input.findingId, input.findings)) {

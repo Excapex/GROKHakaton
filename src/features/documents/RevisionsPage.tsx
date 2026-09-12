@@ -267,7 +267,7 @@ function RevisionDiff({
         </ul>
       )}
 
-      <h4>Po kom ChangeSet-u</h4>
+      <h4>Po kom paketu izmena</h4>
       <p className="availability-note">
         <Icon name="info-circle" size={16} />
         Označi primenjeno ide samo posle kopija na novoj reviziji.
@@ -289,7 +289,7 @@ function RevisionDiff({
             <p className="availability-note">
               <Icon name="info-circle" size={16} />
               Nema paketa izmena vezanog za fajl na ovoj reviziji. Zamenjen fajl
-              bez ChangeSet-a ostaje ručna izmena projektanta.
+              bez paketa izmena ostaje ručna izmena projektanta.
             </p>
           );
         }

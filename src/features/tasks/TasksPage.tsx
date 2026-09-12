@@ -120,7 +120,7 @@ export function TasksPage({
       setNotice({
         tone: "error",
         text:
-          error instanceof Error ? error.message : "ChangeSet nije predložen.",
+          error instanceof Error ? error.message : "Paket izmena nije predložen.",
       });
     } finally {
       setBusy(false);
@@ -175,7 +175,7 @@ export function TasksPage({
           tone="progress"
           label="Učitavanje"
           title="Zadaci se učitavaju"
-          message="Pitanja, odgovori i ChangeSet-ovi stižu sa servera."
+          message="Pitanja, odgovori i paketi izmena stižu sa servera."
         />
       </div>
     );
@@ -335,7 +335,7 @@ export function TasksPage({
                       disabled={busy || answers.length === 0}
                       onClick={() => void proposeSet(question._id)}
                     >
-                      Predloži ChangeSet
+                      Predloži paket izmena
                     </button>
                   </div>
                 </li>
@@ -345,7 +345,7 @@ export function TasksPage({
         </div>
 
         <div className="task-card">
-          <h3>ChangeSet</h3>
+          <h3>Paket izmena</h3>
           <p className="dossier-hint">
             Prihvaćeno nije primenjeno i nije provereno. Ponovljeni klik ne
             dodaje drugo odobrenje. CAD nema patch — samo zadatak projektanta.
