@@ -18,8 +18,11 @@ import {
   observationsForFinding,
 } from "./dossierView.ts";
 import {
+  documentSourceLabel,
   elementLabel,
+  extraFindingDetail,
   findingTitle,
+  isVagueElement,
   observationValue,
   slotLabel,
 } from "./engineLabels.ts";
@@ -101,6 +104,10 @@ export function FindingCard({
   const relatedSets = changeSets.filter((row) =>
     relatedIds.has(String(row.questionId)),
   );
+  const distinctRationale =
+    rule && finding.rationale
+      ? extraFindingDetail(rule.primedba, finding.rationale)
+      : null;
   const next = dossier.next_actions.find((action) => {
     if (action.kind === "ask") {
       return dossier.questions.some(
@@ -124,23 +131,25 @@ export function FindingCard({
       aria-labelledby={`finding-${finding.id}`}
     >
       <header className="finding-card-head">
-        <span className={`kind-chip status-${finding.status}`}>
-          {FINDING_STATUS_LABELS[finding.status]}
-        </span>
+        <div className="finding-card-meta">
+          <span className={`kind-chip status-${finding.status}`}>
+            {FINDING_STATUS_LABELS[finding.status]}
+          </span>
+          <span className="rule-ref">Pravilo {finding.rule_id}</span>
+        </div>
         <h3 id={`finding-${finding.id}`}>
           {findingTitle(finding.id, findingIds)}
         </h3>
         <p className="finding-section">
           {rule?.section ?? "Pravilo iz kataloga ZOP"}
         </p>
-        <span className="rule-ref">Pravilo {finding.rule_id}</span>
       </header>
 
       <section>
         <h4>Šta nije u redu</h4>
         <p>{rule?.primedba ?? finding.rationale}</p>
-        {rule && finding.rationale && finding.rationale !== rule.primedba && (
-          <p className="dossier-hint">{finding.rationale}</p>
+        {distinctRationale && (
+          <p className="finding-detail">{distinctRationale}</p>
         )}
       </section>
 
@@ -156,10 +165,10 @@ export function FindingCard({
 
       {rule && (
         <>
-          <section>
-            <h4>Po kom osnovu</h4>
+          <details className="finding-osnov">
+            <summary>Po kom osnovu</summary>
             <p>{rule.osnov_raw}</p>
-          </section>
+          </details>
           <section>
             <h4>Šta treba uraditi</h4>
             <p>{rule.korekcija}</p>
@@ -266,25 +275,28 @@ function WhereBlock({
     <ul className="finding-where">
       {observations.map((observation) => {
         const row = evidence.find((item) => item.id === observation.evidence_id);
-        const filename =
-          documents.find(
-            (doc) =>
-              String(doc._id) === row?.document_id ||
-              doc.sha256 === row?.input_hash.replace(/^sha256:/, ""),
-          )?.filename ?? row?.document_id;
+        const filename = documents.find(
+          (doc) =>
+            String(doc._id) === row?.document_id ||
+            doc.sha256 === row?.input_hash.replace(/^sha256:/, ""),
+        )?.filename;
+        const source = documentSourceLabel(filename, row?.document_id);
+        const element = isVagueElement(observation.element_id)
+          ? null
+          : elementLabel(observation.element_id);
         return (
           <li key={observation.id}>
-            <strong>{slotLabel(observation.slot)}</strong>
-            <span>{observationValue(observation.value, observation.unit)}</span>
-            {elementLabel(observation.element_id) && (
-              <span>{elementLabel(observation.element_id)}</span>
-            )}
-            {row && (
-              <span>
-                {filename ? `${filename}, ` : ""}
-                strana {row.page_no}
-              </span>
-            )}
+            <p className="finding-where-line">
+              <strong>{slotLabel(observation.slot)}</strong>
+              <span>{observationValue(observation.value, observation.unit)}</span>
+              {element && <span>{element}</span>}
+              {row && (
+                <span>
+                  {source ? `${source}, ` : ""}
+                  strana {row.page_no}
+                </span>
+              )}
+            </p>
             {row?.excerpt && <blockquote>„{row.excerpt.trim()}“</blockquote>}
           </li>
         );
@@ -361,6 +373,7 @@ function FindingActions({
       {threads.length === 0 &&
         (actionKind === "ask" || actionKind === "propose_patch") && (
           <form
+            className="finding-form"
             onSubmit={(event) => {
               event.preventDefault();
               if (!documentId) {
@@ -378,17 +391,18 @@ function FindingActions({
               });
             }}
           >
-            <label>
+            <label htmlFor={`finding-prompt-${finding.id}`}>
               {actionKind === "ask"
                 ? "Pitanje projektantu"
                 : "Tekst predloga ispravke"}
-              <textarea
-                value={prompt}
-                onChange={(event) => setPrompt(event.target.value)}
-                rows={3}
-                required
-              />
             </label>
+            <textarea
+              id={`finding-prompt-${finding.id}`}
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              rows={4}
+              required
+            />
             <button
               className="button button-primary"
               type="submit"
@@ -409,14 +423,17 @@ function FindingActions({
               <strong>{row.author}.</strong> {row.body}
             </p>
           ))}
-          <label>
-            Odgovor projektanta
+          <div className="finding-form">
+            <label htmlFor={`finding-reply-${thread.question._id}`}>
+              Odgovor projektanta
+            </label>
             <textarea
+              id={`finding-reply-${thread.question._id}`}
               value={reply}
               onChange={(event) => setReply(event.target.value)}
-              rows={2}
+              rows={3}
             />
-          </label>
+          </div>
           <div className="task-actions">
             <button
               className="button button-secondary"

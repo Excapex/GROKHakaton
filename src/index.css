@@ -2212,6 +2212,7 @@ summary::-webkit-details-marker {
   border-left: 4px solid #c5b36a;
   border-radius: var(--radius-panel);
   background: #fcfdfb;
+  overflow-wrap: break-word;
 }
 .finding-card.status-fail {
   border-left-color: #b45309;
@@ -2227,7 +2228,16 @@ summary::-webkit-details-marker {
 }
 .finding-card-head {
   display: grid;
-  gap: var(--s-1);
+  gap: var(--s-2);
+}
+.finding-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.finding-card-meta .kind-chip {
+  margin-right: 0;
 }
 .finding-card h3,
 .finding-card h4 {
@@ -2247,13 +2257,38 @@ summary::-webkit-details-marker {
   margin: 0;
   color: #244b38;
   font-weight: 600;
+  max-width: 68ch;
 }
 .finding-card section {
   display: grid;
   gap: var(--s-2);
 }
-.finding-card section p {
+.finding-card section p,
+.finding-card details p,
+.finding-detail {
   margin: 0;
+  max-width: 68ch;
+  line-height: 1.6;
+}
+.finding-detail {
+  color: #3b4f45;
+}
+.finding-osnov {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: var(--s-3) var(--s-4);
+  background: #f7faf7;
+}
+.finding-osnov summary {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.finding-osnov p {
+  margin-top: var(--s-3);
 }
 .finding-where {
   list-style: none;
@@ -2264,20 +2299,65 @@ summary::-webkit-details-marker {
 }
 .finding-where li {
   display: grid;
-  gap: 2px;
+  gap: var(--s-2);
+}
+.finding-where-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  margin: 0;
+  max-width: none;
+  font-size: 14px;
+}
+.finding-where-line strong {
+  font-weight: 700;
+}
+.finding-where-line span {
+  color: #3b4f45;
 }
 .finding-where blockquote {
-  margin: var(--s-2) 0 0;
+  margin: 0;
   padding: var(--s-3);
   border-left: 3px solid var(--accent);
   background: var(--mint);
   color: #193d2b;
+  max-width: 68ch;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.finding-form {
+  display: grid;
+  gap: var(--s-2);
+}
+.finding-form label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #4d5f54;
+}
+.finding-form textarea,
+.finding-card textarea {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  color: var(--ink);
+  border: 1px solid #d5ddd6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f7faf7;
+}
+.finding-form .button,
+.finding-card form .button {
+  justify-self: start;
 }
 .finding-actions,
 .finding-thread,
 .finding-changeset {
   display: grid;
   gap: var(--s-3);
+}
+.finding-card .lifecycle-rail {
+  gap: var(--s-2);
 }
 @media (max-height: 800px) and (min-width: 769px) {
   .sidebar-note {
