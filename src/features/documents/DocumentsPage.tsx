@@ -30,10 +30,12 @@ export function DocumentsPage({
   projectId,
   revisionId,
   documents,
+  embedded = false,
 }: {
   projectId: Id<"projects">;
   revisionId: Id<"revisions"> | null;
   documents: WorkspaceDocument[];
+  embedded?: boolean;
 }) {
   const generateUploadUrl = useMutation(api.documents.generateUploadUrl);
   const register = useMutation(api.documents.register);
@@ -41,7 +43,15 @@ export function DocumentsPage({
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [busy, setBusy] = useState(false);
 
-  async function uploadFiles(fileList: FileList | File[]) {
+  /**
+   * `asNewCheck` znači da ovaj set dokumenata pokreće novi krug provere.
+   * Provera se otvara ovde, posle izbora fajlova — nikad unaprijed praznim
+   * dugmetom, pa prazna provera ne može da nastane.
+   */
+  async function uploadFiles(
+    fileList: FileList | File[],
+    { asNewCheck = false }: { asNewCheck?: boolean } = {},
+  ) {
     const files = [...fileList];
     if (files.length === 0) return;
     setBusy(true);
@@ -54,7 +64,7 @@ export function DocumentsPage({
     );
     try {
       let activeRevision = revisionId;
-      if (!activeRevision) {
+      if (!activeRevision || asNewCheck) {
         activeRevision = await createNext({ projectId });
       }
       for (let index = 0; index < files.length; index += 1) {
@@ -137,14 +147,19 @@ export function DocumentsPage({
   }
 
   return (
-    <section className="page-content" aria-label="Dokumenti">
-      <div className="page-heading">
-        <h2>Dokumenti</h2>
-        <p>
-          Original ostaje nepromenjen. SHA-256 se računa u pregledaču i čuva uz
-          fajl. Nova revizija dodaje sveske, ne prepisuje stare.
-        </p>
-      </div>
+    <section
+      className={embedded ? "embedded-section" : "page-content"}
+      aria-label="Dokumenti"
+    >
+      {!embedded && (
+        <div className="page-heading">
+          <h2>Dokumenti</h2>
+          <p>
+            Original ostaje nepromenjen. SHA-256 se računa u pregledaču i čuva
+            uz fajl. Nova provera dodaje sveske, ne prepisuje stare.
+          </p>
+        </div>
+      )}
 
       <label className={`upload-drop${busy ? " is-busy" : ""}`}>
         <input
@@ -162,6 +177,30 @@ export function DocumentsPage({
         <span>DWG i DWFX se samo čuvaju. Parsiranje ide kroz ingest, ne ovde.</span>
       </label>
 
+      {revisionId && (
+        <label className={`upload-recheck${busy ? " is-busy" : ""}`}>
+          <input
+            type="file"
+            multiple
+            disabled={busy}
+            accept=".pdf,.docx,.xlsx,.dwg,.dwfx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            onChange={(event) => {
+              if (event.target.files)
+                void uploadFiles(event.target.files, { asNewCheck: true });
+              event.target.value = "";
+            }}
+          />
+          <Icon name="history" size={20} />
+          <span>
+            <strong>Ubaci ispravljenu dokumentaciju</strong>
+            <small>
+              Otvara sledeću proveru i poredi je sa prethodnom. Stari originali
+              ostaju na svojoj proveri.
+            </small>
+          </span>
+        </label>
+      )}
+
       {queue.length > 0 && (
         <ul className="upload-queue" aria-live="polite">
           {queue.map((item, index) => (
@@ -178,12 +217,12 @@ export function DocumentsPage({
           tone="neutral"
           label="Prazno"
           title="Još nema sačuvanih originala"
-          message="Posle otpremanja osvežite stranicu — fajl i hash ostaju. Zatim otvorite novu reviziju i dodajte drugi original; oba ostaju otvorljiva."
+          message="Posle otpremanja osvežite stranicu — fajl i hash ostaju. Prvi ubačeni set dokumenata pokreće prvu proveru."
         />
       ) : (
         <div className="document-table-wrap">
           <table className="document-table">
-            <caption>Originali aktivne revizije</caption>
+            <caption>Originali tekuće provere</caption>
             <thead>
               <tr>
                 <th>Fajl</th>

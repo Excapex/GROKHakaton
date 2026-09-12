@@ -15,9 +15,9 @@ export const LIFECYCLE_ORDER: ChangeLifecycle[] = [
 
 export const LIFECYCLE_LABELS: Record<ChangeLifecycle, string> = {
   proposed: "Predloženo",
-  accepted: "Prihvaćeno",
-  applied: "Primenjeno",
-  verified: "Provereno",
+  accepted: "Projektant prihvatio",
+  applied: "Primenjeno u fajlu",
+  verified: "Potvrđeno u novoj proveri",
 };
 
 /** Status se prevodi po značenju za projektanta, ne doslovno iz engine-a. */
