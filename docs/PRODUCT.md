@@ -1,4 +1,4 @@
-# PRODUCT — Saglasnik
+# PRODUCT — Nalaznik
 
 ## Šta je
 Kopilot za tehničke projekte svih disciplina. Jedan radni prostor za projekte,

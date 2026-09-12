@@ -16,7 +16,7 @@ ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
 DONE: squash-merge [#37](https://github.com/Excapex/GROKHakaton/pull/37) na `b57cd248` (A Approve + zeleni `web`). `UNLOCK convex/schema.ts`.
 - Pitanje zahteva `findingId` i `documentId` originala. Odgovor čuva autora i vreme.
 - Prihvatanje je `proposed` → `accepted`, nikad `verified`. Ponovljen klik vraća `duplicated: true`.
-- CAD predlog ide u `designTask`, bez lažnog patch-a. Saglasnik ne izdaje saglasnost.
+- CAD predlog ide u `designTask`, bez lažnog patch-a. Nalaznik ne izdaje saglasnost.
 CONTRACT: nema izmene `contracts/`.
 NEXT: zatvoreno.
 

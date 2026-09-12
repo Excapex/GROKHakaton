@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://saglasnik.local/contracts/document-manifest.schema.json",
+  "$id": "https://nalaznik.local/contracts/document-manifest.schema.json",
   "title": "DocumentManifest",
   "type": "object",
   "additionalProperties": false,

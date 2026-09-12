@@ -163,14 +163,14 @@ export function AppShell({
             <button
               className="sidebar-help"
               type="button"
-              aria-label="Kako radi Saglasnik"
+              aria-label="Kako radi Nalaznik"
               onClick={() => setHelpOpen(!helpOpen)}
               aria-expanded={helpOpen}
               aria-controls="workspace-help"
-              title="Kako radi Saglasnik"
+              title="Kako radi Nalaznik"
             >
               <Icon name="help-circle" />
-              <span className="rail-label">Kako radi Saglasnik</span>
+              <span className="rail-label">Kako radi Nalaznik</span>
             </button>
             {account && (
               <div className="account-row">
@@ -215,7 +215,7 @@ export function AppShell({
           <section
             id="workspace-help"
             className="help-panel"
-            aria-label="Kako radi Saglasnik"
+            aria-label="Kako radi Nalaznik"
           >
             <div>
               <h2>Od dokumentacije do proverene izmene</h2>

@@ -1,9 +1,9 @@
 ---
-description: Saglasnik — obavezni kontekst i pravila za sve izmene
+description: Nalaznik — obavezni kontekst i pravila za sve izmene
 alwaysApply: true
 ---
 
-# Saglasnik
+# Nalaznik
 
 Pročitaj i poštuj, u ovom redu: `CLAUDE.md`, `docs/RUNBOOK.md`,
 `docs/GIT-PROTOCOL.md`, `docs/LOCAL-DATA.md`, `docs/CONTRACTS.md`.

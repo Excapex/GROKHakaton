@@ -130,7 +130,7 @@ def ingest_pdf(pdf: Path, out_dir: Path, document_id: str) -> dict:
 
 
 def main() -> int:
-    p = argparse.ArgumentParser(description="Saglasnik PDF ingest")
+    p = argparse.ArgumentParser(description="Nalaznik PDF ingest")
     p.add_argument("pdf", type=Path)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--document-id", default="")

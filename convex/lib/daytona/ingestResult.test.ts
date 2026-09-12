@@ -8,7 +8,7 @@ import {
   unavailableResult,
 } from "./ingestResult";
 
-const page1 = "Saglasnik anon fixture page 1\nEI 60 SRPS EN 13501-2\n";
+const page1 = "Nalaznik anon fixture page 1\nEI 60 SRPS EN 13501-2\n";
 const page2 = "";
 
 describe("ingestGate", () => {

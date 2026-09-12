@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://saglasnik.local/contracts/changeset.schema.json",
+  "$id": "https://nalaznik.local/contracts/changeset.schema.json",
   "title": "ChangeSet",
   "type": "object",
   "additionalProperties": false,

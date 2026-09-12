@@ -1,5 +1,5 @@
 ---
-name: Saglasnik zadatak
+name: Nalaznik zadatak
 about: Isporuciv zadatak sa vlasnikom, SP i dokazom
 ---
 

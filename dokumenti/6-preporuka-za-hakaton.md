@@ -1,10 +1,10 @@
-# Saglasnik: preporuka za hakaton 12.09.2026.
+# Nalaznik: preporuka za hakaton 12.09.2026.
 
 Nezavisna preporuka, 11.09.2026. Zasnovana na reviziji foldera i potvrdi korisnika da postoje očevi stvarni propisi, primedbe i projekti pre i posle ispravki. Korisnik je potvrdio da ima kompletan materijal sa izvornim formatima i da ga dodaje večeras. Sadržaj i tehnička urednost izvora još nisu pregledani.
 
 ## Odluka
 
-Graditi Saglasnik kao radni prostor za pregled i koordinisano otklanjanje primedbi u dokumentaciji zaštite od požara.
+Graditi Nalaznik kao radni prostor za pregled i koordinisano otklanjanje primedbi u dokumentaciji zaštite od požara.
 
 **Obećanje korisniku:** Predaj projektnu dokumentaciju, razumi gde i zašto postoji problem, pripremi potrebne ispravke i proveri da li ih nova revizija zaista rešava.
 
@@ -16,12 +16,12 @@ Najvažniji proizvodni princip: **smanjivati broj podržanih slučajeva pre nego
 
 | Pravac | Prednost koju stvarno imamo | Najteža zavisnost | Odluka |
 |---|---|---|---|
-| Saglasnik sa ispravkama i revizijama | Stručnjak, stvarni projekti i poznate ispravke | Ekstrakcija, primenljivost pravila, veza između dokumenata | Prvi izbor |
+| Nalaznik sa ispravkama i revizijama | Stručnjak, stvarni projekti i poznate ispravke | Ekstrakcija, primenljivost pravila, veza između dokumenata | Prvi izbor |
 | ForgeFix / Prompt-to-Part | Postojeći uspešni CAD generator i opipljivi fajlovi | Stvarna ograničenja radionice i korisna razlika od postojećih CAD alata | Najbolja rezerva ako domenski materijal izostane |
 | HomeTwin | Snažan vizuelni doživljaj | Verna semantika prostora, editabilna scena i korisna završna akcija još nisu dokazane | Ne bih ga birao sutra |
 | Sabine / Testpoint | Brzi lokalni eksperimenti | Nezavisna fizička validacija i stvaran ulaz iz sveta | Nedovoljno potvrđena osnova za glavni proizvod |
 
-Ovo je izbor na osnovu prednosti ovog tima, bez numeričke prognoze plasmana. Saglasnik može biti zahtevan i snažan proizvod zato što raspolažete proverljivim stručnim procesom koji većina timova tek treba da upozna.
+Ovo je izbor na osnovu prednosti ovog tima, bez numeričke prognoze plasmana. Nalaznik može biti zahtevan i snažan proizvod zato što raspolažete proverljivim stručnim procesom koji većina timova tek treba da upozna.
 
 ## Jedan korisnik i jedan posao
 
@@ -215,6 +215,6 @@ Kroz sve četiri perspektive provlači se isti kvalitet: konkretan stručni posa
 
 ## Konačni sud
 
-Zadržati domen, povećati dubinu izvršenja i proverljivost, a odustati od neutemeljenih garancija. Saglasnik koji pronalazi, objašnjava, priprema koordinisane ispravke i proverava novu reviziju ima najbolji odnos ambicije, vaše stvarne prednosti i mogućnosti da sutra bude ubedljiv proizvod.
+Zadržati domen, povećati dubinu izvršenja i proverljivost, a odustati od neutemeljenih garancija. Nalaznik koji pronalazi, objašnjava, priprema koordinisane ispravke i proverava novu reviziju ima najbolji odnos ambicije, vaše stvarne prednosti i mogućnosti da sutra bude ubedljiv proizvod.
 
 Prvi sledeći ulaz je jedan povezan očev primer iz najavljenog večerašnjeg materijala. On određuje tačan slučaj za demonstraciju, početna pravila i konkretan Word/Excel deo koji sistem stvarno menja, uz anotirani paket za preostale projektantske zahvate.

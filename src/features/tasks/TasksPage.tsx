@@ -193,7 +193,7 @@ export function TasksPage({
         <h2>Zadaci</h2>
         <p>
           Pitanje ide uz nalaz i original. Odgovor čuva autora i vreme.
-          Prihvatanje je eksplicitna odluka projektanta — Saglasnik ne izdaje
+          Prihvatanje je eksplicitna odluka projektanta — Nalaznik ne izdaje
           saglasnost.
         </p>
       </div>

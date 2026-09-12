@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-const STORAGE_KEY = "saglasnik.izabraniPredmet";
+const STORAGE_KEY = "nalaznik.izabraniPredmet";
 
 function readStored(): Id<"projects"> | null {
   try {
