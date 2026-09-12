@@ -1,0 +1,151 @@
+/* Spacing only for Pregled and Zadaci. Tokens and lifecycle labels stay put.
+   Loaded after index.css so these pages can drop the 320px card wells. */
+
+.dossier-page,
+.page-content:has(> .tasks-grid) {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding-top: 24px;
+  padding-bottom: 28px;
+}
+
+.dossier-page > .page-heading,
+.page-content:has(> .tasks-grid) > .page-heading {
+  margin-bottom: 0;
+}
+
+.dossier-page > .page-heading h2,
+.page-content:has(> .tasks-grid) > .page-heading h2 {
+  line-height: 1.2;
+}
+
+.dossier-page > .page-heading p,
+.page-content:has(> .tasks-grid) > .page-heading p {
+  margin-top: 6px;
+  max-width: 68ch;
+}
+
+.dossier-page > .state-panel {
+  max-width: none;
+  padding: 14px 16px;
+  gap: 12px;
+}
+
+.page-content:has(> .tasks-grid) > .lifecycle-rail,
+.page-content:has(> .tasks-grid) > .inline-error,
+.page-content:has(> .tasks-grid) > .inline-status {
+  margin: 0;
+}
+
+.dossier-grid,
+.tasks-grid {
+  gap: 12px;
+  align-items: start;
+}
+
+.dossier-grid > *,
+.tasks-grid > * {
+  min-width: 0;
+}
+
+.dossier-col,
+.task-card {
+  min-height: 0;
+  padding: 14px 16px;
+  gap: 8px;
+}
+
+.task-card label,
+.task-card input,
+.task-card select,
+.task-card textarea {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dossier-col {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.dossier-col h3,
+.task-card h3 {
+  margin: 0;
+}
+
+.dossier-empty,
+.dossier-hint {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.dossier-col .lifecycle-rail {
+  gap: 6px;
+}
+
+.dossier-col .lifecycle-rail .kind-chip {
+  margin-right: 0;
+}
+
+.evidence-toolbar {
+  margin: 0;
+}
+
+.evidence-placeholder,
+.conflict-pair article,
+.single-evidence {
+  min-height: 0;
+}
+
+.evidence-placeholder {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  align-content: start;
+}
+
+.evidence-placeholder .icon {
+  margin: 0;
+}
+
+.task-card .state-panel {
+  max-width: none;
+  margin: 0;
+  padding: 4px 0 0;
+  border: 0;
+  background: transparent;
+  gap: 10px;
+}
+
+.task-card .state-body h3 {
+  margin-top: 2px;
+}
+
+.task-card .state-body p {
+  margin-top: 4px;
+  line-height: 1.45;
+}
+
+.task-card textarea {
+  min-height: 72px;
+}
+
+.task-card .dossier-hint {
+  max-width: none;
+}
+
+.thread-list,
+.changeset-list {
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .dossier-page,
+  .page-content:has(> .tasks-grid) {
+    padding-top: 20px;
+    padding-bottom: 24px;
+    gap: 12px;
+  }
+}
