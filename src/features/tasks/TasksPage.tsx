@@ -6,7 +6,8 @@ import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
 import { ChangeSetLifecycleActions } from "./ChangeSetLifecycleActions.tsx";
 import { downloadChangeSet } from "./changeSetExport.ts";
-import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
+import { LIFECYCLE_LABELS, LIFECYCLE_ORDER, FINDING_STATUS_LABELS } from "../dossier/dossierView.ts";
+import { mappedRuleCopy } from "../../../convex/lib/perception/mappedRuleCopy.ts";
 import {
   patchButtonVisible,
   type FindingSnapshot,
@@ -230,7 +231,9 @@ export function TasksPage({
               ) : (
                 findings.map((finding) => (
                   <option key={finding.id} value={finding.id}>
-                    {finding.id} · {finding.rule_id} · {finding.status}
+                    {mappedRuleCopy(finding.rule_id)?.section ?? "Nalaz sa Pregleda"}
+                    {" · "}
+                    {FINDING_STATUS_LABELS[finding.status]}
                   </option>
                 ))
               )}

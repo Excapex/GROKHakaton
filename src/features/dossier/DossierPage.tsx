@@ -14,6 +14,7 @@ import {
 } from "./dossierView.ts";
 import { isCadKind } from "../../lib/fileKind.ts";
 import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
+import { mappedRuleCopy } from "../../../convex/lib/perception/mappedRuleCopy.ts";
 
 type SourceDoc = {
   filename: string;
@@ -148,7 +149,9 @@ function FindingsColumn({
                 <span className={`kind-chip status-${finding.status}`}>
                   {FINDING_STATUS_LABELS[finding.status]}
                 </span>
-                <strong>{finding.rule_id}</strong>
+                <strong>
+                  {mappedRuleCopy(finding.rule_id)?.section ?? "Pravilo iz packa"}
+                </strong>
                 <span>{finding.rationale}</span>
               </button>
             </li>
@@ -348,7 +351,7 @@ function ActionsColumn({
       ) : (
         <p className="dossier-empty">
           Nema otvorenog pitanja ni zadatka dok nema nalaza
-          {finding ? ` za ${finding.rule_id}` : ""}.
+          {finding ? " za izabrano pravilo" : ""}.
         </p>
       )}
     </aside>
