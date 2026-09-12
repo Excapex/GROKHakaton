@@ -159,6 +159,21 @@ describe("evaluateMarkVerified", () => {
       revisionId: "rev2",
     });
   });
+
+  it("FAIL ili druga revizija čitanja nisu verified", () => {
+    expect(
+      evaluateMarkVerified({
+        ...closed,
+        findings: [{ id: "f1", status: "fail" }],
+      }).ok,
+    ).toBe(false);
+    expect(
+      evaluateMarkVerified({
+        ...closed,
+        reviewRevisionId: "rev1",
+      }).ok,
+    ).toBe(false);
+  });
 });
 
 describe("changeSetsVisibleOnRevision", () => {
@@ -184,5 +199,38 @@ describe("CAD patch", () => {
       ]),
     ).toBe(false);
     expect(patchButtonVisible(accepted, officeDocs)).toBe(true);
+  });
+
+  it("CAD posle kopije sme applied, i dalje bez patch dugmeta", () => {
+    const cad: LifecycleChangeSet = {
+      ...accepted,
+      designTask: "Izmena crteža je zadatak projektanta.",
+    };
+    const docs: LifecycleDoc[] = [
+      {
+        _id: "cad1",
+        revisionId: "rev1",
+        filename: "plan.dwg",
+        kind: "dwg",
+        sha256: "h1",
+      },
+      {
+        _id: "cad2",
+        revisionId: "rev2",
+        filename: "plan.dwg",
+        kind: "dwg",
+        sha256: "h2",
+      },
+    ];
+    const cadSet = { ...cad, documentId: "cad1", baseHashes: { cad1: "h1" } };
+    expect(patchButtonVisible(cadSet, docs)).toBe(false);
+    expect(
+      evaluateMarkApplied({
+        hasApi: true,
+        changeSet: cadSet,
+        documents: docs,
+        revisions,
+      }),
+    ).toEqual({ ok: true, revisionId: "rev2" });
   });
 });

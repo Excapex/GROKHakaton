@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useConvex } from "convex/react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import {
@@ -23,7 +24,7 @@ export function ChangeSetLifecycleActions({
   revisions,
   findingId,
   review,
-  busy,
+  busy: busyFromParent,
 }: {
   changeSet: LifecycleChangeSet & { _id: string };
   documents: LifecycleDoc[];
@@ -34,6 +35,11 @@ export function ChangeSetLifecycleActions({
 }) {
   const convex = useConvex();
   const lifecycleApi = readChangeSetLifecycleApi();
+  const [localBusy, setLocalBusy] = useState(false);
+  const [notice, setNotice] = useState<{ tone: "ok" | "error"; text: string } | null>(
+    null,
+  );
+  const busy = busyFromParent || localBusy;
   const applyGate = evaluateMarkApplied({
     hasApi: lifecycleApi.hasMarkApplied,
     changeSet,
@@ -52,6 +58,52 @@ export function ChangeSetLifecycleActions({
     reviewRevisionId: review?.review_run?.revision_id ?? null,
   });
 
+  async function runApplied() {
+    if (!applyGate.ok || !lifecycleApi.markApplied) return;
+    setLocalBusy(true);
+    setNotice(null);
+    try {
+      await convex.mutation(lifecycleApi.markApplied, {
+        changeSetId: changeSet._id as Id<"changeSets">,
+        revisionId: applyGate.revisionId as Id<"revisions">,
+      });
+      setNotice({
+        tone: "ok",
+        text: "Označeno primenjeno (markApplied). To još nije provera nalaza.",
+      });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Primena nije upisana.",
+      });
+    } finally {
+      setLocalBusy(false);
+    }
+  }
+
+  async function runVerified() {
+    if (!verifyGate.ok || !lifecycleApi.markVerified) return;
+    setLocalBusy(true);
+    setNotice(null);
+    try {
+      await convex.mutation(lifecycleApi.markVerified, {
+        changeSetId: changeSet._id as Id<"changeSets">,
+        revisionId: verifyGate.revisionId as Id<"revisions">,
+      });
+      setNotice({
+        tone: "ok",
+        text: "Provera upisana (markVerified): hash je promenjen i nalaz je zatvoren na novom čitanju.",
+      });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Provera nije upisana.",
+      });
+    } finally {
+      setLocalBusy(false);
+    }
+  }
+
   return (
     <>
       <div className="task-actions">
@@ -59,13 +111,7 @@ export function ChangeSetLifecycleActions({
           className="button button-secondary"
           type="button"
           disabled={busy || !applyGate.ok}
-          onClick={() => {
-            if (!applyGate.ok || !lifecycleApi.markApplied) return;
-            void convex.mutation(lifecycleApi.markApplied, {
-              changeSetId: changeSet._id as Id<"changeSets">,
-              revisionId: applyGate.revisionId as Id<"revisions">,
-            });
-          }}
+          onClick={() => void runApplied()}
         >
           Označi primenjeno
         </button>
@@ -73,17 +119,19 @@ export function ChangeSetLifecycleActions({
           className="button button-secondary"
           type="button"
           disabled={busy || !verifyGate.ok}
-          onClick={() => {
-            if (!verifyGate.ok || !lifecycleApi.markVerified) return;
-            void convex.mutation(lifecycleApi.markVerified, {
-              changeSetId: changeSet._id as Id<"changeSets">,
-              revisionId: verifyGate.revisionId as Id<"revisions">,
-            });
-          }}
+          onClick={() => void runVerified()}
         >
           Proveri novu reviziju
         </button>
       </div>
+      {notice && (
+        <p
+          className={notice.tone === "error" ? "inline-error" : "inline-status"}
+          role="status"
+        >
+          {notice.text}
+        </p>
+      )}
       {!applyGate.ok && <p className="dossier-hint">{applyGate.reason}</p>}
       {!verifyGate.ok && <p className="dossier-hint">{verifyGate.reason}</p>}
     </>

@@ -13,6 +13,7 @@ import {
   observationsForFinding,
 } from "./dossierView.ts";
 import { isCadKind } from "../../lib/fileKind.ts";
+import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
 
 type SourceDoc = {
   filename: string;
@@ -112,6 +113,7 @@ export function DossierPage({
           dossier={dossier}
           finding={selected}
           documents={documents}
+          review={payload}
         />
       </div>
     </section>
@@ -248,14 +250,22 @@ function ActionsColumn({
   dossier,
   finding,
   documents,
+  review,
 }: {
   projectId: Id<"projects">;
   dossier: Dossier | null;
   finding: Finding | null;
   documents: SourceDoc[];
+  review: {
+    pipelineReady?: boolean;
+    source?: string | null;
+    dossier?: Dossier | null;
+    review_run?: { revision_id?: string };
+  } | null;
 }) {
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const threads = useQuery(api.questions.listForProject, { projectId });
+  const workspace = useQuery(api.projects.getWorkspace);
   const relatedIds = new Set(
     (threads ?? [])
       .filter(({ question }) => question.findingId === finding?.id)
@@ -296,11 +306,22 @@ function ActionsColumn({
         </p>
       )}
       {related.map((row) => (
-        <p key={row._id} className="dossier-hint">
-          ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
-          {row.approvalState}. Primena i provera su na Zadacima, posle kopija i
-          merenja.
-        </p>
+        <div key={row._id}>
+          <p className="dossier-hint">
+            ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
+            {row.approvalState}. Prihvati je na Zadacima; ovde se meri primena i
+            provera, bez izmišljenog ID-a nalaza.
+          </p>
+          {workspace && (
+            <ChangeSetLifecycleActions
+              changeSet={row}
+              documents={workspace.documents}
+              revisions={workspace.revisions}
+              findingId={finding?.id ?? null}
+              review={review}
+            />
+          )}
+        </div>
       ))}
       {dossier ? (
         <dl className="coverage-list">
@@ -318,7 +339,10 @@ function ActionsColumn({
           </div>
           <div>
             <dt>Integritet</dt>
-            <dd>{dossier.integrity_report.ok ? "ok" : "nije ok"}</dd>
+            <dd>
+              {dossier.integrity_report.ok ? "struktura ok" : "struktura nije ok"}
+              {" — nije semantika ni verified"}
+            </dd>
           </div>
         </dl>
       ) : (
