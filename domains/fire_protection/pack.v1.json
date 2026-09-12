@@ -1356,7 +1356,10 @@
       "korekcija": "Zahtev iskazati klasom prema važećem sistemu klasifikacije i kriterijumu koji odgovara funkciji elementa.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "fire_resistance_mark",
+        "fire_resistance_standard"
+      ],
       "status": "approved"
     },
     {
@@ -2139,7 +2142,9 @@
       "korekcija": "Uskladiti obračun broja lica sa stvarnom opremom prostora prikazanom u predmeru.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "occupant_load_vs_area"
+      ],
       "status": "approved"
     },
     {
@@ -2170,7 +2175,9 @@
       "korekcija": "Sprovesti proračun za sve prostore i sve etape evakuacije.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "occupant_load_vs_area"
+      ],
       "status": "approved"
     },
     {
@@ -2941,7 +2948,9 @@
       "korekcija": "U tehničkom opisu, detaljima i predmeru navesti zahtevane klase sistema i komponenti.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "facade_insulation_material"
+      ],
       "status": "approved"
     },
     {
@@ -5172,7 +5181,9 @@
       "korekcija": "Priložiti proračun na nivou poda za sve trase i prostore obuhvaćene zahtevom.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "emergency_lighting_photometry"
+      ],
       "status": "approved"
     },
     {
@@ -14524,7 +14535,9 @@
       "korekcija": "Uneti meru u projekat odgovarajuće struke i u predmer.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "gpzop_element_in_predmer"
+      ],
       "status": "approved"
     },
     {
@@ -15689,7 +15702,9 @@
       "korekcija": "Zameniti odgovarajućim kriterijumom R, REI, EI ili EW i vremenom, prema funkciji elementa.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "fire_resistance_mark"
+      ],
       "status": "approved"
     },
     {
@@ -15864,7 +15879,9 @@
       "korekcija": "Uneti stavku sa svim performansama i količinama.",
       "snaga": "JAK",
       "snaga_raw": "JAK",
-      "requires_slots": [],
+      "requires_slots": [
+        "gpzop_element_in_predmer"
+      ],
       "status": "approved"
     },
     {

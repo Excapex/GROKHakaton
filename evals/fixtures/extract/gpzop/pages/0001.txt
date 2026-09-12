@@ -1,0 +1,5 @@
+GPZOP anon fixture
+Otpornost: F60 za protivpožarna vrata D-12.
+Fasada: A1 klasa obloga izolacije.
+EI 60 prema SRPS EN 13501-1.
+Površina sale 180 m2 za 90 lica.

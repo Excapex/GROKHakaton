@@ -1,5 +1,10 @@
 # Handoff — Builder B
 
+CURRENT PR: [#34](https://github.com/Excapex/GROKHakaton/pull/34) `feat/B/10-dosije` → `main` (#10 S09)
+DEPS: `#33` je u `main` (`7702256`). Approve na `#34` je bio `d79c5b5`; posle merge `origin/main` treba nov review.
+BLOCKER: čeka partner approve na HEAD posle sync sa `main`. Stari approve (`d79c5b5`) ne važi.
+NEXT: push + `gh pr edit 34 --base main` + re-review. Merge tek posle approve-a na novi SHA.
+
 ISSUE: #10 S09 — dosije i dokazi
 DONE:
 - Pregled je trokolonski radni prostor: nalazi · original · akcije. Zoom +/- i tastatura.
@@ -9,7 +14,7 @@ DONE:
 CONTRACT: nema izmene `contracts/`. Konzumira `Dossier`, `Finding`, `Observation`, `ChangeLifecycle`.
 VALIDATION: `npm run verify` 18 testova. Browser `#pregled` pokazuje prazan dosije i lifecycle.
 NEEDS: A da upiše stvarni dosije (R3 dva izvora). Tada klik na nalaz otvara stranu+region.
-NEXT: #11 S10 pitanja/ChangeSet, pa #13 izvoz.
+NEXT: Review na SHA posle sync sa `main`, zatim squash-merge od B.
 
 ISSUE: #4 S03 — upload, dokumenti, revizije
 DONE:
@@ -25,9 +30,8 @@ VALIDATION:
 - `npx convex dev --once` na `gallant-dolphin-326` kreirao indekse i funkcije.
 - `projects:ensureDemo` + `getWorkspace` vraćaju živi predmet. Browser: `#dokumenti` dropzona i
   `#revizije` lanac + „Nova revizija“, deep-link ostaje posle navigacije.
-NEEDS: A-ov review. Ručni dokaz upload → refresh → revizija 2 (oba originala otvorljiva) na
-pregledaču, jer file input nije automatizovan u ovom prolazu.
-NEXT: #10 S09 dosije + dokazi, zatim #11, #13, #15, #17, #18. Review tuđih PR-ova na kraju.
+NEEDS: zatvoreno u `#33` / `main`.
+NEXT: `#34` dosije, zatim `#11` S10.
 
 ## S02 · shell i katalog (#3)
 
