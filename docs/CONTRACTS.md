@@ -40,6 +40,7 @@ type Rule = {
   chapter: 'I'|'II'|'III'|'IV'|'V'|'VI'|'VII'|'VIII'
   primedba: string               // generička formulacija nedostatka
   osnov: {
+    raw?: string                 // sačuvan tekst; jedini zapis kad nema source_key
     sources: Array<{ source_key: string; articles?: string[] }>  // 1..n propisa
     standards?: string[]
   }

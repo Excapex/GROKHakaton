@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #6 S05 — ZOP pack (nastavak posle #22)
-DONE: `osnov.sources[]` usklađen sa S01 ugovorom. I-6 ima 4 propisa. 364/652 više izvora; 40 samo standard/generički (nema lažnog source_key). Pack JSON regenerisan iz postojećeg `raw` (docx nije u Gitu). Grana mergovana sa `main`.
-CONTRACT: `Rule.osnov.sources` 0..n registry keys; `standards` odvojeno.
-VALIDATION: I-6 → P04, P10, P06, P01 sa članovima po segmentu. Ukupno i dalje 652.
-NEEDS: B review #20 (više nije draft).
-NEXT: S04 ingest ili S06 kad B odobri pack.
+ISSUE: #6 S05 pack
+DONE: Sergejevi nalazi na #20. (1) članovi se seku na sledećem `čl.` unutar segmenta; II-14/II-35 sada P04+P05. (2) `RuleOsnov.raw?` u ugovoru. I-6 i dalje 4 propisa. I-23/I-71/I-103 ne gube pravi pravilnik.
+CONTRACT: `osnov.raw?` + `sources[]`.
+VALIDATION: II-35 P04[50] P05[53]; II-14 P04[49] P05[75] P02[66].
+NEEDS: B Approve #20.
+NEXT: merge pack pa S06; ingest #24 i dalje na review.

@@ -146,24 +146,57 @@ def match_source_key(segment: str, sources: list[dict]) -> str | None:
     return None
 
 
+def _add_source(order: list[str], buckets: dict[str, list[str]], key: str, arts: list[str]) -> None:
+    if key not in buckets:
+        buckets[key] = []
+        order.append(key)
+    for a in arts:
+        if a not in buckets[key]:
+            buckets[key].append(a)
+
+
 def structured_osnov(osnov_raw: str, sources: list[dict]) -> dict:
-    """1..n propisa: contracts.RuleOsnov.sources — ne jedan source_key."""
+    """RuleOsnov: raw + sources[]. Članovi ostaju u prozoru do sledećeg 'čl.',
+    ali 'čl. 13 i čl. 29 Pravilnika X' se spaja jer prvi prozor nema propis."""
     standards = sorted({" ".join(s.split()) for s in STD_CODE.findall(osnov_raw)})
-    linked: list[dict] = []
-    seen: set[str] = set()
+    order: list[str] = []
+    buckets: dict[str, list[str]] = {}
+
+    def consume_segment(seg: str) -> None:
+        heads = list(ART_HEAD.finditer(seg))
+        if not heads:
+            if not HAS_REGULATION.search(seg):
+                return
+            if GENERIC_OSNOV.search(seg) and "Pravilnik" not in seg and "Zakon" not in seg:
+                return
+            key = match_source_key(seg, sources)
+            if key:
+                _add_source(order, buckets, key, parse_articles(seg))
+            return
+        buf = ""
+        n = len(heads)
+        for i, head in enumerate(heads):
+            end = heads[i + 1].start() if i + 1 < n else len(seg)
+            buf += seg[head.start():end]
+            if i + 1 < n:
+                nxt_end = heads[i + 2].start() if i + 2 < n else len(seg)
+                nxt = seg[heads[i + 1].start():nxt_end]
+                if match_source_key(buf, sources) and match_source_key(nxt, sources):
+                    _add_source(order, buckets, match_source_key(buf, sources), parse_articles(buf))
+                    buf = ""
+        if buf:
+            key = match_source_key(buf, sources)
+            if key:
+                _add_source(order, buckets, key, parse_articles(buf))
+
     for seg in [s.strip() for s in osnov_raw.split(";") if s.strip()]:
-        if not HAS_REGULATION.search(seg):
-            continue
-        if GENERIC_OSNOV.search(seg) and "čl." not in seg and "Pravilnik" not in seg and "Zakon" not in seg:
-            continue
-        key = match_source_key(seg, sources)
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        arts = parse_articles(seg)
+        consume_segment(seg)
+
+    linked = []
+    for key in order:
         item: dict = {"source_key": key}
-        if arts:
-            item["articles"] = arts
+        if buckets[key]:
+            item["articles"] = buckets[key]
         linked.append(item)
     return {"raw": osnov_raw, "sources": linked, "standards": standards}
 
