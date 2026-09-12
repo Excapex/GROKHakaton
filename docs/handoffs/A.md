@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #2 S01 — generički contracts i validan fixture dosijea
-DONE: Tipovi u `contracts/` (`schema_version` 1.0.0): Project, DomainPack, Evidence, Observation, Dossier, ChangeSet, Revision + ReviewRun. Fixture `evals/fixtures/dossier.valid.json` (i project/revision/evidence/changeset). JSON Schema za dossier i changeset. `.gitkeep` za sandbox ingest/compute/artifacts.
-CONTRACT: `docs/CONTRACTS.md` v1.0.0. Stanja izmene `proposed|accepted|applied|verified` na `ChangeSet.lifecycle`. `next_action` discriminated union. Konflikt zahteva ≥2 observation_id. `value: null` zahteva `search_scope`.
-VALIDATION: `bash evals/validate-fixture.sh` OK (`python3 -m jsonschema`). Negativni slučajevi (unknown bez scope, conflict sa jednim izvorom) padaju schema. `npm run lint` + `npm run build` zeleni na Node 22 (upozorenje `engines: >=24`). Convex: nema `CONVEX_DEPLOYMENT` — treba `npx convex dev` posle prijave na dashboard.
-NEEDS: B review ovog PR-a. Merge S00 (#19) u `main`, zatim rebase/merge `origin/main` na `feat/A/2-contracts`. CI i dalje nije u #19 — #1 ostaje otvoren.
-NEXT: Posle merge S01, S05 pack je već na #19 (A ownership); inače S04 ingest kad postoji upload (#4) ili paralelni parser ako pack ostane van S00.
+ISSUE: #2 S01
+DONE: Contracts 1.0.0 + fixture. `Rule.osnov.sources` je 1..n (365/652 pravila citira više propisa). Validacija preko `evals/validate_fixture.py` (`Draft202012Validator`), ne uklonjenog `python -m jsonschema` CLI. `requirements.txt` za jsonschema. Grana `feat/A/2-contracts-v2` cherry-pick sa `origin/main` — bez merge-a stare grane koja vraća pack.
+CONTRACT: `osnov.sources[]` + `standards?`. Ostalo kao u `docs/CONTRACTS.md`.
+VALIDATION: `bash evals/validate-fixture.sh` OK.
+NEEDS: B review novog PR-a (stari #21 zatvoren — pogrešan merge-base).
+NEXT: Posle merge S01 — #20 pack uskladiti sa `sources[]`, ili S04 ingest.

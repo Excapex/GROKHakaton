@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-# Validate S01 fixtures against JSON Schema (python3.12 + jsonschema).
+# Validate S01 fixtures. jsonschema CLI (python -m jsonschema) je uklonjen;
+# koristi se Draft202012Validator. Python zavisnost: requirements.txt
 set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
-python3 -m jsonschema \
-  -i "$root/evals/fixtures/dossier.valid.json" \
-  "$root/contracts/jsonschema/dossier.schema.json"
-python3 -m jsonschema \
-  -i "$root/evals/fixtures/changeset.valid.json" \
-  "$root/contracts/jsonschema/changeset.schema.json"
-echo "evals/validate-fixture: OK dossier.valid.json changeset.valid.json"
+if [ -x "$root/.venv/bin/python" ]; then
+  py="$root/.venv/bin/python"
+else
+  py="${PYTHON:-python3}"
+fi
+if ! "$py" -c "import jsonschema" 2>/dev/null; then
+  echo "Nedostaje jsonschema za: $py" >&2
+  echo "  python3 -m venv .venv && .venv/bin/pip install -r requirements.txt" >&2
+  exit 1
+fi
+exec "$py" "$root/evals/validate_fixture.py"

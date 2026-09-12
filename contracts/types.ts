@@ -38,12 +38,22 @@ export type RuleChapter = 'I' | 'II' | 'III' | 'IV' | 'V' | 'VI' | 'VII' | 'VIII
 
 export type RuleStrength = 'JAK' | 'USLOVNO_JAK' | 'DOPUNITI'
 
+export type LegalSource = {
+  source_key: string
+  articles?: string[]
+}
+
+export type RuleOsnov = {
+  sources: LegalSource[]
+  standards?: string[]
+}
+
 export type Rule = {
   schema_version: SchemaVersion
   id: string
   chapter: RuleChapter
   primedba: string
-  osnov: { source_key: string; articles?: string[]; standards?: string[] }
+  osnov: RuleOsnov
   korekcija: string
   snaga: RuleStrength
   requires_slots: string[]
