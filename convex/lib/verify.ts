@@ -1,4 +1,4 @@
-# Independent second-pass payload. Must not include fact.value.
+// Independent second-pass payload. Must not include fact.value.
 export type VerifierPayload = {
   slot: string;
   documentId: string;
