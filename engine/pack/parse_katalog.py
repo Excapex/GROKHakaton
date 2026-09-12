@@ -116,7 +116,84 @@ def parse_articles(osnov: str) -> list[str]:
     return sorted(out, key=lambda x: (int(re.sub(r"\D", "", x) or 0), x))
 
 
-def parse_rules(text: str) -> list[dict]:
+def source_match_keys(sources: list[dict]) -> list[tuple[str, str]]:
+    """(source_key, match_key) — distinktivan deo naziva propisa.
+
+    Registar nosi nominativ ('Zakon o zastiti od pozara'), a osnov genitiv
+    ('Zakona o zastiti od pozara'). Poklapa se deo od prvog ' o ' nadalje, koji
+    je u oba slucaja isti. Naslovi bez ' o ' padaju na naziv bez prve reci.
+    """
+    out = []
+    for s in sources:
+        core = re.split(r"\s*[(„\"]", s["title"])[0].strip().rstrip(",")
+        m = re.search(r"\s(o|za)\s", core)
+        key = core[m.start():].strip() if m else " ".join(core.split()[1:])
+        key = " ".join(key.split()).lower()
+        if len(key) >= 12:
+            out.append((s["key"], key))
+    # duzi kljucevi prvi: 'o tehnickim normativima za zastitu od pozara stambenih...'
+    # ne sme da bude pojeden kracim poklapanjem
+    return sorted(out, key=lambda kv: -len(kv[1]))
+
+
+def build_osnov(raw: str, match_keys: list[tuple[str, str]]) -> dict:
+    """osnov -> {sources: [{source_key, articles?}], standards?}
+
+    Clanovi se vezuju za propis koji ih SLEDI u tekstu ('cl. 30 i 31 Zakona o ...'),
+    a ne za sve propise u osnovu — inace bi pravni osnov bio netacan.
+    """
+    low = " ".join(raw.split()).lower()
+    hits: list[tuple[int, str]] = []
+    for skey, mkey in match_keys:
+        start = 0
+        while True:
+            i = low.find(mkey, start)
+            if i < 0:
+                break
+            if not any(h_i <= i < h_i + len(mk)
+                       for h_i, mk in ((h[0], dict(match_keys).get(h[1], "")) for h in hits)):
+                hits.append((i, skey))
+            start = i + len(mkey)
+    hits.sort()
+
+    # Prozor svakog 'cl.' staje na SLEDECEM 'cl.' — inace clanovi iz narednog
+    # propisa procure u prethodni ('cl. 6 i 7 Pravilnika A; cl. 65 Pravilnika B').
+    head_pos = [m.start() for m in ART_HEAD.finditer(raw)]
+    art_heads = []
+    for i, hp in enumerate(head_pos):
+        end = head_pos[i + 1] if i + 1 < len(head_pos) else len(raw)
+        art_heads.append((hp, parse_articles(raw[hp:end])))
+
+    per: dict[str, list[str]] = {}
+    order: list[str] = []
+    for pos, skey in hits:
+        if skey not in per:
+            per[skey] = []
+            order.append(skey)
+    for head_pos, arts in art_heads:
+        target = next((skey for pos, skey in hits if pos > head_pos), None)
+        if target is None and order:
+            target = order[0]
+        if target:
+            for a in arts:
+                if a not in per[target]:
+                    per[target].append(a)
+
+    sources = []
+    for skey in order:
+        entry: dict = {"source_key": skey}
+        if per[skey]:
+            entry["articles"] = sorted(per[skey], key=lambda x: (int(re.sub(r"\D", "", x) or 0), x))
+        sources.append(entry)
+
+    osnov: dict = {"sources": sources}
+    stds = sorted({" ".join(c.split()) for c in STD_CODE.findall(raw)})
+    if stds:
+        osnov["standards"] = stds
+    return osnov
+
+
+def parse_rules(text: str, match_keys: list[tuple[str, str]]) -> list[dict]:
     """Svaka primedba: '<ID>  Primedba: …' + Osnov/Korekcija/Snaga."""
     # Telo kataloga počinje kod drugog pojavljivanja naslova poglavlja I.
     heads = [m.start() for m in re.finditer(r"^I\. ARHITEKTONSKO", text, re.M)]
@@ -149,18 +226,17 @@ def parse_rules(text: str) -> list[dict]:
             else:
                 break
         osnov_raw = " ".join(m.group("osnov").split())
+        osnov = build_osnov(osnov_raw, match_keys)
         snaga_raw = " ".join(m.group("snaga").split())
         rules.append({
             "id": rid,
             "chapter": rid.split("-")[0],
             "section": section,
             "primedba": " ".join(m.group("primedba").split()),
-            "osnov": {
-                "raw": osnov_raw,
-                "articles": parse_articles(osnov_raw),
-                "standards": sorted({" ".join(s.split())
-                                     for s in STD_CODE.findall(osnov_raw)}),
-            },
+            "osnov": osnov,
+            # Sirov tekst osnova za reviziju i sledivost. Trazi `osnov_raw?: string`
+            # na `Rule` u contracts/types.ts — vidi PR #20.
+            "osnov_raw": osnov_raw,
             "korekcija": " ".join(m.group("korekcija").split()),
             "snaga": normalise_snaga(snaga_raw),
             "snaga_raw": snaga_raw,
@@ -227,8 +303,8 @@ def main() -> int:
         return 2
 
     text = docx_text(src)
-    rules = parse_rules(text)
     sources = parse_sources(text)
+    rules = parse_rules(text, source_match_keys(sources))
     standards = parse_standards(text)
 
     problems: list[str] = []
@@ -242,7 +318,7 @@ def main() -> int:
             problems.append(f"poglavlje {ch}: {per.get(ch, 0)}, očekivano {n}")
     for r in rules:
         for f in ("primedba", "osnov", "korekcija", "snaga"):
-            v = r["osnov"]["raw"] if f == "osnov" else r[f]
+            v = r["osnov_raw"] if f == "osnov" else r[f]
             if not str(v).strip():
                 problems.append(f"{r['id']}: prazno polje {f}")
 
