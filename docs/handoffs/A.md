@@ -1,20 +1,16 @@
 # Handoff — Builder A
 
-ISSUE: #48 tracking; S18–S25 (#49–#56)
-BRANCH: `feat/A/49-ingest-action`
+ISSUE: #57 S26 mapped rule copy
+PR: https://github.com/Excapex/GROKHakaton/pull/70
 
-DONE (lokalno, mereno):
-- Upload PDF/DOCX/XLSX → Daytona ingest (`workflows/ingest.fromStorage`) → `pageTexts.replaceForDocument`
-- CAD ostaje `store_only` / design_task
-- `requestReviewRun.pipeline_ready` samo uz ingestovani tekst
-- ChangeSet `patches` iz `planFromUploadedDocs`; export JSON nosi patches
-- `markApplied` / `markVerified({ changeSetId, revisionId })` — server meri hash + novo čitanje; klijentski boolean se ne prima
-- Hash poređenje prihvata sirovi hex i `sha256:`
+DONE:
+- #66 i #68 su na `main` (`93c6f26`, `fb0fef0`): ingest → pageTexts, patches, `markApplied`/`markVerified` mereni na serveru, engine copy bez PASS/opažanje.
+- Na ovoj grani: 8 pravila iz `MAPPED_RULES` u `convex/lib/perception/mappedRuleCopy.ts` (generisano iz packa). Nepoznat id → `null`.
 
-CONTRACT: unknown ostaje unknown. Original se ne prepisuje. UI klikovi (`TasksPage` / `RevisionsPage`) su Agent 2 — ne dirati ovu granu.
+CONTRACT: pack (568 KB) ne ide u frontend; B importuje `mappedRuleCopy` / `mappedRuleCopies`. Original se ne prepisuje. UI klikovi ostaju Agent 2 (`TasksPage` / `RevisionsPage`).
 
-VALIDATION: Vitest `rereadMeasure` + `hashes`; `evals/test_office_ingest.py`; `evals/test_reread.py`
+VALIDATION: `python3 evals/test_mapped_rule_copy.py`; vitest `mappedRuleCopy.test.ts`
 
-NEEDS: B Approve #66 na novi HEAD. Agent 2: `markVerified` args su `revisionId`, ne boolean (već tako zovete). Ne zahtevati `status === pass` u UI — engine retko emituje PASS; zatvaranje je „nije više fail/conflict“.
+NEEDS: squash-merge #70. B da veže nalaze na `mappedRuleCopy(ruleId)` (#59/#60). Agent 2: ne zahtevati `status === pass` za verified.
 
-NEXT: squash posle B Approve `--match-head-commit`.
+NEXT: #70 na main, zatim B #67 i Agent 2 #69 posle `git merge origin/main`.

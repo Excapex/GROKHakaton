@@ -64,6 +64,9 @@ describe("perception R1–R6", () => {
     expect(ready.pipelineReady).toBe(true);
     if (ready.pipelineReady) {
       expect(ready.dossier.findings.find((f) => f.id === "find_r3")?.status).toBe("conflict");
+      expect(ready.dossier.findings.find((f) => f.rule_id === "I-35")?.rationale).toContain(
+        "Koristi se povučena ili nepostojeća oznaka otpornosti",
+      );
     }
   });
 
