@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0.0",
+  "id": "ev_gpzop_p14",
+  "document_id": "doc_gpzop",
+  "revision_id": "rev_1",
+  "page_no": 14,
+  "region": { "x": 0.12, "y": 0.41, "w": 0.62, "h": 0.08 },
+  "excerpt": "Vrata stepeništa A, oznaka D-12, otpornost F60.",
+  "artifact_id": "art_gpzop_p14",
+  "input_hash": "sha256:fixture-gpzop-p14"
+}
