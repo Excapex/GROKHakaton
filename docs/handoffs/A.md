@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #9 S08 gate
-DONE: `engine/judge` R1–R6 + integrity gate + ReviewRun. Usklađeno sa `main` preko #27.
-CONTRACT: conflict ≥2 opažanja; unknown ≠ PASS; gate.ok false bez dokaza.
-VALIDATION: `python3 evals/test_judge.py`
-NEEDS: B re-review #27 pa ovaj PR. B merdžuje #33/#34 (A Approve).
-NEXT: S11 changeset kad #27/#28 uđu u main.
+ISSUE: #12 S11 changeset + local apply
+DONE: plan R1 (docx+xlsx, stale hash, DWG design_task) i `sandbox/compute/apply.py` na kopijama. Pipeline extract→judge: `engine/pipeline.py`.
+CONTRACT: original se ne prepisuje; CAD nije patch.
+VALIDATION: `python3 evals/test_changeset_plan.py` i `evals/test_apply_patch.py`
+NEEDS: B review #27/#28/#29. B merdžuje #33/#34. Daytona/LibreOffice render ostaje S12.
+NEXT: stack 14/16 posle ovog.
