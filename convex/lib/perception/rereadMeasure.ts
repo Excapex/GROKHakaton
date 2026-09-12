@@ -6,7 +6,9 @@ export type FindingLite = {
 /**
  * Same rule as evals/test_reread.py: a prior fail/conflict is closed when the
  * new ingest no longer produces that status. unknown is not fail — it does not
- * keep the finding open. Client booleans are not an input.
+ * keep the finding open. Missing finding (rule no longer emitted) is closed.
+ * Engine almost never emits status "pass"; UI must not require PASS.
+ * Client booleans are not an input.
  */
 export function findingClosedOnReread(
   findingId: string,
