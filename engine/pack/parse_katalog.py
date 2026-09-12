@@ -28,6 +28,9 @@ EXPECTED_PER_CHAPTER = {"I": 124, "II": 75, "III": 64, "IV": 72,
 
 REPO = Path(__file__).resolve().parents[2]
 OUT = REPO / "domains" / "fire_protection" / "pack.v1.json"
+if str(REPO) not in sys.path:
+    sys.path.insert(0, str(REPO))
+from engine.extract.apply_pack_slots import apply, slots_by_rule
 
 
 def docx_text(path: Path) -> str:
@@ -309,6 +312,7 @@ def main() -> int:
     text = docx_text(src)
     sources = parse_sources(text)
     rules = parse_rules(text, sources)
+    apply({"rules": rules}, slots_by_rule())
     standards = parse_standards(text)
 
     problems: list[str] = []

@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "doc_anon_predmer",
+  "source_filename": "anon-predmer.txt",
+  "input_hash": "sha256:anon-extract-predmer",
+  "page_count": 1,
+  "pages": [
+    {
+      "page_no": 1,
+      "width_pt": 595.0,
+      "height_pt": 842.0,
+      "rotation": 0,
+      "has_text": true,
+      "is_scanned": false,
+      "text_layer_count": 1,
+      "char_count": 70,
+      "readability": "full",
+      "regions": [{ "x": 0.1, "y": 0.2, "w": 0.5, "h": 0.03 }],
+      "text_artifact": "pages/0001.txt",
+      "render_artifact": "pages/0001.png"
+    }
+  ]
+}
