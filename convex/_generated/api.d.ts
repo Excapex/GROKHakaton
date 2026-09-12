@@ -8,8 +8,15 @@
  * @module
  */
 
+import type * as documents from "../documents.js";
 import type * as domainPackRegistry from "../domainPackRegistry.js";
 import type * as domainPacks from "../domainPacks.js";
+import type * as filePolicy from "../filePolicy.js";
+import type * as lib_providers_xai from "../lib/providers/xai.js";
+import type * as lib_verify from "../lib/verify.js";
+import type * as projects from "../projects.js";
+import type * as revisions from "../revisions.js";
+import type * as workflows_extract from "../workflows/extract.js";
 
 import type {
   ApiFromModules,
@@ -18,8 +25,15 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  documents: typeof documents;
   domainPackRegistry: typeof domainPackRegistry;
   domainPacks: typeof domainPacks;
+  filePolicy: typeof filePolicy;
+  "lib/providers/xai": typeof lib_providers_xai;
+  "lib/verify": typeof lib_verify;
+  projects: typeof projects;
+  revisions: typeof revisions;
+  "workflows/extract": typeof workflows_extract;
 }>;
 
 /**
