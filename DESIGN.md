@@ -1,5 +1,5 @@
 ---
-name: "Saglasnik"
+name: "ProjectLens"
 description: "An architectural working folio for technical project review."
 colors:
   surface: "#f7f9f7"
@@ -132,7 +132,7 @@ components:
     padding: "23px 25px"
 ---
 
-# Design System: Saglasnik
+# Design System: ProjectLens
 
 ## Overview
 

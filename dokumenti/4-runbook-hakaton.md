@@ -1,4 +1,4 @@
-# Saglasnik Runbook
+# ProjectLens Runbook
 
 **Pre-flight review glavnog projekta zaštite od požara. Proizvod je dosije, ne dashboard.**
 
@@ -43,19 +43,19 @@ MODEL VADI → KOD SUDI → DOKAZ JE KLIKABILAN. Ova verzija je prepisana posle 
 
 ## 0 — Product gate — Osam pitanja na koja se odgovara pre nego što se pomene ijedna platforma
 
-**1. Šta je profesionalni artefakt koji Saglasnik proizvodi?**
+**1. Šta je profesionalni artefakt koji ProjectLens proizvodi?**
 
   **DOSIJE PRE-PREGLEDA** — verzionisan, trajan objekat koji predstavlja stanje jednog projekta pre predaje. Dva nivoa: *rukovodilački* (spremnost, blokirajući nalazi, pokrivenost, nerazrešeno, verzija rule pack-a, stanje stručnog pregleda, sledeće radnje) i *inženjerski* (svaki nalaz sa računom, propisom, dokazom A/B, dokumentom, stranom, citatom, pouzdanošću, rezultatom verifikatora). Nije chat odgovor, nije PDF, nije izveštaj koji se generiše pa zaboravi.
 
 **2. Ko ga koristi odmah posle generisanja?**
 
-  Projektant zaštite od požara ili inženjer u kancelariji, *petnaest minuta pre nego što pošalje projekat na saglasnost.* On je i jedini koji sme da odluči šta je stvarno primedba — Saglasnik mu daje spisak mesta koja treba da pogleda, sa stranom i citatom.
+  Projektant zaštite od požara ili inženjer u kancelariji, *petnaest minuta pre nego što pošalje projekat na saglasnost.* On je i jedini koji sme da odluči šta je stvarno primedba — ProjectLens mu daje spisak mesta koja treba da pogleda, sa stranom i citatom.
 
 **3. Koju radnju mu omogućava?**
 
   Da **otvori tačnu stranu tačnog dokumenta** i ili ispravi, ili odbaci nalaz kao neosnovan. Svaki nalaz nosi determinističku `next_action` iz zatvorene liste (`RECONCILE_DOCUMENTS`, `UPDATE_DRAWING`, `ADD_MISSING_SECTION`, `VERIFY_SOURCE`…), pa on zna i *kome* ovo prosleđuje.
 
-**4. Šta Saglasnik vidi, a generički PDF/RAG chatbot ne vidi?**
+**4. Šta ProjectLens vidi, a generički PDF/RAG chatbot ne vidi?**
 
   **Kontradikciju između dva dokumenta.** Tehnički opis kaže stepen otpornosti II, grafički prilog kaže III. Pojedinačno su oba dokumenta validna; nijedan prag nije prekršen; RAG nad njima vraća tačan odgovor na oba pitanja posebno. Konflikt postoji samo kao *relacija*, i može ga videti samo sistem koji dve nezavisno utemeljene činjenice poredi kodom.
 
@@ -230,13 +230,13 @@ Argument „više je posla" nije dovoljan, pa evo pet koji jesu. Sva četiri prv
 
 **5. Server-side zadržavanje tuđe projektne dokumentacije je proizvodna mana, ne samo compliance stavka**
 
-  Docs: *„Claude Managed Agents is stateful by design: sessions are long-running and store conversation history, sandbox state, and outputs server-side"*, uz eksplicitno **nije eligible za ZDR ni HIPAA BAA**. Saglasnik po definiciji obrađuje poverljivu dokumentaciju tuđih investitora. Arhitektura u kojoj se ta dokumentacija zadržava van naše kontrole je nešto što ćemo morati da razgradimo pre prvog stvarnog korisnika. Efemerni Daytona sandbox koji se posle runa briše je *ispravan* odgovor za ovaj domen — i to je rečenica koju vredi izgovoriti sudiji.
+  Docs: *„Claude Managed Agents is stateful by design: sessions are long-running and store conversation history, sandbox state, and outputs server-side"*, uz eksplicitno **nije eligible za ZDR ni HIPAA BAA**. ProjectLens po definiciji obrađuje poverljivu dokumentaciju tuđih investitora. Arhitektura u kojoj se ta dokumentacija zadržava van naše kontrole je nešto što ćemo morati da razgradimo pre prvog stvarnog korisnika. Efemerni Daytona sandbox koji se posle runa briše je *ispravan* odgovor za ovaj domen — i to je rečenica koju vredi izgovoriti sudiji.
 
 > ✅ **Šta od B ipak preuzimamo — strukturnu specijalizaciju bez agent runtime-a**
 >
 > Odbacujemo mehanizam, ne ideju. C ima **isti roster uloga** kao B (kartograf, tekstualni ekstraktor, inspektor crteža, verifikator dokaza, engine), samo je svaka uloga nezavisan poziv sa kontekstom koji sastavljam ja, umesto agent thread-a. Dobijamo specijalizaciju, paralelizam i izolaciju; ne dobijamo beta zavisnost, Console korak i always-on worker.
 >
-> **Managed Agents ostaju zabeleženi kao P2 upgrade put** u `docs/ARCHITECTURE.md`, sa cenom migracije u jednoj rečenici: zameniti pet poziva u `convex/lib/perception.ts` rosterom, zadržati identične `contracts/`, `engine/` i artefakte. To je tačno ono što znači „Managed Agents smeju da padnu, Saglasnik ne sme da padne sa njima" — u našoj verziji oni nikad nisu ni nosili proizvod.
+> **Managed Agents ostaju zabeleženi kao P2 upgrade put** u `docs/ARCHITECTURE.md`, sa cenom migracije u jednoj rečenici: zameniti pet poziva u `convex/lib/perception.ts` rosterom, zadržati identične `contracts/`, `engine/` i artefakte. To je tačno ono što znači „Managed Agents smeju da padnu, ProjectLens ne sme da padne sa njima" — u našoj verziji oni nikad nisu ni nosili proizvod.
 
 ## 4 — Runtime architecture P0 — Od upload-a do dosijea, sa artefaktom na svakom koraku
 
@@ -615,11 +615,11 @@ Ovo je mesto gde svesno odstupamo od CrossBeama — i gde se vidi zašto nam Man
 | IN_REVIEW | projektant otvorio dosije | prolazi nalaz po nalaz | po nalazu: *prihvaćen* ili *odbačen kao neosnovan* + razlog |
 | REVIEWED | prošao sve non-PASS nalaze | potpisuje pregled | readiness se preračunava **samo nad prihvaćenim nalazima**; odbačeni ostaju vidljivi sa razlogom |
 
-**Odbačeni nalaz je najvredniji podatak koji sistem može da dobije.** Svaki „ovo nije primedba, i evo zašto" je *labeled negative* koji ide pravo u `evals/gold.yaml` i u prior sledeće verzije pack-a. To je mehanizam kojim se Saglasnik popravlja korišćenjem, i jedina rečenica o budućnosti koju smemo da izgovorimo kao postojeću.
+**Odbačeni nalaz je najvredniji podatak koji sistem može da dobije.** Svaki „ovo nije primedba, i evo zašto" je *labeled negative* koji ide pravo u `evals/gold.yaml` i u prior sledeće verzije pack-a. To je mehanizam kojim se ProjectLens popravlja korišćenjem, i jedina rečenica o budućnosti koju smemo da izgovorimo kao postojeću.
 
 > ▸ **Granica, izgovorena u demou a ne u fine printu**
 >
-> Saglasnik **nije saglasnost** i ne zamenjuje licenciranog projektanta ni pregled nadležnog organa — odlučuje licencirano lice po čl. 32. Zato `readiness` nikad ne kaže „usklađeno" nego `SPREMNO_ZA_STRUCNI_PREGLED`, i uz njega uvek stoji pokrivenost. Isto tako, nema auto-approval-a: čovek prihvata ili odbacuje, sistem samo preračunava.
+> ProjectLens **nije saglasnost** i ne zamenjuje licenciranog projektanta ni pregled nadležnog organa — odlučuje licencirano lice po čl. 32. Zato `readiness` nikad ne kaže „usklađeno" nego `SPREMNO_ZA_STRUCNI_PREGLED`, i uz njega uvek stoji pokrivenost. Isto tako, nema auto-approval-a: čovek prihvata ili odbacuje, sistem samo preračunava.
 
 ## 12 — Failure architecture — Četiri fallbacka, poređana po tome šta gube — i šta čuvaju
 
@@ -659,7 +659,7 @@ Svaki fallback koristi **identične** `contracts/`, `engine/`, `domains/` i arte
 ## 13 — Repo, contracts, podela rada — Disjunktno vlasništvo, zamrznuti ugovori, osam artefakata
 
 ```
-saglasnik/ javan od 11:02 · MIT
+projectlens/ javan od 11:02 · MIT
 ├── README.md  LICENSE  .gitignore  .env.example  netlify.toml
 ├── docs/{ARCHITECTURE.md, DOMAIN_PACK.md, STATUS.md}
 ├── scripts/{secrets-scan.sh, pack_from_csv.py, make_fixtures.py}
@@ -780,7 +780,7 @@ BROKEN:    PS-01 str.2 nije klasifikovan — pada u unindexed_pages
 
 **`11:01` — A · repo postoji i javan je**
 
-  `gh repo create saglasnik --public --clone`. Prvi commit: `.gitignore`, `LICENSE` (MIT), `.env.example`. Push. **Timestamp prvog commita je dokaz — zato minut 1.**
+  `gh repo create projectlens --public --clone`. Prvi commit: `.gitignore`, `LICENSE` (MIT), `.env.example`. Push. **Timestamp prvog commita je dokaz — zato minut 1.**
 
 **`11:03` — A · secrets hook**
 
@@ -925,7 +925,7 @@ Redosled iz winner research-a, doslovno: **1** kompletnost petlje · **2** deter
 | **[MUST]** | Upload → Convex storage | **[B]** | 12:00 | prva trećina petlje |
 | **[MUST]** | Ingest u Daytoni (tekst + rasterizacija) | **[A]** | 12:30 | izolacija tuđeg dokumenta + Daytona nagrada |
 | **[MUST]** | Kartograf → `document_map.json` sa `page_index` | **[A]** | 13:00 | jedini accuracy pivot iz winner analize; i anti-halucinacija filter |
-| **[MUST]** | Ciljana ekstrakcija u zatvorenu shemu | **[A]** | 13:00 | **ovo JE inovacija** — bez zatvorene sheme Saglasnik je chatbot |
+| **[MUST]** | Ciljana ekstrakcija u zatvorenu shemu | **[A]** | 13:00 | **ovo JE inovacija** — bez zatvorene sheme ProjectLens je chatbot |
 | **[MUST]** | Engine + Dossier Gate u Daytoni | **[A]** | 13:30 | „kod sudi" mora imati vidljivo mesto izvršavanja |
 | **[MUST]** | ≥1 CONFLICT iz dve nezavisno utemeljene činjenice | **[A]** | 14:00 | hero. Klasa koju nijedan drugi alat ne vidi |
 | **[MUST]** | Dosije: readiness + coverage + findings + next_action | **[B]** | 14:00 | profesionalni artefakt, ne dashboard |
@@ -1004,7 +1004,7 @@ Redosled iz winner research-a, doslovno: **1** kompletnost petlje · **2** deter
 
 > ⚠ **Ako je Windows — odluka se donosi večeras, ne sutra u 11:15**
 >
-> Sve unutar **WSL2 Ubuntu**, repo u WSL filesystemu (`~/saglasnik`), *nikad* na `/mnt/d` — I/O preko `/mnt/` je višestruko sporiji i `node_modules` tamo ume da zakuca watcher. Postavljanje: `wsl --install -d Ubuntu` u PowerShellu kao admin, restart. Materijal jednom: `cp -r /mnt/d/"Faks sav materijal"/Hakaton ~/hakaton-materijal`. **Ako WSL večeras pravi problem, macOS/Linux kolega preuzima ulogu Buildera A i menjate uloge.**
+> Sve unutar **WSL2 Ubuntu**, repo u WSL filesystemu (`~/projectlens`), *nikad* na `/mnt/d` — I/O preko `/mnt/` je višestruko sporiji i `node_modules` tamo ume da zakuca watcher. Postavljanje: `wsl --install -d Ubuntu` u PowerShellu kao admin, restart. Materijal jednom: `cp -r /mnt/d/"Faks sav materijal"/Hakaton ~/hakaton-materijal`. **Ako WSL večeras pravi problem, macOS/Linux kolega preuzima ulogu Buildera A i menjate uloge.**
 
 #### Laptop B — Convex, frontend, deploy, video
 
@@ -1054,7 +1054,7 @@ Redosled iz winner research-a, doslovno: **1** kompletnost petlje · **2** deter
 **19:00–20:00 · NALOZI**
 
 - [ ] `A` Anthropic Console · x.ai (hakaton kredit ~$35) · **Daytona — zabeleži koji si tier**, od toga zavisi mreža u sandboxu
-- [ ] `B` Convex (prazan projekat `saglasnik`) · Netlify (tim, oba buildera) · Cursor/Grok krediti
+- [ ] `B` Convex (prazan projekat `projectlens`) · Netlify (tim, oba buildera) · Cursor/Grok krediti
 - [ ] `A` GitHub org odabran — **repo se NE kreira večeras** · Firecrawl 20.000 kredita
 
 **20:00–21:00 · INSTALACIJE**
@@ -1063,7 +1063,7 @@ Redosled iz winner research-a, doslovno: **1** kompletnost petlje · **2** deter
 - [ ] `OBA` `node -v` na oba, izgovoriti naglas — isti major (22), inače `package-lock.json` pravi konflikt u 14:00
 - [ ] `B` **Snimi 20 s ekrana sa zvukom i pusti ih.** Mikrofon i rezolucija se rešavaju večeras
 
-**21:00–22:15 · SPIKE-OVI · repo `saglasnik-spikes`, PRIVATAN, nikad se ne merguje**
+**21:00–22:15 · SPIKE-OVI · repo `projectlens-spikes`, PRIVATAN, nikad se ne merguje**
 
 - [ ] `A` **P1** xAI `response_format.json_schema` sa skraćenom shemom → vrati li validan JSON
 - [ ] `A` **P1b** Anthropic `output_config.format` + provera da `content[0]` NIJE text
@@ -1095,9 +1095,9 @@ Redosled iz winner research-a, doslovno: **1** kompletnost petlje · **2** deter
 #### 11:00 · repo, labele, issue-i
 
 ```
-gh repo create saglasnik --public --clone \
+gh repo create projectlens --public --clone \
   --description "Pre-flight review dosije za glavni projekat zastite od pozara"
-cd saglasnik
+cd projectlens
 
 for L in "area:pipeline:0E8A16" "area:ui:1D76DB" "area:contract:D93F0B" \
          "gate:FBCA04" "needs-owner:5319E7" "cut:BFBFBF"; do
@@ -1262,4 +1262,4 @@ ffprobe -v error -show_entries format=duration -of csv=p=0 demo.mp4   # < 180
 ### Izvori i granice
 
 
-Saglasnik Runbook v2 · 11.09.2026 · zamenjuje v1 u celosti. Sintetizovano iz: spec v2, `istrazivanje-hakaton.md`, `2-sta-stvarno-pobedjuje.html`, prototipa `rules.py`/`schema_test.py`, i **analize stvarnog repoa [cc-crossbeam](https://github.com/mikeOnBreeze/cc-crossbeam)** (362 fajla: `progress.md`, 9 skillova, `server/src`, `frontend/`, `docs/learnings-agents-sdk.md`). Platformske činjenice provereno 11.09.2026 nad zvaničnim docs-ima: [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) · [multiagent orchestration](https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration) · [permission policies](https://platform.claude.com/docs/en/managed-agents/permission-policies) · [outcomes](https://platform.claude.com/docs/en/managed-agents/define-outcomes) · [self-hosted sandboxes](https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes) · [Opus 5](https://platform.claude.com/docs/en/models/opus-5/migration-guide) · [PDF support](https://platform.claude.com/docs/en/build-with-claude/pdf-support) · [Convex Workflow](https://www.convex.dev/components/workflow) · [Convex + Netlify](https://docs.convex.dev/production/hosting/netlify) · [Daytona network limits](https://www.daytona.io/docs/en/network-limits) · [xAI structured outputs](https://docs.x.ai/docs/guides/structured-outputs). Pragovi u `domains/fire_protection/rules.yaml` nisu autoritativni dok ih licencirani inženjer zaštite od požara ne potpiše po pravilu. Procena krugova i troška je model, ne merenje. **Saglasnik nije saglasnost** i ne zamenjuje licenciranog projektanta ni pregled nadležnog organa — odlučuje licencirano lice po čl. 32 Zakona o zaštiti od požara.
+ProjectLens Runbook v2 · 11.09.2026 · zamenjuje v1 u celosti. Sintetizovano iz: spec v2, `istrazivanje-hakaton.md`, `2-sta-stvarno-pobedjuje.html`, prototipa `rules.py`/`schema_test.py`, i **analize stvarnog repoa [cc-crossbeam](https://github.com/mikeOnBreeze/cc-crossbeam)** (362 fajla: `progress.md`, 9 skillova, `server/src`, `frontend/`, `docs/learnings-agents-sdk.md`). Platformske činjenice provereno 11.09.2026 nad zvaničnim docs-ima: [structured outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs) · [multiagent orchestration](https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration) · [permission policies](https://platform.claude.com/docs/en/managed-agents/permission-policies) · [outcomes](https://platform.claude.com/docs/en/managed-agents/define-outcomes) · [self-hosted sandboxes](https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes) · [Opus 5](https://platform.claude.com/docs/en/models/opus-5/migration-guide) · [PDF support](https://platform.claude.com/docs/en/build-with-claude/pdf-support) · [Convex Workflow](https://www.convex.dev/components/workflow) · [Convex + Netlify](https://docs.convex.dev/production/hosting/netlify) · [Daytona network limits](https://www.daytona.io/docs/en/network-limits) · [xAI structured outputs](https://docs.x.ai/docs/guides/structured-outputs). Pragovi u `domains/fire_protection/rules.yaml` nisu autoritativni dok ih licencirani inženjer zaštite od požara ne potpiše po pravilu. Procena krugova i troška je model, ne merenje. **ProjectLens nije saglasnost** i ne zamenjuje licenciranog projektanta ni pregled nadležnog organa — odlučuje licencirano lice po čl. 32 Zakona o zaštiti od požara.

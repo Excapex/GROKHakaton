@@ -1,9 +1,9 @@
 ---
-description: Saglasnik — obavezni kontekst i pravila za sve izmene
+description: ProjectLens — obavezni kontekst i pravila za sve izmene
 alwaysApply: true
 ---
 
-# Saglasnik
+# ProjectLens
 
 Pročitaj i poštuj, u ovom redu: `CLAUDE.md`, `docs/RUNBOOK.md`,
 `docs/GIT-PROTOCOL.md`, `docs/LOCAL-DATA.md`, `docs/CONTRACTS.md`.

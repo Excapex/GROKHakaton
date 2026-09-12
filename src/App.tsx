@@ -79,7 +79,7 @@ function ShellFrame({
 }) {
   return (
     <AppShell
-      appName="Saglasnik"
+      appName="ProjectLens"
       tagline="Kopilot za tehničke projekte"
       navItems={NAV_ITEMS}
       activeNavId={activeNavId}

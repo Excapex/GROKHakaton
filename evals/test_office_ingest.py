@@ -37,7 +37,7 @@ def main() -> int:
     pdf_pages = pdf.get("pages") or []
     if len(pdf_pages) != 2 or pdf_pages[0].get("page_no") != 1 or pdf_pages[1].get("page_no") != 2:
         fail("PDF fixture mora imati page_no 1 i 2")
-    cad = Path("/tmp/saglasnik-empty.dwg")
+    cad = Path("/tmp/projectlens-empty.dwg")
     cad.write_bytes(b"")
     cad_out = extract(cad)
     if cad_out.get("pages"):

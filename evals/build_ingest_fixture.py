@@ -19,7 +19,7 @@ PDF = FIX / "anon-two-page.pdf"
 def write_fixture_pdf(path: Path) -> None:
     doc = fitz.open()
     p1 = doc.new_page(width=595, height=842)
-    p1.insert_text((72, 72), "Saglasnik anon fixture page 1", fontsize=16)
+    p1.insert_text((72, 72), "ProjectLens anon fixture page 1", fontsize=16)
     p1.insert_text((72, 110), "EI 60 SRPS EN 13501-2", fontsize=12)
     p2 = doc.new_page(width=595, height=842)
     # No text layer: unreadable / scanned placeholder. Must be partial, not empty.

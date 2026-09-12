@@ -4,7 +4,7 @@
 Katalog je generalizovan i oslobođen podataka o konkretnim predmetima, pa
 IZLAZNI JSON sme u Git. .docx original NE SME — živi u lokalnom korpusu.
 
-    export SAGLASNIK_KATALOG="/put/do/Katalog_primedbi_ZOP_2026 ... .docx"
+    export PROJECTLENS_KATALOG="/put/do/Katalog_primedbi_ZOP_2026 ... .docx"
     python3.12 engine/pack/parse_katalog.py
 
 Izlaz je determinističan: isti ulaz -> isti JSON (stabilan redosled, sortirani
@@ -299,9 +299,9 @@ def parse_standards(text: str) -> list[dict]:
 
 
 def main() -> int:
-    raw = os.environ.get("SAGLASNIK_KATALOG") or (sys.argv[1] if len(sys.argv) > 1 else "")
+    raw = os.environ.get("PROJECTLENS_KATALOG") or (sys.argv[1] if len(sys.argv) > 1 else "")
     if not raw:
-        print("Postavi SAGLASNIK_KATALOG na .docx katalog (lokalni korpus, ne Git).",
+        print("Postavi PROJECTLENS_KATALOG na .docx katalog (lokalni korpus, ne Git).",
               file=sys.stderr)
         return 2
     src = Path(raw).expanduser()

@@ -1,4 +1,4 @@
-# Saglasnik · GROKHakaton
+# ProjectLens · GROKHakaton
 
 **Kopilot za tehničke projekte svih disciplina.** Jedan radni prostor za projekte, dokumente, zadatke, stručne preglede i revizije.
 
@@ -45,7 +45,7 @@ apply umesto da prepiše noviju verziju.
 
 - Ostali stručni moduli (konstrukcija, elektro, mašinstvo…) su u katalogu označeni
   kao **Planirano** i ne prikazuju nikakav rezultat.
-- Saglasnik **ne izdaje saglasnost**. Prihvatanje izmene je odluka projektanta i
+- ProjectLens **ne izdaje saglasnost**. Prihvatanje izmene je odluka projektanta i
   vodi se odvojeno od `applied` i `verified`.
 - DWG/DWFX se nikad ne patch-uje — takva izmena ostaje `design_task` za projektanta.
 - Odsustvo podatka se tvrdi samo uz dokumentovan `search_scope`; bez njega nalaz
@@ -53,7 +53,7 @@ apply umesto da prepiše noviju verziju.
 
 ## Šta pravimo
 
-Projektant dodaje dokumentaciju. Saglasnik povezuje dokaze, pronalazi primedbe, postavlja presudno pitanje, priprema povezane izmene i proverava novu reviziju nakon prihvatanja.
+Projektant dodaje dokumentaciju. ProjectLens povezuje dokaze, pronalazi primedbe, postavlja presudno pitanje, priprema povezane izmene i proverava novu reviziju nakon prihvatanja.
 
 ```text
 Projekat i dokumenti
@@ -87,17 +87,17 @@ bi tako završili u browser bundle-u.
 
 | Dokument | Namena |
 |---|---|
-| **[Saglasnik v3 — specifikacija i runbook](dokumenti/7-saglasnik-spec-v3.html)** | Aktuelni plan: proizvod, arhitektura, kompletan tok, setup, 18 zadataka, Git protokol i Claude promptovi |
-| [Setup paket ZIP](dokumenti/saglasnik-v3-setup.zip) | 14 fajlova spremnih za kopiranje |
-| [Setup direktorijum](dokumenti/saglasnik-v3-setup/) | Pojedinačni promptovi, skripte, šabloni i backlog |
+| **[ProjectLens v3 — specifikacija i runbook](dokumenti/7-projectlens-spec-v3.html)** | Aktuelni plan: proizvod, arhitektura, kompletan tok, setup, 18 zadataka, Git protokol i Claude promptovi |
+| [Setup paket ZIP](dokumenti/projectlens-v3-setup.zip) | 14 fajlova spremnih za kopiranje |
+| [Setup direktorijum](dokumenti/projectlens-v3-setup/) | Pojedinačni promptovi, skripte, šabloni i backlog |
 | [Nezavisna revizija konteksta](dokumenti/5-nezavisna-revizija-konteksta.md) | Provera istraživanja, izvora, prototipa i ranijih pretpostavki |
 | [Preporuka za hakaton](dokumenti/6-preporuka-za-hakaton.md) | Obrazloženje kompletnog toka ispravke i verifikacije |
 | [Ažurirani prethodni runbook](dokumenti/4-runbook-hakaton.md) | Referenca za dosije, domenske pakete, ciljanu ekstrakciju i integrity gate |
-| [Specifikacija v2](dokumenti/3-saglasnik-spec-v2.html) | Prethodni smer i originalni vizuelni format |
+| [Specifikacija v2](dokumenti/3-projectlens-spec-v2.html) | Prethodni smer i originalni vizuelni format |
 
 **V3 i noviji dogovor tima imaju prednost** u pitanjima scope-a, prioriteta i redosleda rada. Stariji dokumenti su sačuvani radi konteksta; njihove pretpostavke nisu automatski aktuelne. Revizija pominje originalni istraživački folder i lokalne audit ekstrakcije koje nisu deo ovog paketa.
 
-GitHub prikazuje HTML kao izvorni kod. Za pun prikaz klonirajte repo i otvorite `dokumenti/7-saglasnik-spec-v3.html` u browseru. Dokument ima sadržaj sa 30 odeljaka i dugmad za kopiranje promptova. Sačuvajte strukturu foldera da bi lokalne veze i preuzimanja radili.
+GitHub prikazuje HTML kao izvorni kod. Za pun prikaz klonirajte repo i otvorite `dokumenti/7-projectlens-spec-v3.html` u browseru. Dokument ima sadržaj sa 30 odeljaka i dugmad za kopiranje promptova. Sačuvajte strukturu foldera da bi lokalne veze i preuzimanja radili.
 
 ## Početak rada u ovom repou
 
@@ -113,9 +113,9 @@ git status --short
 Ako je repo već kloniran, otvorite taj direktorijum umesto ponovnog kloniranja. GitHub nalog svakog člana mora imati pristup repou.
 
 1. Pročitajte v3: odeljci **19** (novi scope), **20–26** (stack setup), **27–28** (posao i Git), **29** (Claude promptovi).
-2. Dogovorite ko je **A**, a ko **B**. U `dokumenti/saglasnik-v3-setup/team.example.json` vidite potrebna polja. Pri pripremi radnog `scripts/setup/team.json`, postavite `repo` na **`Excapex/GROKHakaton`** i unesite stvarne GitHub naloge za obe uloge. Ne ostavljajte `YOUR_OWNER/saglasnik` iz generičkog primera.
+2. Dogovorite ko je **A**, a ko **B**. U `dokumenti/projectlens-v3-setup/team.example.json` vidite potrebna polja. Pri pripremi radnog `scripts/setup/team.json`, postavite `repo` na **`Excapex/GROKHakaton`** i unesite stvarne GitHub naloge za obe uloge. Ne ostavljajte `YOUR_OWNER/projectlens` iz generičkog primera.
 3. **Preskočite pravljenje novog repoa, `git init` i `gh repo create` iz generičkog odeljka 21.** B priprema Vite scaffold u zasebnom privremenom folderu i prenosi aplikacione fajlove u ovaj repo kroz feature granu. Sačuvati postojeći README, dokumentaciju i Git istoriju; `.gitignore` dopuniti, ne zameniti. Nemojte potvrditi opciju koja briše sadržaj postojećeg foldera.
-4. Zatim pratite kopiranje setup fajlova iz odeljka 21. U ovom klonu je putanja `$setupSource = (Resolve-Path '.\dokumenti\saglasnik-v3-setup').Path`. Zajednički `CLAUDE.md` ide u root, a izabrani lokalni dodatak u `CLAUDE.local.md`. Lokalna uloga i ključevi su ignorisani u Git-u.
+4. Zatim pratite kopiranje setup fajlova iz odeljka 21. U ovom klonu je putanja `$setupSource = (Resolve-Path '.\dokumenti\projectlens-v3-setup').Path`. Zajednički `CLAUDE.md` ide u root, a izabrani lokalni dodatak u `CLAUDE.local.md`. Lokalna uloga i ključevi su ignorisani u Git-u.
 5. Kreirajte `docs/PRODUCT.md` i `docs/CONTRACTS.md` iz prihvaćene specifikacije, kako nalaže setup. Tek nakon prenosa aplikacionog scaffolda postoje `package.json`, `npm install` / `npm ci` i lokalni app build.
 6. Svaki član koristi **svoj Convex dev deployment**. B vodi produkcioni deploy iz pregledanog `main`-a.
 
@@ -159,7 +159,7 @@ CI šablon je pripremljen u setup paketu. Aktivira se u `.github/workflows/ci.ym
 | **A** | Ugovori, ingest, domensko znanje, ekstrakcija, pravila, integrity gate, predlog promena i ponovna provera | 22 SP |
 | **B** | Zajednički UI, stanje predmeta, dokumentni artefakti, izvoz, CI, deploy i prezentacija | 21 SP |
 
-**18 početnih zadataka, ukupno 43 SP.** Story poeni su relativna procena složenosti i rizika, ne sati i ne ocena doprinosa. Svaki issue ima jednog vlasnika, zavisnosti, kriterijum prihvatanja i dokaz završetka. Drugi član radi review. [Backlog sa kriterijumima](dokumenti/saglasnik-v3-setup/backlog.json).
+**18 početnih zadataka, ukupno 43 SP.** Story poeni su relativna procena složenosti i rizika, ne sati i ne ocena doprinosa. Svaki issue ima jednog vlasnika, zavisnosti, kriterijum prihvatanja i dokaz završetka. Drugi član radi review. [Backlog sa kriterijumima](dokumenti/projectlens-v3-setup/backlog.json).
 
 Kada su `scripts/setup/` i stvarni `team.json` pripremljeni, B može prvo pregledati pa napraviti issues:
 
@@ -176,9 +176,9 @@ Za implementaciju: kratka grana po issue-u → ciljani commit → push → PR �
 
 | Fajl | Kako se koristi |
 |---|---|
-| [CLAUDE.md](dokumenti/saglasnik-v3-setup/CLAUDE.md) | Zajednički protokol za oba člana; kopirati u root pri bootstrapu |
-| [CLAUDE-A.local.md](dokumenti/saglasnik-v3-setup/CLAUDE-A.local.md) | Član A kopira kao `CLAUDE.local.md` |
-| [CLAUDE-B.local.md](dokumenti/saglasnik-v3-setup/CLAUDE-B.local.md) | Član B kopira kao `CLAUDE.local.md` |
+| [CLAUDE.md](dokumenti/projectlens-v3-setup/CLAUDE.md) | Zajednički protokol za oba člana; kopirati u root pri bootstrapu |
+| [CLAUDE-A.local.md](dokumenti/projectlens-v3-setup/CLAUDE-A.local.md) | Član A kopira kao `CLAUDE.local.md` |
+| [CLAUDE-B.local.md](dokumenti/projectlens-v3-setup/CLAUDE-B.local.md) | Član B kopira kao `CLAUDE.local.md` |
 
 Obojica dele isti `CLAUDE.md`; svaki računar ima svoju lokalnu ulogu. Zajednički prompt definiše pull/push, issues, review, ownership, handoff i standarde kvaliteta. Konkretni GitHub identiteti dolaze iz popunjenog `scripts/setup/team.json`.
 
