@@ -8,6 +8,7 @@ import {
   LIFECYCLE_LABELS,
   pageForFinding,
 } from "../dossier/dossierView.ts";
+import { eventLabel, findingTitle } from "../dossier/engineLabels.ts";
 import { formatBytes, KIND_LABELS, revisionLabel } from "./projectMap.ts";
 
 type WorkspaceRevision = {
@@ -151,7 +152,7 @@ export function RevisionsPage({
           <ol>
             {events.map((event) => (
               <li key={event._id}>
-                <span className="kind-chip">{event.type}</span>
+                <span className="kind-chip">{eventLabel(event.type)}</span>
                 <span>{event.message}</span>
               </li>
             ))}
@@ -184,6 +185,7 @@ function RevisionDiff({
     | undefined;
   const dossier = review?.pipelineReady ? review.dossier : null;
   const evidence = review?.evidence ?? [];
+  const findingIds = dossier?.findings.map((row) => row.id) ?? [];
 
   if (diff === undefined) {
     return (
@@ -240,12 +242,12 @@ function RevisionDiff({
         </ul>
       )}
 
-      <h4>Po kom ChangeSet-u</h4>
+      <h4>Po kom predlogu ispravke</h4>
       {diff.changeSets.length === 0 ? (
         <p className="availability-note">
           <Icon name="info-circle" size={16} />
-          Nema prihvaćenog paketa izmena za ovu reviziju. Zamenjen fajl bez
-          ChangeSet-a ostaje ručna izmena projektanta.
+          Nema prihvaćene ispravke za ovu reviziju. Zamenjen fajl bez predloga
+          ispravke ostaje ručna izmena projektanta.
         </p>
       ) : (
         <ul className="diff-list">
@@ -264,7 +266,9 @@ function RevisionDiff({
                 </span>
                 <span>
                   {entry.filename}
-                  {entry.findingId ? ` · nalaz ${entry.findingId}` : ""}
+                  {entry.findingId
+                    ? ` · ${findingTitle(entry.findingId, findingIds)}`
+                    : ""}
                   {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
                 </span>
                 {entry.designTask && (

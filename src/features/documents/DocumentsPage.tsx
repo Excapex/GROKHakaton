@@ -6,6 +6,7 @@ import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
 import { isCadKind, policyForFilename } from "../../lib/fileKind.ts";
 import { sha256Hex } from "../../lib/sha256.ts";
+import { parsePolicyLabel } from "../dossier/engineLabels.ts";
 import { formatBytes, KIND_LABELS } from "./projectMap.ts";
 
 type WorkspaceDocument = {
@@ -198,8 +199,10 @@ export function DocumentsPage({
                   <td>{doc.filename}</td>
                   <td>
                     <span className="kind-chip">{KIND_LABELS[doc.kind] ?? doc.kind}</span>
-                    {doc.parsePolicy === "store_only" && (
-                      <span className="kind-chip cad">store only</span>
+                    {parsePolicyLabel(doc.parsePolicy) && (
+                      <span className="kind-chip cad">
+                        {parsePolicyLabel(doc.parsePolicy)}
+                      </span>
                     )}
                   </td>
                   <td>{formatBytes(doc.byteSize)}</td>

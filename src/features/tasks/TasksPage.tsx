@@ -5,7 +5,12 @@ import type { Id } from "../../../convex/_generated/dataModel";
 import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
 import { downloadChangeSet } from "./changeSetExport.ts";
-import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
+import {
+  FINDING_STATUS_LABELS,
+  LIFECYCLE_LABELS,
+  LIFECYCLE_ORDER,
+} from "../dossier/dossierView.ts";
+import { findingTitle } from "../dossier/engineLabels.ts";
 
 const ACTOR = "M. Jovanović";
 
@@ -48,6 +53,7 @@ export function TasksPage({
   const selectedDocumentId = documentId || documents[0]?._id || "";
   const findings =
     review && review.pipelineReady === true ? review.dossier.findings : [];
+  const findingIds = findings.map((row) => row.id);
   const selectedFindingId = findingId || findings[0]?.id || "";
 
   async function submitQuestion() {
@@ -112,7 +118,7 @@ export function TasksPage({
       setNotice({
         tone: "error",
         text:
-          error instanceof Error ? error.message : "ChangeSet nije predložen.",
+          error instanceof Error ? error.message : "Ispravka nije predložena.",
       });
     } finally {
       setBusy(false);
@@ -203,7 +209,9 @@ export function TasksPage({
               ) : (
                 findings.map((finding) => (
                   <option key={finding.id} value={finding.id}>
-                    {finding.id} · {finding.rule_id} · {finding.status}
+                    {findingTitle(finding.id, findingIds)} ·{" "}
+                    {FINDING_STATUS_LABELS[finding.status]} · pravilo{" "}
+                    {finding.rule_id}
                   </option>
                 ))
               )}
@@ -251,7 +259,7 @@ export function TasksPage({
         </form>
 
         <div className="task-card">
-          <h3>Tok pitanja</h3>
+          <h3>Pitanja projektantu</h3>
           {threads.length === 0 ? (
             <StatePanel
               tone="neutral"
@@ -264,7 +272,9 @@ export function TasksPage({
               {threads.map(({ question, answers, document }) => (
                 <li key={question._id}>
                   <p>
-                    <span className="kind-chip">{question.findingId}</span>
+                    <span className="kind-chip">
+                      {findingTitle(question.findingId, findingIds)}
+                    </span>
                     {document?.filename}
                   </p>
                   <strong>{question.prompt}</strong>
@@ -305,7 +315,7 @@ export function TasksPage({
                       disabled={busy || answers.length === 0}
                       onClick={() => void proposeSet(question._id)}
                     >
-                      Predloži ChangeSet
+                      Predloži ispravku
                     </button>
                   </div>
                 </li>
@@ -315,7 +325,7 @@ export function TasksPage({
         </div>
 
         <div className="task-card">
-          <h3>ChangeSet</h3>
+          <h3>Predlog ispravke</h3>
           <p className="dossier-hint">
             Prihvaćeno nije primenjeno i nije provereno. Ponovljeni klik ne
             dodaje drugo odobrenje.
