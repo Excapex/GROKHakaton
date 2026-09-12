@@ -1,9 +1,21 @@
 # Handoff — Builder B
 
-CURRENT PR: [#34](https://github.com/Excapex/GROKHakaton/pull/34) `feat/B/10-dosije` → `main` (#10 S09)
-DEPS: `origin/main` je `aca56f9` (#30 reread). `#33` je u `main`.
-BLOCKER: CHANGES_REQUESTED na `7e7a0af` — nije bilo GitHub `web` checka, i PR je bio iza `main`. Uvezen #30; push da se pokrene CI.
-NEXT: verify + push + re-review na novi SHA. Merge tek posle approve-a na HEAD.
+CURRENT PR: `feat/B/11-pitanja-odluke` → `main` (#11 S10)
+DEPS: `origin/main` je `f1f541f` (#34 dossier). Engine dosije još nije upisan; pitanje zahteva ručni ID nalaza + sačuvani original.
+BLOCKER: nema — čeka review A na HEAD + zeleni `web`, pa squash-merge.
+NEXT: posle merge-a #13 S12 (stvarni DOCX/XLSX patch + izvoz).
+
+ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
+DONE:
+- `LOCK convex/schema.ts`: tabele `questions`, `answers`, `changeSets`.
+- Pitanje zahteva `findingId` i `documentId` originala. Odgovor čuva autora i vreme.
+- Prihvatanje je `proposed` → `accepted`, nikad `verified`. Ponovljen klik vraća `duplicated: true`.
+- CAD predlog ide u `designTask`, bez lažnog patch-a. Saglasnik ne izdaje saglasnost.
+- UI `#zadaci` (pitaj / odgovori / predloži / prihvati).
+CONTRACT: nema izmene `contracts/`. Čuva `ChangeSet.approval` i `base_hashes`; patch fajla je #13.
+VALIDATION: `applyAcceptance` testovi + `npm run verify`. Browser: pitanje → odgovor → prihvati, drugi klik bez duplikata.
+NEEDS: A-ov review na aktuelnom SHA. Engine (#9) da upiše dosije pa će ID nalaza moći da se bira sa Pregleda.
+NEXT: squash-merge posle approve-a na HEAD, zatim #13.
 
 ISSUE: #10 S09 — dosije i dokazi
 DONE:
