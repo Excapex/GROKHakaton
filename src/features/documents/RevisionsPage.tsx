@@ -193,7 +193,7 @@ function RevisionDiff({
   const diff = useQuery(api.revisions.diff, { projectId, revisionId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const threads = useQuery(api.questions.listForProject, { projectId });
-  const workspace = useQuery(api.projects.getWorkspace);
+  const workspace = useQuery(api.projects.getWorkspace, { projectId });
   // The payload widens once the engine writes a dossier; page stays null until then.
   const review = useQuery(api.dossiers.getActive, { projectId }) as
     | {

@@ -274,7 +274,7 @@ function ActionsColumn({
 }) {
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const threads = useQuery(api.questions.listForProject, { projectId });
-  const workspace = useQuery(api.projects.getWorkspace);
+  const workspace = useQuery(api.projects.getWorkspace, { projectId });
   const relatedIds = new Set(
     (threads ?? [])
       .filter(({ question }) => question.findingId === finding?.id)
