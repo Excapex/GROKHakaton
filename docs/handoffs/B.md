@@ -1,6 +1,26 @@
 # Handoff — Builder B
 
-ISSUE: #3 S02 — zajednički shell i katalog modula
+ISSUE: #4 S03 — upload, dokumenti, revizije
+DONE:
+- `LOCK convex/schema.ts`: tabele `projects`, `documents`, `revisions`, `artifacts`, `events`.
+- Original ide u Convex storage i nikad se ne prepisuje. SHA-256 se računa u pregledaču i
+  prikazuje uz fajl. Nova revizija se **dodaje**; stari original ostaje na starom indeksu.
+- PDF/DOCX/XLSX: `parsePolicy: ingest`. DWG/DWFX: `store_only` + događaj `design_task`, bez parsiranja.
+- UI `#dokumenti` i `#revizije` čitaju `projects.getWorkspace`. Demo fixture ostaje samo ako nema
+  `VITE_CONVEX_URL`. Predmet: Objekat A, Lamela 3 / `PZI-DEMO-01-2026`.
+CONTRACT: nema izmene `contracts/`. Mapira `Project` iz 1.0.0. `convex/lib/` nije diran (A).
+VALIDATION:
+- `npm run verify` zeleno (oxlint, tsc, vite build, 16 vitest testova).
+- `npx convex dev --once` na `gallant-dolphin-326` kreirao indekse i funkcije.
+- `projects:ensureDemo` + `getWorkspace` vraćaju živi predmet. Browser: `#dokumenti` dropzona i
+  `#revizije` lanac + „Nova revizija“, deep-link ostaje posle navigacije.
+NEEDS: A-ov review. Ručni dokaz upload → refresh → revizija 2 (oba originala otvorljiva) na
+pregledaču, jer file input nije automatizovan u ovom prolazu.
+NEXT: #10 S09 dosije + dokazi, zatim #11, #13, #15, #17, #18. Review tuđih PR-ova na kraju.
+
+## S02 · shell i katalog (#3)
+
+ISSUE: #3 S02 — zajednički shell i katalog stručnih modula
 DONE:
 - Shell `Pregled / Dokumenti / Zadaci / Revizije / Moduli` (`src/features/shell/`), generisan kroz
   Wonder pa prepakovan; generisane komponente u `src/components/generated/` primaju samo typed
@@ -29,8 +49,7 @@ VALIDATION:
   kao disciplinu predmeta i `fire_protection v1` kao postupak pregleda — dva različita polja.
 NEEDS: A-ov review na aktuelnom SHA. Kad #20 (ZOP pack) prođe, `pack_version` u katalogu vezati za
 stvarnu verziju packa umesto konstante `v1`.
-NEXT: #4 (S03) — `LOCK convex/schema.ts`, tabele `projects documents revisions artifacts events`,
-upload i revizije. Tada demo fixture predmeta iz `src/features/shell/demoProject.ts` ide napolje.
+NEXT: zatvoreno u #4 na ovoj grani.
 
 ## Frontend redesign · 2026-09-12
 
