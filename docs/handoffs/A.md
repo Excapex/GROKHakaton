@@ -8,12 +8,13 @@ DONE (lokalno, mereno):
 - CAD ostaje `store_only` / design_task
 - `requestReviewRun.pipeline_ready` samo uz ingestovani tekst
 - ChangeSet `patches` iz `planFromUploadedDocs`; export JSON nosi patches
-- `markApplied` / `markVerified` (isti hash ≠ applied; verified samo posle novog čitanja)
+- `markApplied` / `markVerified({ changeSetId, revisionId })` — server meri hash + novo čitanje; klijentski boolean se ne prima
+- Hash poređenje prihvata sirovi hex i `sha256:`
 
 CONTRACT: unknown ostaje unknown. Original se ne prepisuje. UI klikovi (`TasksPage` / `RevisionsPage`) su Agent 2 — ne dirati ovu granu.
 
-VALIDATION: Vitest 55; `evals/test_office_ingest.py`; `evals/test_reread.py`; `tsc -b`
+VALIDATION: Vitest `rereadMeasure` + `hashes`; `evals/test_office_ingest.py`; `evals/test_reread.py`
 
-NEEDS: B/Agent 2 wire `markApplied`/`markVerified` u `src/` (ne `changeSetExport.ts`). Convex env: `DAYTONA_API_KEY` na deploymentu.
+NEEDS: B Approve #66 na novi HEAD. Agent 2: `markVerified` args su `revisionId`, ne boolean (već tako zovete). Ne zahtevati `status === pass` u UI — engine retko emituje PASS; zatvaranje je „nije više fail/conflict“.
 
-NEXT: squash PR → main; Agent 2 `git merge origin/main` u wt2.
+NEXT: squash posle B Approve `--match-head-commit`.
