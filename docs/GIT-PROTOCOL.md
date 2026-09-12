@@ -21,6 +21,8 @@ i otvara se nova za sledeći issue.
 | `src/`, `public/` | **B** | ceo UI |
 | `src/components/generated/` | **B** | karantin za v0/Wonder izlaz |
 | `convex/schema.ts` | **B** | 🔥 hot |
+| `convex/convex.config.ts` | **A** | registracija komponenti (workflow) |
+| `convex/_generated/` | — | generisano; ne uređivati ručno, `npx convex codegen` |
 | `convex/*.ts` (CRUD: queries/mutations) | **B** | |
 | `sandbox/artifacts/` | **B** | izvoz i paketi |
 | `package.json`, `package-lock.json` | **B** | 🔥 hot — A otvara zahtev, ne menja sam |
@@ -102,6 +104,9 @@ Kada: na početku zadatka, pre PR-a, posle partnerovog merge-a, i pri promeni ug
 2. Uključi vlasnika fajla.
 3. Sačuvaj **oba** potrebna ponašanja.
 4. `package-lock.json`: usaglasi `package.json` → `npm install` → `npm ci` → `npm run build`.
+5. `convex/_generated/`: **ne rešavaj ručno.** Uzmi bilo koju stranu, pa
+   regeneriši: `npx convex codegen`. Fajlovi su commit-ovani da CI može
+   `tsc -b` bez Convex kredencijala.
 5. Nikad ne skrivaj neslaganje kroz `any` / `as unknown`.
 
 ## 9. Zabranjeno
