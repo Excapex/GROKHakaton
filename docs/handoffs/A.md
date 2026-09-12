@@ -1,9 +1,9 @@
 # Handoff — Builder A
 
-ISSUE: #38 S12a apply
-PR: https://github.com/Excapex/GROKHakaton/pull/39
-DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
-CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
-VALIDATION: test_apply_patch; changeset vitest; perception vitest
-DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
-NEXT: push restack #39; B review HEAD.
+ISSUE: #57 S26 mapped rule copy
+PR: (ovaj branch `feat/A/57-mapped-rules`)
+DONE: 8 pravila iz `MAPPED_RULES` u `convex/lib/perception/mappedRuleCopy.ts` (generisano iz packa). Nepoznat id → `null`.
+CONTRACT: pack (568 KB) ne ide u frontend; B importuje `mappedRuleCopy` / `mappedRuleCopies`.
+VALIDATION: `python3 evals/test_mapped_rule_copy.py`; vitest `mappedRuleCopy.test.ts`
+NEEDS: B Approve pa A squash-merge. B da veže UI nalaze na `mappedRuleCopy(ruleId)` (#59/#60).
+NEXT: #66 i #68 čekaju B review; ne mešati sa ingest granom.
