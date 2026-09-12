@@ -1,0 +1,23 @@
+services:
+  - type: web
+    runtime: static
+    name: saglasnik
+    plan: free
+    # Convex deploy prints the production URL into VITE_CONVEX_URL for the build.
+    buildCommand: npm ci && npx convex deploy --cmd-url-env-var-name VITE_CONVEX_URL --cmd "npm run build"
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      # Server key. Set the value in Render Environment, never in the repo and
+      # never with a VITE_ prefix — that would ship it to the browser bundle.
+      - key: CONVEX_DEPLOY_KEY
+        sync: false
+    routes:
+      # Deep links like /#revizije reload through index.html instead of 404.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

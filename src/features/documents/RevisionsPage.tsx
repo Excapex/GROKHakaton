@@ -1,8 +1,13 @@
 import { useState } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import type { Dossier, Evidence } from "../../../contracts/types.ts";
 import { Icon } from "../../components/generated/Icon.tsx";
+import {
+  LIFECYCLE_LABELS,
+  pageForFinding,
+} from "../dossier/dossierView.ts";
 import { formatBytes, KIND_LABELS, revisionLabel } from "./projectMap.ts";
 
 type WorkspaceRevision = {
@@ -136,6 +141,10 @@ export function RevisionsPage({
         </ol>
       )}
 
+      {activeRevisionId && (
+        <RevisionDiff projectId={projectId} revisionId={activeRevisionId} />
+      )}
+
       {events.length > 0 && (
         <div className="event-log">
           <h3>Događaji</h3>
@@ -150,5 +159,122 @@ export function RevisionsPage({
         </div>
       )}
     </section>
+  );
+}
+
+const DIFF_LABELS: Record<string, string> = {
+  added: "Novo",
+  replaced: "Zamenjeno",
+  unchanged: "Nepromenjeno",
+  carried_over: "Preneto iz prethodne",
+};
+
+function RevisionDiff({
+  projectId,
+  revisionId,
+}: {
+  projectId: Id<"projects">;
+  revisionId: Id<"revisions">;
+}) {
+  const diff = useQuery(api.revisions.diff, { projectId, revisionId });
+  // The payload widens once the engine writes a dossier; page stays null until then.
+  const review = useQuery(api.dossiers.getActive, { projectId }) as
+    | { pipelineReady: boolean; dossier: Dossier | null; evidence?: Evidence[] }
+    | null
+    | undefined;
+  const dossier = review?.pipelineReady ? review.dossier : null;
+  const evidence = review?.evidence ?? [];
+
+  if (diff === undefined) {
+    return (
+      <div className="revision-diff">
+        <h3>Razlika prema prethodnoj reviziji</h3>
+        <p className="availability-note">
+          <Icon name="info-circle" size={16} />
+          Poređenje se učitava.
+        </p>
+      </div>
+    );
+  }
+  if (diff === null) return null;
+
+  const changed = diff.entries.filter((row) => row.state !== "unchanged");
+
+  return (
+    <div className="revision-diff">
+      <h3>
+        Razlika prema prethodnoj reviziji
+        {diff.previousIndex !== null && (
+          <span className="status-badge">
+            Revizija {diff.previousIndex} → {diff.revisionIndex}
+          </span>
+        )}
+      </h3>
+
+      {diff.partialReason && (
+        <p className="availability-note">
+          <Icon name="info-circle" size={16} />
+          {diff.partialReason}
+        </p>
+      )}
+
+      {changed.length === 0 ? (
+        <p className="availability-note">
+          <Icon name="info-circle" size={16} />
+          Nijedan original nije zamenjen. Poređenje ide po nazivu i sha256, pa
+          ista datoteka nije izmena.
+        </p>
+      ) : (
+        <ul className="diff-list">
+          {changed.map((row) => (
+            <li key={`${row.documentId}-${row.state}`}>
+              <span className="kind-chip">{DIFF_LABELS[row.state]}</span>
+              <span>{row.filename}</span>
+              <code className="hash-value">
+                {row.previousSha256
+                  ? `${row.previousSha256.slice(0, 12)}… → ${row.sha256.slice(0, 12)}…`
+                  : `${row.sha256.slice(0, 12)}…`}
+              </code>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <h4>Po kom ChangeSet-u</h4>
+      {diff.changeSets.length === 0 ? (
+        <p className="availability-note">
+          <Icon name="info-circle" size={16} />
+          Nema prihvaćenog paketa izmena za ovu reviziju. Zamenjen fajl bez
+          ChangeSet-a ostaje ručna izmena projektanta.
+        </p>
+      ) : (
+        <ul className="diff-list">
+          {diff.changeSets.map((entry) => {
+            const finding = dossier?.findings.find(
+              (row) => row.id === entry.findingId,
+            );
+            const page =
+              dossier && finding
+                ? pageForFinding(dossier, finding, evidence)
+                : null;
+            return (
+              <li key={entry.changeSetId}>
+                <span className="kind-chip">
+                  {LIFECYCLE_LABELS[entry.lifecycle] ?? entry.lifecycle}
+                </span>
+                <span>
+                  {entry.filename}
+                  {entry.findingId ? ` · nalaz ${entry.findingId}` : ""}
+                  {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
+                </span>
+                {entry.designTask && (
+                  <span className="inline-status">{entry.designTask}</span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
   );
 }

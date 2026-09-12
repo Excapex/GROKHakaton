@@ -1824,6 +1824,35 @@ summary::-webkit-details-marker {
   display: grid;
   gap: 4px;
 }
+.revision-diff {
+  margin-top: 28px;
+  padding: 18px;
+  border: 1px solid #d5ddd6;
+  border-radius: 16px;
+  background: white;
+}
+.revision-diff h3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.revision-diff h4 {
+  margin: 18px 0 8px;
+}
+.diff-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+.diff-list li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: baseline;
+  font-size: 14px;
+}
 .event-log {
   margin-top: 28px;
 }
