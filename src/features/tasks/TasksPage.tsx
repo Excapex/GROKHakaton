@@ -30,6 +30,7 @@ export function TasksPage({
 }) {
   const threads = useQuery(api.questions.listForProject, { projectId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
+  const review = useQuery(api.dossiers.getActive, { projectId });
   const ask = useMutation(api.questions.ask);
   const answer = useMutation(api.questions.answer);
   const propose = useMutation(api.changeSets.proposeFromQuestion);
@@ -44,8 +45,18 @@ export function TasksPage({
   );
   const [busy, setBusy] = useState(false);
   const selectedDocumentId = documentId || documents[0]?._id || "";
+  const findings =
+    review && review.pipelineReady === true ? review.dossier.findings : [];
+  const selectedFindingId = findingId || findings[0]?.id || "";
 
   async function submitQuestion() {
+    if (!selectedFindingId) {
+      setNotice({
+        tone: "error",
+        text: "Izaberi nalaz sa Pregleda — ID se ne upisuje ručno.",
+      });
+      return;
+    }
     if (!selectedDocumentId) {
       setNotice({
         tone: "error",
@@ -58,7 +69,7 @@ export function TasksPage({
     try {
       await ask({
         projectId,
-        findingId,
+        findingId: selectedFindingId,
         documentId: selectedDocumentId as Id<"documents">,
         prompt,
         createdBy: ACTOR,
@@ -128,7 +139,7 @@ export function TasksPage({
     }
   }
 
-  if (threads === undefined || changeSets === undefined) {
+  if (threads === undefined || changeSets === undefined || review === undefined) {
     return (
       <div className="state-wrap state-page">
         <StatePanel
@@ -179,13 +190,23 @@ export function TasksPage({
         >
           <h3>Novo pitanje</h3>
           <label>
-            ID nalaza
-            <input
-              value={findingId}
+            Nalaz sa Pregleda
+            <select
+              value={selectedFindingId}
               onChange={(event) => setFindingId(event.target.value)}
-              placeholder="npr. id nalaza iz dosijea"
               required
-            />
+              disabled={findings.length === 0}
+            >
+              {findings.length === 0 ? (
+                <option value="">Nema nalaza — otvori Pregled</option>
+              ) : (
+                findings.map((finding) => (
+                  <option key={finding.id} value={finding.id}>
+                    {finding.id} · {finding.rule_id} · {finding.status}
+                  </option>
+                ))
+              )}
+            </select>
           </label>
           <label>
             Dokaz (original)
@@ -215,6 +236,12 @@ export function TasksPage({
             Pošalji pitanje
             <Icon name="arrow-up-right" size={18} />
           </button>
+          {findings.length === 0 && (
+            <p className="dossier-hint">
+              Nalaz se bira sa Pregleda. Sistem ne izmišlja ID.{" "}
+              <a href="#pregled">Otvori Pregled</a>
+            </p>
+          )}
           {documents.length === 0 && (
             <p className="dossier-hint">
               Prvo sačuvaj original na Dokumentima — pitanje mora da ima dokaz.

@@ -74,7 +74,7 @@ export function DossierPage({
         </p>
       </div>
 
-      {(!payload || payload.pipelineReady === false) && (
+      {!payload || payload.pipelineReady === false ? (
         <StatePanel
           tone="warning"
           label="Delimično"
@@ -84,7 +84,14 @@ export function DossierPage({
             "Nema nalaza jer obrada dokumenata nije povezana. Prazan dosije nije prolaz."
           }
         />
-      )}
+      ) : payload.source === "anon_fixture" ? (
+        <StatePanel
+          tone="warning"
+          label="Anon fixture"
+          title="Nalazi nisu iz vaših dokumenata"
+          message={payload.sourceNote ?? ""}
+        />
+      ) : null}
 
       <div className="dossier-grid">
         <FindingsColumn
