@@ -6,6 +6,7 @@ import {
   LIFECYCLE_LABELS,
   isConflictFinding,
   observationsForFinding,
+  pageForFinding,
 } from "./dossierView.ts";
 
 const finding: Finding = {
@@ -64,6 +65,21 @@ describe("dossierView", () => {
     expect(isConflictFinding(finding)).toBe(true);
     const rows = observationsForFinding(dossier, finding);
     expect(rows.map((row) => row.id)).toEqual(["o1", "o2"]);
+  });
+
+  it("strana dolazi iz dokaza, a bez dokaza ostaje null", () => {
+    const evidence = [
+      {
+        schema_version: SCHEMA_VERSION,
+        id: "e1",
+        document_id: "d1",
+        revision_id: "r1",
+        page_no: 7,
+        input_hash: "sha256:x",
+      },
+    ];
+    expect(pageForFinding(dossier, finding, evidence)).toBe(7);
+    expect(pageForFinding(dossier, finding, [])).toBeNull();
   });
 
   it("ima četiri odvojena stanja izmene", () => {

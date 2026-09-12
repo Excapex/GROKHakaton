@@ -1,9 +1,16 @@
 # Handoff — Builder B
 
-CURRENT: `feat/B/wire-dossier-perception` (lokalno, čeka #36 u `main`)
-DEPS: #37 S10 je u `main` (`90dbcdb`). #36 perception Approve na `dd5e3fe` — squash radi A.
-BLOCKER: `dossiers.getActive` ne može da uveze `assembleFromRoles` dok #36 nije u `main`.
-NEXT: merge `origin/main` posle #36 → Pregled R3 dva izvora; Zadaci biraju `findingId` sa Pregleda. Zatim #15.
+CURRENT PR: [#41](https://github.com/Excapex/GROKHakaton/pull/41) `feat/B/s14-diff-revizija` → `main` (#15 S14)
+DEPS: `origin/main` je `bb65239` (#39 apply + #40 dosije). [#43](https://github.com/Excapex/GROKHakaton/pull/43) je S12b Preuzmi.
+BLOCKER: nema. #41 je bio `CONFLICTING`; `origin/main` je umergovan bez rebase-a.
+NEXT: #41 i #43 u `main` → #17 Render deploy + Convex prod → #18 README (A-ova izmerena R1–R6 tabela) i video.
+
+ISSUE: #15 S14 — razlike revizija i javni tok
+DONE:
+- `revisions.diff`: poređenje po nazivu + sha256 (`added` / `replaced` / `unchanged` / `carried_over`), bez izmišljene izmene.
+- Vezani ChangeSet-ovi sa `lifecycle`, `findingId` i stranom iz dokaza; bez dokaza piše da strana nije zabeležena.
+- Prazna revizija i prva revizija daju `partialReason`, ne pad.
+- `render.yaml`: rewrite `/*` → `/index.html`, `CONVEX_DEPLOY_KEY` bez `VITE_` prefiksa, PR preview isključen.
 
 ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
 DONE: squash-merge [#37](https://github.com/Excapex/GROKHakaton/pull/37) na `b57cd248` (A Approve + zeleni `web`). `UNLOCK convex/schema.ts`.
