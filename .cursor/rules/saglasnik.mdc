@@ -1,0 +1,30 @@
+---
+description: Saglasnik — obavezni kontekst i pravila za sve izmene
+alwaysApply: true
+---
+
+# Saglasnik
+
+Pročitaj i poštuj, u ovom redu: `CLAUDE.md`, `docs/RUNBOOK.md`,
+`docs/GIT-PROTOCOL.md`, `docs/LOCAL-DATA.md`, `docs/CONTRACTS.md`.
+Puna pravila su tamo — ovaj fajl je samo prečica.
+
+## Tvrda pravila
+
+- Jedan issue = jedna grana = jedan agent. Ne diraj fajl koji nije tvoj po
+  ownership mapi iz `docs/GIT-PROTOCOL.md`.
+- Nikad `push --force`, `reset --hard`, `git clean`.
+- Pre commita pokreni `bash scripts/setup/check-no-private-data.sh`.
+- **Nikad ne dodaj u Git:** `*.dwg`, `*.dwfx`, bilo šta iz `../za sergeja`,
+  `../neki bitni standardi`, `../izgradnja zakoni i pravlinici`, ni naziv
+  stvarnog predmeta (Prezident, Čerevićka, Kordun, Gložan).
+- Tajne nikad u `src/`. Nikad `VITE_` prefiks na serverskom ključu.
+- Nepoznat podatak → `unknown`. Ne pretvaraj ga u `PASS` ni `FAIL`.
+- Planirani moduli (sve osim ZOP) ne smeju prikazati nikakav rezultat.
+- Generisani UI iz v0/Wonder ide u `src/components/generated/`, bez direktnog
+  `convex` importa i bez hardkodovanih podataka.
+
+## Ownership
+
+- **A:** `contracts/ engine/ domains/ evals/ sandbox/ingest/ sandbox/compute/ convex/workflows/ convex/lib/`
+- **B:** `src/ public/ sandbox/artifacts/ convex/schema.ts` + convex CRUD, `.github/`, `package.json`, `package-lock.json`

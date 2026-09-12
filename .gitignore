@@ -34,3 +34,19 @@ docs/pr-body.local.md
 
 # macOS
 .DS_Store
+
+# --- Lokalni stručni korpus: NIKAD u Git ---
+# Očevi projekti, sirove primedbe i licencirani SRPS/EN standardi.
+# Žive IZVAN repoa (../za sergeja, ../neki bitni standardi,
+# ../izgradnja zakoni i pravlinici). Oba člana ih imaju lokalno.
+local-corpus/
+private-data/
+**/za sergeja/
+**/neki bitni standardi/
+**/izgradnja zakoni i pravlinici/
+*.dwg
+*.dwfx
+*.DWG
+# Standardi i propisi su licencirani — ne redistribuiraju se kroz repo.
+standardi/
+propisi/
