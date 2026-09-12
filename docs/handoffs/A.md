@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #5 S04 ingest
-DONE: `DocumentManifest` + jsonschema. `sandbox/ingest/manifest.py` (fizicki page_no, full|partial, render PNG). Anon 2-page fixture u `evals/fixtures/ingest/`. Daytona runner `scripts/ingest-daytona.mjs` (PDF ostaje lokalno).
-CONTRACT: page_no samo iz PDF indeksa; nečitljivo = partial.
-VALIDATION: `evals/build_ingest_fixture.py` + `bash evals/validate-fixture.sh` OK (2 strane: full + partial/scanned). Daytona smoke nije pokrenut ovde — `.env.local` nema DAYTONA_*.
-NEEDS: B review. Stvarni Prezident set + Daytona ključ kod A za dokaz 3 sveske (nije u Gitu).
-NEXT: Kad #20 pack uđe i ingest mergovan — S06.
+ISSUE: #6 S05 pack (merge sa #24 ingest)
+DONE: Pack `3945b58` usklađen sa ingest `main`. II-14/II-35 članovi po propisu. `RuleOsnov.raw?`. Ingest već u `main`.
+CONTRACT: `osnov.raw?` + `sources[]`; `DocumentManifest` iz #24.
+VALIDATION: II-35 P04[50] P05[53]; ingest fixture 2 strane.
+NEEDS: squash merge #20. Review #25 (B shell).
+NEXT: S06 ekstrakcija.

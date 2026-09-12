@@ -44,6 +44,7 @@ export type LegalSource = {
 }
 
 export type RuleOsnov = {
+  raw?: string
   sources: LegalSource[]
   standards?: string[]
 }
