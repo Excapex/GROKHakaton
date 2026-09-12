@@ -86,6 +86,27 @@ def main() -> int:
             fail("stale hash must reject")
         except StaleSourceError:
             pass
+        export_shaped = {
+            "schema_version": "1.0.0",
+            "id": "cs_ui",
+            "lifecycle": "accepted",
+            "approval": {"state": "accepted", "not_consent": True},
+            "base_hashes": {
+                "doc_opis": h_doc[7:] if h_doc.startswith("sha256:") else h_doc,
+                "doc_predmer": h_xls[7:] if h_xls.startswith("sha256:") else h_xls,
+            },
+            "patches": cs["patches"],
+            "design_tasks": cs["design_tasks"],
+            "apply": {"originals_untouched": True},
+        }
+        export_out = tmp / "from-ui"
+        exported = apply_changeset(
+            export_shaped,
+            {"doc_opis": docx, "doc_predmer": xlsx},
+            export_out,
+        )
+        if not exported["ok"]:
+            fail("UI export JSON sa sirovim hex hash-em mora da apply-uje")
         import json
 
         prov = json.loads((out / "provenance.json").read_text(encoding="utf-8"))
