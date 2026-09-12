@@ -1,9 +1,16 @@
 # Handoff — Builder B
 
-CURRENT PR: [#37](https://github.com/Excapex/GROKHakaton/pull/37) `feat/B/11-pitanja-odluke` → `main` (#11 S10)
-DEPS: `origin/main` je `f1f541f` (#34 dossier). Engine dosije još nije upisan; pitanje zahteva ručni ID nalaza + sačuvani original.
-BLOCKER: čeka review A na HEAD + zeleni `web`, pa squash-merge.
-NEXT: posle merge-a #13 S12 (stvarni DOCX/XLSX patch + izvoz).
+CURRENT PR: [#41](https://github.com/Excapex/GROKHakaton/pull/41) `feat/B/s14-diff-revizija` → `main` (#15 S14)
+DEPS: `origin/main` je `67c8051` (#36 perception). [#40](https://github.com/Excapex/GROKHakaton/pull/40) povezuje `dossiers.getActive` na `assembleFromRoles` i čeka A review; #39 sam Approve-ovao na `71e419e`.
+BLOCKER: strana uz ChangeSet u diff-u ostaje „nije zabeležena" dok #40 ne uđe u `main` — tek tada dosije nosi `evidence` sa `page_no`.
+NEXT: #40 i #41 u `main` → #17 Render deploy + Convex prod → #18 README (A-ova izmerena R1–R6 tabela) i video.
+
+ISSUE: #15 S14 — razlike revizija i javni tok
+DONE:
+- `revisions.diff`: poređenje po nazivu + sha256 (`added` / `replaced` / `unchanged` / `carried_over`), bez izmišljene izmene.
+- Vezani ChangeSet-ovi sa `lifecycle`, `findingId` i stranom iz dokaza; bez dokaza piše da strana nije zabeležena.
+- Prazna revizija i prva revizija daju `partialReason`, ne pad.
+- `render.yaml`: rewrite `/*` → `/index.html`, `CONVEX_DEPLOY_KEY` bez `VITE_` prefiksa, PR preview isključen.
 
 ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
 DONE:
