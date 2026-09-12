@@ -85,6 +85,11 @@ describe("dossierView", () => {
   it("ima četiri odvojena stanja izmene", () => {
     expect(LIFECYCLE_LABELS.proposed).toBe("Predloženo");
     expect(LIFECYCLE_LABELS.verified).toBe("Provereno");
-    expect(FINDING_STATUS_LABELS.unknown).toBe("Nepoznato");
+  });
+
+  it("status nalaza se čita bez poznavanja engine-a", () => {
+    expect(FINDING_STATUS_LABELS.unknown).toBe("Nije moguće proveriti");
+    expect(FINDING_STATUS_LABELS.conflict).toBe("Neusaglašenost dokumenata");
+    expect(FINDING_STATUS_LABELS.fail).toBe("Primedba");
   });
 });

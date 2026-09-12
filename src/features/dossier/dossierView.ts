@@ -20,11 +20,12 @@ export const LIFECYCLE_LABELS: Record<ChangeLifecycle, string> = {
   verified: "Provereno",
 };
 
+/** Status se prevodi po značenju za projektanta, ne doslovno iz engine-a. */
 export const FINDING_STATUS_LABELS: Record<Finding["status"], string> = {
-  pass: "Prošlo",
-  fail: "Nije usklađeno",
-  conflict: "Konflikt",
-  unknown: "Nepoznato",
+  pass: "Usklađeno",
+  fail: "Primedba",
+  conflict: "Neusaglašenost dokumenata",
+  unknown: "Nije moguće proveriti",
 };
 
 export function observationsForFinding(

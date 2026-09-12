@@ -1644,6 +1644,12 @@ summary::-webkit-details-marker {
 .finding-list button.is-selected {
   border-color: var(--accent);
 }
+.rule-ref {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7d71;
+}
 .evidence-toolbar,
 .zoom-controls {
   display: flex;

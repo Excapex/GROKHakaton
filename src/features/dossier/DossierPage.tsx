@@ -12,6 +12,12 @@ import {
   isConflictFinding,
   observationsForFinding,
 } from "./dossierView.ts";
+import {
+  elementLabel,
+  findingTitle,
+  observationValue,
+  slotLabel,
+} from "./engineLabels.ts";
 import { isCadKind } from "../../lib/fileKind.ts";
 import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
 import { mappedRuleCopy } from "../../../convex/lib/perception/mappedRuleCopy.ts";
@@ -130,6 +136,7 @@ function FindingsColumn({
   selectedId: string | null;
   onSelect: (id: string) => void;
 }) {
+  const findingIds = findings.map((row) => row.id);
   return (
     <aside className="dossier-col" aria-label="Nalazi">
       <h3>Nalazi</h3>
@@ -149,10 +156,15 @@ function FindingsColumn({
                 <span className={`kind-chip status-${finding.status}`}>
                   {FINDING_STATUS_LABELS[finding.status]}
                 </span>
-                <strong>
-                  {mappedRuleCopy(finding.rule_id)?.section ?? "Pravilo iz packa"}
-                </strong>
-                <span>{finding.rationale}</span>
+                <strong>{findingTitle(finding.id, findingIds)}</strong>
+                <span>
+                  {mappedRuleCopy(finding.rule_id)?.section ?? finding.rationale}
+                </span>
+                {mappedRuleCopy(finding.rule_id) && (
+                  <span>{finding.rationale}</span>
+                )}
+                {/* Broj pravila ostaje: projektant ga citira u dopisu. */}
+                <span className="rule-ref">Pravilo {finding.rule_id}</span>
               </button>
             </li>
           ))}
@@ -201,17 +213,11 @@ function EvidenceColumn({
         <div className="conflict-pair">
           {observations.slice(0, 2).map((observation) => (
             <article key={observation.id}>
-              <h4>{observation.slot}</h4>
-              <p>
-                {observation.value}
-                {observation.unit ? ` ${observation.unit}` : ""}
-              </p>
-              <p className="page-meta">
-                dokaz {observation.evidence_id}
-                {observation.element_id
-                  ? ` · element ${observation.element_id}`
-                  : ""}
-              </p>
+              <h4>{slotLabel(observation.slot)}</h4>
+              <p>{observationValue(observation.value, observation.unit)}</p>
+              {elementLabel(observation.element_id) && (
+                <p className="page-meta">{elementLabel(observation.element_id)}</p>
+              )}
             </article>
           ))}
         </div>
@@ -220,11 +226,11 @@ function EvidenceColumn({
           className="single-evidence"
           style={{ transform: `scale(${zoom})`, transformOrigin: "top left" }}
         >
-          <h4>{observations[0].slot}</h4>
-          <p>
-            {observations[0].value}
-            {observations[0].unit ? ` ${observations[0].unit}` : ""}
-          </p>
+          <h4>{slotLabel(observations[0].slot)}</h4>
+          <p>{observationValue(observations[0].value, observations[0].unit)}</p>
+          {elementLabel(observations[0].element_id) && (
+            <p className="page-meta">{elementLabel(observations[0].element_id)}</p>
+          )}
         </article>
       ) : (
         <div className="evidence-placeholder">
@@ -311,9 +317,8 @@ function ActionsColumn({
       {related.map((row) => (
         <div key={row._id}>
           <p className="dossier-hint">
-            ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
-            {row.approvalState}. Prihvati je na Zadacima; ovde se meri primena i
-            provera, bez izmišljenog ID-a nalaza.
+            Predlog ispravke · {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle}.
+            Prihvati je na Zadacima; ovde se meri primena i provera.
           </p>
           {workspace && (
             <ChangeSetLifecycleActions
@@ -329,29 +334,42 @@ function ActionsColumn({
       {dossier ? (
         <dl className="coverage-list">
           <div>
-            <dt>Obuhvat</dt>
-            <dd>{dossier.coverage.checked_rules.join(", ") || "—"}</dd>
+            <dt>Provereno pravila</dt>
+            <dd>
+              {dossier.coverage.checked_rules.length > 0
+                ? `${dossier.coverage.checked_rules.length} · ${dossier.coverage.checked_rules.join(", ")}`
+                : "Nijedno"}
+            </dd>
           </div>
           <div>
             <dt>Preskočeno</dt>
-            <dd>{dossier.coverage.skipped_rules.join(", ") || "—"}</dd>
-          </div>
-          <div>
-            <dt>Nepoznato</dt>
-            <dd>{dossier.coverage.unknown_slots.join(", ") || "—"}</dd>
-          </div>
-          <div>
-            <dt>Integritet</dt>
             <dd>
-              {dossier.integrity_report.ok ? "struktura ok" : "struktura nije ok"}
-              {" — nije semantika ni verified"}
+              {dossier.coverage.skipped_rules.length > 0
+                ? dossier.coverage.skipped_rules.join(", ")
+                : "Ništa nije preskočeno"}
+            </dd>
+          </div>
+          <div>
+            <dt>Podatak nije pronađen</dt>
+            <dd>
+              {dossier.coverage.unknown_slots.length > 0
+                ? dossier.coverage.unknown_slots.map(slotLabel).join(", ")
+                : "Svi traženi podaci su pronađeni"}
+            </dd>
+          </div>
+          <div>
+            <dt>Provera doslednosti</dt>
+            <dd>
+              {dossier.integrity_report.ok
+                ? "Bez nedoslednosti"
+                : "Pronađena nedoslednost — nalazi se ne smeju čitati kao konačni"}
             </dd>
           </div>
         </dl>
       ) : (
         <p className="dossier-empty">
           Nema otvorenog pitanja ni zadatka dok nema nalaza
-          {finding ? " za izabrano pravilo" : ""}.
+          {finding ? ` za pravilo ${finding.rule_id}` : ""}.
         </p>
       )}
     </aside>
