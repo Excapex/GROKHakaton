@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ConvexProvider, ConvexReactClient } from 'convex/react'
 import './index.css'
+import './features/shell/workspace-folio.css'
 import App from './App.tsx'
 
 // Samo javni Convex URL sme da nosi VITE_ prefiks (docs/TOOLSTACK.md §3).
