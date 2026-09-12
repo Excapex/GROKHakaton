@@ -116,7 +116,59 @@ def parse_articles(osnov: str) -> list[str]:
     return sorted(out, key=lambda x: (int(re.sub(r"\D", "", x) or 0), x))
 
 
-def parse_rules(text: str) -> list[dict]:
+GENERIC_OSNOV = re.compile(
+    r"primenljivi|odgovarajući deo|poseban (tehnički )?propis|"
+    r"usvojen[ai]|projektn[ai]|GPZOP|status u registru",
+    re.I,
+)
+HAS_REGULATION = re.compile(r"čl\.|Pravilnik|Zakon|Uredb|Odluk|Statut", re.I)
+
+
+def match_source_key(segment: str, sources: list[dict]) -> str | None:
+    """Veži segment osnova na P01–P36. Standardi nisu source_key."""
+    ranked = sorted(
+        sources,
+        key=lambda s: len(re.sub(r"\s*[\(„].*$", "", s["title"])),
+        reverse=True,
+    )
+    for s in ranked:
+        core = re.sub(r"\s*[\(„].*$", "", s["title"]).strip()
+        if len(core) >= 20 and core in segment:
+            return s["key"]
+    hits = [s for s in sources if s.get("gazette") and s["gazette"] in segment]
+    if len(hits) == 1:
+        return hits[0]["key"]
+    if len(hits) > 1:
+        hits.sort(key=lambda s: -len(s["title"]))
+        return hits[0]["key"]
+    if "Zakona o zaštiti od požara" in segment or "Zakon o zaštiti od požara" in segment:
+        return "P01"
+    return None
+
+
+def structured_osnov(osnov_raw: str, sources: list[dict]) -> dict:
+    """1..n propisa: contracts.RuleOsnov.sources — ne jedan source_key."""
+    standards = sorted({" ".join(s.split()) for s in STD_CODE.findall(osnov_raw)})
+    linked: list[dict] = []
+    seen: set[str] = set()
+    for seg in [s.strip() for s in osnov_raw.split(";") if s.strip()]:
+        if not HAS_REGULATION.search(seg):
+            continue
+        if GENERIC_OSNOV.search(seg) and "čl." not in seg and "Pravilnik" not in seg and "Zakon" not in seg:
+            continue
+        key = match_source_key(seg, sources)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        arts = parse_articles(seg)
+        item: dict = {"source_key": key}
+        if arts:
+            item["articles"] = arts
+        linked.append(item)
+    return {"raw": osnov_raw, "sources": linked, "standards": standards}
+
+
+def parse_rules(text: str, sources: list[dict]) -> list[dict]:
     """Svaka primedba: '<ID>  Primedba: …' + Osnov/Korekcija/Snaga."""
     # Telo kataloga počinje kod drugog pojavljivanja naslova poglavlja I.
     heads = [m.start() for m in re.finditer(r"^I\. ARHITEKTONSKO", text, re.M)]
@@ -155,12 +207,7 @@ def parse_rules(text: str) -> list[dict]:
             "chapter": rid.split("-")[0],
             "section": section,
             "primedba": " ".join(m.group("primedba").split()),
-            "osnov": {
-                "raw": osnov_raw,
-                "articles": parse_articles(osnov_raw),
-                "standards": sorted({" ".join(s.split())
-                                     for s in STD_CODE.findall(osnov_raw)}),
-            },
+            "osnov": structured_osnov(osnov_raw, sources),
             "korekcija": " ".join(m.group("korekcija").split()),
             "snaga": normalise_snaga(snaga_raw),
             "snaga_raw": snaga_raw,
@@ -227,8 +274,8 @@ def main() -> int:
         return 2
 
     text = docx_text(src)
-    rules = parse_rules(text)
     sources = parse_sources(text)
+    rules = parse_rules(text, sources)
     standards = parse_standards(text)
 
     problems: list[str] = []
