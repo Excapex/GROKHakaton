@@ -13,4 +13,5 @@ if ! "$py" -c "import jsonschema" 2>/dev/null; then
   echo "  python3 -m venv .venv && .venv/bin/pip install -r requirements.txt" >&2
   exit 1
 fi
-exec "$py" "$root/evals/validate_fixture.py"
+"$py" "$root/evals/validate_fixture.py"
+exec "$py" "$root/evals/test_extract.py"

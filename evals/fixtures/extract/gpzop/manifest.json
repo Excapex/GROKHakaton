@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "doc_anon_gpzop",
+  "source_filename": "anon-gpzop.txt",
+  "input_hash": "sha256:anon-extract-gpzop",
+  "page_count": 1,
+  "pages": [
+    {
+      "page_no": 1,
+      "width_pt": 595.0,
+      "height_pt": 842.0,
+      "rotation": 0,
+      "has_text": true,
+      "is_scanned": false,
+      "text_layer_count": 1,
+      "char_count": 220,
+      "readability": "full",
+      "regions": [{ "x": 0.1, "y": 0.1, "w": 0.7, "h": 0.04 }],
+      "text_artifact": "pages/0001.txt",
+      "render_artifact": "pages/0001.png"
+    }
+  ]
+}
