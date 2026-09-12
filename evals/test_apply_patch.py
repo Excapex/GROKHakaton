@@ -86,6 +86,11 @@ def main() -> int:
             fail("stale hash must reject")
         except StaleSourceError:
             pass
+        import json
+
+        prov = json.loads((out / "provenance.json").read_text(encoding="utf-8"))
+        if prov.get("originals_untouched") is not True or not prov.get("not_consent"):
+            fail("provenance")
     print("evals/test_apply_patch: OK")
     return 0
 

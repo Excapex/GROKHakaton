@@ -1,10 +1,10 @@
 # Handoff — Builder A
 
-ISSUE: #16 S15 eval
-PR: https://github.com/Excapex/GROKHakaton/pull/31 (`feat/A/16-eval`)
-DONE: `evals/MODEL-EVAL.md` — izmerena tabela R1–R6 (anon fixture + lokalni ingest, bez klijentskih naziva). S13 je u `main` (`aca56f9`, #30).
-CONTRACT: unknown≠PASS; uredan isti-A1 nije conflict; nema klijentskih imena u Gitu.
-VALIDATION: `python3 evals/test_reread.py`; `python3 evals/test_judge.py`
-DEPENDENCIES: #30 **merged**. #13 S12 ostaje B.
-BLOCKERS: #31 čeka B re-review na HEAD posle `merge origin/main`.
-NEXT: retarget #31 na `main`; ne squash-merge dok B ne Approve novi SHA.
+ISSUE: #38 S12a apply copies
+PR: (otvara se) `feat/A/38-apply-copies`
+DONE: CLI `sandbox/compute/cli.py apply` na kopijama + `provenance.json`; `workflows/apply.planR1Copies`; stale hash i dalje odbija; CAD=`design_task`.
+CONTRACT: original se ne prepisuje; nije saglasnost; B radi download (#13).
+VALIDATION: `.venv/bin/python evals/test_apply_patch.py`; `npx vitest run convex/lib/perception/changeset.test.ts`
+DEPENDENCIES: #37 u main. #36 perception čeka B re-review posle restack (`dd5e3fe`).
+BLOCKERS: B Approve #36 na novi SHA; B S12b UI.
+NEXT: PR #38 → B review.
