@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { anonExtractRoles } from "./lib/perception/anonFixture.ts";
 import { assembleFromRoles } from "./lib/perception/assemble.ts";
-import { anonDocsByRole, hasPageText } from "./pageRoles.ts";
+import { hasPageText } from "./pageRoles.ts";
 
 describe("getActive izvor nalaza", () => {
   it("anon tekst daje R3 konflikt sa dva izvora i nijedan PASS", () => {
-    const assembled = assembleFromRoles(anonDocsByRole("rev_extract"), {
+    const assembled = assembleFromRoles(anonExtractRoles("rev_extract"), {
       projectId: "proj_demo",
       revisionId: "rev_extract",
     });

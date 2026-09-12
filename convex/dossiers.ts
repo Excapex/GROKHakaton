@@ -1,9 +1,11 @@
 import { query, type QueryCtx } from "./_generated/server";
 import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
+import { anonExtractRoles } from "./lib/perception/anonFixture";
 import { assembleFromRoles } from "./lib/perception/assemble";
+import { rolesFromPageTexts, type PageTextRow } from "./lib/perception/pageTexts";
 import type { IngestDoc } from "./lib/perception/types";
-import { anonDocsByRole, hasPageText, roleFromFilename } from "./pageRoles";
+import { hasPageText } from "./pageRoles";
 
 const EMPTY_REASON =
   "Nema ingestovanog teksta strana za ovaj predmet. Engine ne izmišlja nalaze ni broj strane.";
@@ -39,7 +41,7 @@ export const getActive = query({
     const docsByRole: Record<string, IngestDoc> = usesIngest
       ? ingested
       : project.demoKey
-        ? anonDocsByRole(revisionId ? String(revisionId) : "rev_extract")
+        ? anonExtractRoles(revisionId ? String(revisionId) : "rev_extract")
         : {};
 
     if (!hasPageText(docsByRole)) return empty();
@@ -58,40 +60,40 @@ export const getActive = query({
   },
 });
 
-/** Page text comes from ingest rows in `pageTexts`; nothing is guessed here. */
+/** Page text comes from ingest rows in `pageTexts`; A's mapper groups them by role. */
 async function loadTextByRole(
   ctx: QueryCtx,
   projectId: Id<"projects">,
   revisionId: Id<"revisions">,
 ): Promise<Record<string, IngestDoc>> {
-  const rows = await ctx.db
+  const stored = await ctx.db
     .query("pageTexts")
     .withIndex("by_revision", (q) => q.eq("revisionId", revisionId))
     .collect();
-  if (rows.length === 0) return {};
+  if (stored.length === 0) return {};
 
-  const pagesByDocument = new Map<Id<"documents">, { page_no: number; text: string }[]>();
-  for (const row of rows) {
+  const rows: PageTextRow[] = [];
+  const documents = new Map<string, { filename: string; sha256: string } | null>();
+  for (const row of stored) {
     if (row.projectId !== projectId) continue;
-    const pages = pagesByDocument.get(row.documentId) ?? [];
-    pages.push({ page_no: row.pageNo, text: row.text });
-    pagesByDocument.set(row.documentId, pages);
-  }
-
-  const docsByRole: Record<string, IngestDoc> = {};
-  for (const [documentId, pages] of pagesByDocument) {
-    const document = await ctx.db.get(documentId);
+    const key = String(row.documentId);
+    if (!documents.has(key)) {
+      const document = await ctx.db.get(row.documentId);
+      documents.set(
+        key,
+        document ? { filename: document.filename, sha256: document.sha256 } : null,
+      );
+    }
+    const document = documents.get(key);
     if (!document) continue;
-    const role = roleFromFilename(document.filename);
-    if (!role) continue;
-
-    pages.sort((a, b) => a.page_no - b.page_no);
-    docsByRole[role] = {
-      document_id: String(document._id),
-      revision_id: String(revisionId),
-      input_hash: document.sha256,
-      pages,
-    };
+    rows.push({
+      documentId: key,
+      revisionId: String(revisionId),
+      pageNo: row.pageNo,
+      text: row.text,
+      inputHash: document.sha256,
+      filename: document.filename,
+    });
   }
-  return docsByRole;
+  return rolesFromPageTexts(rows, {});
 }

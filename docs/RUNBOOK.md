@@ -162,6 +162,31 @@ DWG izmena → `design_task`, **nikad lažni patch**.
 
 **Dokaz:** otvoren fajl sa vidljivom izmenom, screenshot pre/posle.
 
+#### S12b — kako se pokreće apply i preuzima paket
+
+```bash
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python scripts/demo/make_demo_sources.py          # anon DOCX/XLSX u sandbox/artifacts/source
+.venv/bin/python sandbox/compute/cli.py apply \
+  --change-set sandbox/artifacts/source/changeset.json \
+  --source doc_anon_gpzop=sandbox/artifacts/source/anon-gpzop.docx \
+  --source doc_anon_predmer=sandbox/artifacts/source/anon-predmer.xlsx \
+  --out sandbox/artifacts/rev2 --revision-id rev_2
+qlmanage -t -s 1400 -o sandbox/artifacts/rev2 sandbox/artifacts/rev2/*.docx sandbox/artifacts/rev2/*.xlsx
+```
+
+Izlaz: `doc_anon_gpzop.docx` sa `EI 60 prema SRPS EN 13501-2`, `doc_anon_predmer.xlsx`
+sa `Sheet1!C12 = EI 60`, i `provenance.json` sa `originals_untouched: true` i
+`not_consent: true`. Originali u `source/` ostaju na `F60` — to je provera da se
+ne prepisuje ulaz.
+
+U aplikaciji: `#zadaci` → ChangeSet → **Preuzmi paket izmena**. Dugme je zaključano
+dok paket nije prihvaćen. Preuzeti JSON nosi `base_hashes`, pa apply odbija izmenu
+ako se original u međuvremenu promenio. Patch-ovane kopije se vraćaju u sistem kao
+**nova revizija** kroz Dokumenti; tek tada ih Revizije prikazuju kao `Zamenjeno`.
+
+`sandbox/artifacts/` je gitignore-ovan: DOCX/XLSX su zip fajlovi i ne idu u repo.
+
 ---
 
 ## FAZA 5 — Ponovna provera (17:45–18:15) 🎬
