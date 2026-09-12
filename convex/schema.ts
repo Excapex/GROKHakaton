@@ -46,6 +46,17 @@ export default defineSchema({
     .index("by_document", ["documentId"])
     .index("by_revision", ["revisionId"]),
 
+  /** Physical page text from ingest. Queries read it directly; storage blobs cannot. */
+  pageTexts: defineTable({
+    projectId: v.id("projects"),
+    revisionId: v.id("revisions"),
+    documentId: v.id("documents"),
+    pageNo: v.number(),
+    text: v.string(),
+  })
+    .index("by_revision", ["revisionId"])
+    .index("by_document_page", ["documentId", "pageNo"]),
+
   events: defineTable({
     projectId: v.id("projects"),
     type: v.string(),

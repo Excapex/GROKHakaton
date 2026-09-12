@@ -1,21 +1,21 @@
 # Handoff — Builder B
 
-CURRENT PR: [#37](https://github.com/Excapex/GROKHakaton/pull/37) `feat/B/11-pitanja-odluke` → `main` (#11 S10)
-DEPS: `origin/main` je `f1f541f` (#34 dossier). Engine dosije još nije upisan; pitanje zahteva ručni ID nalaza + sačuvani original.
-BLOCKER: čeka review A na HEAD + zeleni `web`, pa squash-merge.
-NEXT: posle merge-a #13 S12 (stvarni DOCX/XLSX patch + izvoz).
+CURRENT: `feat/B/wire-dossier-perception` (lokalno, čeka #36 u `main`)
+DEPS: #37 S10 je u `main` (`90dbcdb`). #36 perception Approve na `dd5e3fe` — squash radi A.
+BLOCKER: `dossiers.getActive` ne može da uveze `assembleFromRoles` dok #36 nije u `main`.
+NEXT: merge `origin/main` posle #36 → Pregled R3 dva izvora; Zadaci biraju `findingId` sa Pregleda. Zatim #15.
 
 ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
-DONE:
-- `LOCK convex/schema.ts`: tabele `questions`, `answers`, `changeSets`.
+DONE: squash-merge [#37](https://github.com/Excapex/GROKHakaton/pull/37) na `b57cd248` (A Approve + zeleni `web`). `UNLOCK convex/schema.ts`.
 - Pitanje zahteva `findingId` i `documentId` originala. Odgovor čuva autora i vreme.
 - Prihvatanje je `proposed` → `accepted`, nikad `verified`. Ponovljen klik vraća `duplicated: true`.
 - CAD predlog ide u `designTask`, bez lažnog patch-a. Saglasnik ne izdaje saglasnost.
-- UI `#zadaci` (pitaj / odgovori / predloži / prihvati).
-CONTRACT: nema izmene `contracts/`. Čuva `ChangeSet.approval` i `base_hashes`; patch fajla je #13.
-VALIDATION: `applyAcceptance` testovi + `npm run verify`. Browser: pitanje → odgovor → prihvati, drugi klik bez duplikata.
-NEEDS: A-ov review na aktuelnom SHA. Engine (#9) da upiše dosije pa će ID nalaza moći da se bira sa Pregleda.
-NEXT: squash-merge posle approve-a na HEAD, zatim #13.
+CONTRACT: nema izmene `contracts/`.
+NEXT: zatvoreno.
+
+ISSUE: #13 S12 — ACK split
+DONE: na issue #13: `ACK S12a A / S12b B`. B ne dira `sandbox/compute/` ni `engine/`. S12b (Preuzmi + screenshot) kreće kad S12a da putanju.
+NEXT: čekam A artifact/path.
 
 ISSUE: #10 S09 — dosije i dokazi
 DONE:
