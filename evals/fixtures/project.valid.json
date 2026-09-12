@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "id": "proj_fixture_001",
+  "name": "anon-pzi-fixture",
+  "discipline": "architecture",
+  "phase": "PZI",
+  "active_revision_id": "rev_1"
+}

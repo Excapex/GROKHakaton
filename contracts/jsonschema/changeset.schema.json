@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://saglasnik.local/contracts/changeset.schema.json",
+  "title": "ChangeSet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "lifecycle",
+    "base_hashes",
+    "patches",
+    "design_tasks",
+    "dependencies",
+    "approval",
+    "artifact_ids"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "lifecycle": { "enum": ["proposed", "accepted", "applied", "verified"] },
+    "base_hashes": {
+      "type": "object",
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "patches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["document_id", "format", "op", "locator", "from", "to"],
+        "properties": {
+          "document_id": { "type": "string" },
+          "format": { "enum": ["docx", "xlsx"] },
+          "op": { "enum": ["replace_text", "set_cell", "insert_row"] },
+          "locator": { "type": "string" },
+          "from": { "type": "string" },
+          "to": { "type": "string" }
+        }
+      }
+    },
+    "design_tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "reason"],
+        "properties": {
+          "id": { "type": "string" },
+          "description": { "type": "string" },
+          "reason": { "enum": ["unsupported_format", "physical_change"] },
+          "document_id": { "type": "string" }
+        }
+      }
+    },
+    "dependencies": { "type": "array", "items": { "type": "string" } },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": { "enum": ["proposed", "accepted", "rejected"] },
+        "by": { "type": "string" },
+        "at": { "type": "number" }
+      }
+    },
+    "artifact_ids": { "type": "array", "items": { "type": "string" } },
+    "verification_run_id": { "type": "string" }
+  }
+}

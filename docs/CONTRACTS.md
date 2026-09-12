@@ -39,7 +39,10 @@ type Rule = {
   id: string                     // 'I-23', 'VI-8' — ID iz kataloga
   chapter: 'I'|'II'|'III'|'IV'|'V'|'VI'|'VII'|'VIII'
   primedba: string               // generička formulacija nedostatka
-  osnov: { source_key: string; articles?: string[]; standards?: string[] }
+  osnov: {
+    sources: Array<{ source_key: string; articles?: string[] }>  // 1..n propisa
+    standards?: string[]
+  }
   korekcija: string              // zahtev projektantu
   snaga: 'JAK' | 'USLOVNO_JAK' | 'DOPUNITI'
   requires_slots: string[]
