@@ -4,7 +4,52 @@
 
 Za hakaton 12.09.2026. implementiramo **Zaštitu od požara (ZOP)** kao prvi aktivni stručni modul. Ostali moduli biće jasno označeni kao **Planirano** i razvijaće se posle hakatona.
 
-> **Trenutni status:** repo sadrži specifikaciju, istraživanje i operativni setup paket. Aplikacija još nije implementirana u ovom repou. API ključevi, cloud deployment-i i stručna pokrivenost nisu potvrđeni samim postojanjem plana.
+> **Trenutni status (12.09.2026):** aplikacija je implementirana i radi — React + Convex, sa pet ekrana i ZOP modulom nad pravilima R1–R6. Šta je pritom izmereno, šta je demonstracioni primer, a šta ostaje van obuhvata, razdvojeno je u odeljku [Šta je izmereno](#šta-je-izmereno-a-šta-nije).
+
+## Šta je izmereno, a šta nije
+
+### Izmereno
+
+R1–R6 su pokrenuti nad anon fixture-om i nad lokalnim ingestom pravih PDF-ova
+(lokalni korpus namerno nije u Gitu). Tabelu je izmerio A; izvor je
+[`evals/MODEL-EVAL.md`](evals/MODEL-EVAL.md), model `grok-4.6`.
+
+| Pravilo | Anon fixture | Lokalni ingest (case_a) | Promašaj |
+|---|---|---|---|
+| R1 F-oznaka | hit F60 str. 1 | hit F90 str. 42 | 0 |
+| R2 EI + 13501-1 | hit | hit str. 16 i 8 | 0 |
+| R3 fasada konflikt | A1 vs mineral_wool | oba A1 — nije konflikt | 0 lažnih FAIL |
+| R4 element vs predmer | hit + `search_scope` | vrata str. 16, nema u predmeru | 0 |
+| R5 fotometrija | unknown + scope | unknown (nema fotometrije) | 0 lažnih PASS |
+| R6 površina / lica | 180 m2 / 90 | 2000/107 i 1200/200 | 0 PASS iz nepoznatog |
+
+Uz to je izmereno i ponašanje pri lošem ulazu: kad se dokaz ukloni, nalaz pada na
+`unknown`, ne na `pass` (`evals/test_judge.py`). Uredan projekat gde oba izvora
+kažu A1 **ne** proizvodi konflikt — nema lažnog FAIL-a da bi demo izgledao pametnije.
+
+Stvarna izmena fajla je izmerena, ne opisana: `sandbox/compute/cli.py apply`
+patch-uje **kopije** DOCX/XLSX (`F60` → `EI 60 prema SRPS EN 13501-2`,
+`Sheet1!C12` → `EI 60`), originali ostaju netaknuti, a `provenance.json` beleži
+`originals_untouched: true` i `not_consent: true`. Zastareo hash izvora odbija
+apply umesto da prepiše noviju verziju.
+
+### Demonstracioni primer
+
+- Predmet **„Objekat A, Lamela 3"** je demo radni prostor, ne stvaran projekat.
+- Kada predmet nema ingestovan tekst strana, Pregled računa nalaze nad **javnim
+  anon fixture tekstom** i to piše na vrhu ekrana. Nalazi su stvarno izračunati,
+  ali nisu iz korisnikovih dokumenata.
+- Vraćanje patch-ovanih kopija u sistem je ručno, kroz novu reviziju na Dokumentima.
+
+### Van obuhvata
+
+- Ostali stručni moduli (konstrukcija, elektro, mašinstvo…) su u katalogu označeni
+  kao **Planirano** i ne prikazuju nikakav rezultat.
+- Saglasnik **ne izdaje saglasnost**. Prihvatanje izmene je odluka projektanta i
+  vodi se odvojeno od `applied` i `verified`.
+- DWG/DWFX se nikad ne patch-uje — takva izmena ostaje `design_task` za projektanta.
+- Odsustvo podatka se tvrdi samo uz dokumentovan `search_scope`; bez njega nalaz
+  ostaje `unknown`.
 
 ## Šta pravimo
 
@@ -23,6 +68,20 @@ Projekat i dokumenti
 Zajednički UI: **Pregled · Dokumenti · Zadaci · Revizije · Moduli**. Vrsta projekta i stručni modul pregleda su odvojeni: arhitektonski projekat, na primer, može koristiti ZOP modul kada je odgovarajući paket primenljiv.
 
 Izvoz, stvarni izlazni fajl i provera revizije pripadaju glavnom obuhvatu. Originali ostaju sačuvani. Promene tehničkog rešenja i nepodržane CAD izmene vode se kao precizni projektantski zadaci. Prihvatanje predloga i dokazano rešenje su odvojena stanja.
+
+## Pokretanje
+
+```bash
+npm ci
+npm run dev            # http://localhost:5173
+npm run verify         # check:private + lint + build + test
+```
+
+Za živi backend treba `VITE_CONVEX_URL` u `.env.local` i `npx convex dev`. Bez
+njega aplikacija radi u demo režimu i Moduli katalog javlja da nije dostupan.
+Serverski ključevi (`XAI_API_KEY`, `DAYTONA_API_KEY`, `CONVEX_DEPLOY_KEY`) idu u
+Convex production env i Render Environment — **nikad sa `VITE_` prefiksom**, jer
+bi tako završili u browser bundle-u.
 
 ## Dokumentacija — počnite ovde
 
@@ -76,10 +135,11 @@ npm run verify   # check:private + lint + build + test
 - `npm run check:private` — guard koji blokira privatni korpus, licencirane
   standarde, CAD izvore, API ključeve i nazive stvarnih predmeta. Lista naziva je
   lokalna: `cp scripts/setup/cases.example.txt scripts/setup/cases.local.txt`.
-- `npm test` — Vitest. **Trenutno nema ni jednog testa** i skripta koristi
-  `--passWithNoTests`, pa zeleno `npm test` **nije dokaz pokrivenosti**. Stvarni
-  testovi dolaze kao prihvatni uslov zadataka koji ih zahtevaju (ugovori, pravila,
-  izmena dokumenata).
+- `npm test` — Vitest, 40 testova: ugovori, R1–R6 percepcija, mapiranje strana u
+  uloge, idempotentno prihvatanje i izvoz paketa izmena. Zeleno `npm test` znači
+  da ta pravila važe — ne znači da je pokrivenost potpuna.
+- Python evali (`.venv/bin/python evals/test_*.py`) pokrivaju extract, verify,
+  judge, plan izmena i apply na kopijama.
 - `npm run test:e2e` — Playwright, pokriva petlju upload → nalaz → odluka → izlaz
   → revizija. Namerno nije u CI-ju dok testovi ne postoje.
 
