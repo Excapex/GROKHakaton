@@ -1,8 +1,8 @@
 # Handoff — Builder B
 
-CURRENT PR: `feat/B/11-pitanja-odluke` → `main` (#11 S10)
+CURRENT PR: [#37](https://github.com/Excapex/GROKHakaton/pull/37) `feat/B/11-pitanja-odluke` → `main` (#11 S10)
 DEPS: `origin/main` je `f1f541f` (#34 dossier). Engine dosije još nije upisan; pitanje zahteva ručni ID nalaza + sačuvani original.
-BLOCKER: nema — čeka review A na HEAD + zeleni `web`, pa squash-merge.
+BLOCKER: čeka review A na HEAD + zeleni `web`, pa squash-merge.
 NEXT: posle merge-a #13 S12 (stvarni DOCX/XLSX patch + izvoz).
 
 ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
