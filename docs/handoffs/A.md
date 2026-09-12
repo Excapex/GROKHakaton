@@ -1,18 +1,19 @@
-# Handoff — Builder A (Agent 2 / wt2)
+# Handoff — Builder A
 
-ISSUE: #56 S25 UI + pozivi (ne engine)
-BRANCH: `feat/A/56-ui-reread-wire` u `/home/mihajlo/GROKHakaton-wt2`
-PR: https://github.com/Excapex/GROKHakaton/pull/69
+ISSUE: petlja primedbe (upload → pitanje/ispravka → prihvati → primeni → proveri)
+BRANCH: `feat/A/loop-findings-gates`
 
 DONE:
-- `origin/main` uključuje #66 ingest, #68 engine copy, #70 mapped rules.
-- UI: Prihvati ≠ primenjeno ≠ provereno. CAD bez patch dugmeta.
-- `markApplied` / `markVerified({ changeSetId, revisionId })` — bez klijentskog boolean-a. Zatvaranje prati `findingClosedOnReread` (ne zahteva PASS). Isti hash nije primena.
+- `getActive` ne prikazuje anon fixture ako postoje ubačeni dokumenti.
+- Prazna novija provera čita ingest sa poslednje revizije koja ima tekst.
+- Kartica primedbe bira original po evidenciji / svim revizijama, ne `documents[0]` tekuće prazne provere.
+- `Pripremi ispravku` u jednom koraku pita + predlaže ChangeSet. CAD ostaje ručni zadatak.
+- `Označi primenjeno` / `Proveri novu reviziju` vide originale i kopije sa svih provera.
 
-CONTRACT: unknown ostaje unknown u prikazu. Original se ne prepisuje. Ne izmišljati finding ID / page_no / patch.
+CONTRACT: unknown ostaje unknown. Nema izmišljenog finding ID / page_no / patch. Isti hash nije primena. verified samo posle ingest reread.
 
-VALIDATION: `npm test` + `npx tsc -b` u wt2.
+VALIDATION: `npx vitest run` za dossierSource + findingLoop + postojeći suite.
 
-NEEDS: B Approve #69 na tačan HEAD. Ne merge-ujem B PR-ove (#67).
+NEEDS: B pregled `src/` i `convex/dossiers.ts` (CRUD je B, izmena je potrebna za petlju).
 
-NEXT: squash posle B Approve `--match-head-commit`.
+NEXT: PR, ne zatvarati #48.
