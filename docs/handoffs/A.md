@@ -1,10 +1,10 @@
 # Handoff — Builder A
 
-ISSUE: perception Convex action (bez B schema/UI)
-PR: (otvara se) `feat/A/perception-convex`
-DONE: `convex/lib/perception` = R1–R6 extract+judge+gate; `workflows/review.fromPages` vraća pravi dosije iz teksta strana ili `pipelineReady:false` bez izmišljanja. Python pipeline dodaje ChangeSet uz R1 fail. `evals/fixtures/dossier.engine.json` iz anon fixture-a.
-CONTRACT: unknown≠PASS; UI i dalje čita `dossiers.getActive` (B). A ne dira `schema.ts` ni `src/`.
-VALIDATION: `npx vitest run convex/lib/perception`; `python3 evals/test_pipeline.py`; `python3 evals/test_judge.py`
-DEPENDENCIES: B da poveže `dossiers.getActive` na `workflows/review.fromPages` i da ingest upiše `artifacts.kind=text`.
-BLOCKERS: nema tabele dosijea; bez B UI ostaje prazan.
-NEXT: PR → B review na HEAD.
+ISSUE: perception + S12a apply
+PR: https://github.com/Excapex/GROKHakaton/pull/36 (restack posle #37)
+DONE: S10 je u `main` (`90dbcdb`). Perception `fromPages` čeka B Approve na novi HEAD posle merge main.
+CONTRACT: unknown≠PASS; A ne dira `dossiers.ts` / `schema.ts` / `src/`.
+VALIDATION: vitest perception; test_pipeline; test_apply_patch
+DEPENDENCIES: B Approve #36; ACK S12 na #13 (A kreće S12a jer je B pokrenuo prompt).
+BLOCKERS: #36 bez Approve na novom SHA posle restack-a.
+NEXT: push restack #36; S12a CLI + provenance na kopijama.
