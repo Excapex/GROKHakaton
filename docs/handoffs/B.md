@@ -1,5 +1,10 @@
 # Handoff — Builder B
 
+CURRENT PR: [#33](https://github.com/Excapex/GROKHakaton/pull/33) `feat/B/4-upload-revizije` → `main` (#4 S03)
+DEPS: `#25` shell i `#27` verify su u `origin/main` (`ebd6d77`). `#34` dosije stacked na ovu granu. `#11` S10 WIP u stash-u na `feat/B/11-pitanja-odluke`.
+BLOCKER: Review-agent nije merge-ovao `#33` jer je merge sa `main` padao na `process` u `xai.ts` (#26). `#27` to je sredio na `main`. `origin/main` je uvezen ovde; `npm run verify` zeleno (16 testova). Novi SHA treba review pa squash-merge od B.
+NEXT: Push codegen + merge commit, komentar na `#33` sa SHA i verify. Ne rivjuj A-ove PRove. Nastavak `#11` posle push-a.
+
 ISSUE: #4 S03 — upload, dokumenti, revizije
 DONE:
 - `LOCK convex/schema.ts`: tabele `projects`, `documents`, `revisions`, `artifacts`, `events`.
@@ -14,9 +19,8 @@ VALIDATION:
 - `npx convex dev --once` na `gallant-dolphin-326` kreirao indekse i funkcije.
 - `projects:ensureDemo` + `getWorkspace` vraćaju živi predmet. Browser: `#dokumenti` dropzona i
   `#revizije` lanac + „Nova revizija“, deep-link ostaje posle navigacije.
-NEEDS: A-ov review. Ručni dokaz upload → refresh → revizija 2 (oba originala otvorljiva) na
-pregledaču, jer file input nije automatizovan u ovom prolazu.
-NEXT: #10 S09 dosije + dokazi, zatim #11, #13, #15, #17, #18. Review tuđih PR-ova na kraju.
+NEEDS: Review na SHA posle merge `origin/main` (prethodni approve je bio `fa1267b`). Ručni dokaz upload → refresh → revizija 2 i dalje na pregledaču.
+NEXT: Kad `#33` uđe u `main`, merge `origin/main` u `#34`, pa `#11` S10.
 
 ## S02 · shell i katalog (#3)
 
