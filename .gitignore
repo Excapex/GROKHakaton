@@ -17,3 +17,20 @@ private-data/
 artifacts-local/
 test-results/
 playwright-report/
+
+# --- appended by S00 bootstrap ---
+.env
+.env.*
+!.env.example
+CLAUDE.local.md
+.venv/
+__pycache__/
+.pytest_cache/
+private-data/
+artifacts-local/
+*.local.json
+issue-body.local.md
+docs/pr-body.local.md
+
+# macOS
+.DS_Store
