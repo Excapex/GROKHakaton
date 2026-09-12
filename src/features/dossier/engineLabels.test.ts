@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  documentSourceLabel,
   elementLabel,
   eventLabel,
+  extraFindingDetail,
   findingOrdinal,
   findingTitle,
+  isVagueElement,
   observationValue,
   parsePolicyLabel,
   slotLabel,
@@ -135,5 +138,38 @@ describe("findingTitle", () => {
     for (const id of ids) {
       expect(findingTitle(id, ids)).not.toContain(id);
     }
+  });
+});
+
+describe("documentSourceLabel", () => {
+  it("skriva anonimni i sha256 identifikator", () => {
+    expect(documentSourceLabel("doc_anon_gpzop", "doc_anon_gpzop")).toBeNull();
+    expect(documentSourceLabel(null, "sha256:abcd")).toBeNull();
+  });
+
+  it("prikazuje pravo ime fajla", () => {
+    expect(documentSourceLabel("GPZOP.pdf", "doc_anon_gpzop")).toBe("GPZOP.pdf");
+  });
+});
+
+describe("isVagueElement", () => {
+  it("ne prikazuje neodređen element", () => {
+    expect(isVagueElement("element.unspecified")).toBe(true);
+    expect(isVagueElement("element.gpzop")).toBe(false);
+  });
+});
+
+describe("extraFindingDetail", () => {
+  it("ne ponavlja isti pasus", () => {
+    expect(extraFindingDetail("Koristi se F60.", "Koristi se F60.")).toBeNull();
+  });
+
+  it("ostavlja samo nastavak kad rationale ponavlja primedbu", () => {
+    expect(
+      extraFindingDetail(
+        "Koristi se povučena oznaka kao jedini zahtev.",
+        "Koristi se povučena oznaka kao jedini zahtev. Navedeno je F60 umesto EI.",
+      ),
+    ).toBe("Navedeno je F60 umesto EI.");
   });
 });

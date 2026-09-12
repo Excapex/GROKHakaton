@@ -115,6 +115,57 @@ export function findingTitle(
   return `Primedba ${findingOrdinal(findingId, allFindingIds)}`;
 }
 
+/** Interni `doc_anon_*` / `sha256:` ne izlaze kao ime dokumenta. */
+export function isInternalDocumentId(value: string): boolean {
+  return /^(doc[_-]|sha256:)/i.test(value) || /anon/i.test(value);
+}
+
+export function documentSourceLabel(
+  filename?: string | null,
+  documentId?: string | null,
+): string | null {
+  for (const value of [filename, documentId]) {
+    if (value && !isInternalDocumentId(value)) return value;
+  }
+  return null;
+}
+
+export function isVagueElement(
+  elementId: string | null | undefined,
+): boolean {
+  return (
+    elementId === "element.unspecified" ||
+    elementId === "space.unspecified"
+  );
+}
+
+/**
+ * Ako je `extra` isti tekst kao `primary`, ili ga samo ponavlja i doda
+ * nastavak, vraća samo taj nastavak. Inače ceo `extra`, ili `null`.
+ */
+export function extraFindingDetail(
+  primary: string,
+  extra: string,
+): string | null {
+  const a = normalizeCopy(primary);
+  const b = normalizeCopy(extra);
+  if (!b || a === b) return null;
+  if (b.startsWith(a)) {
+    const rest = extra
+      .trim()
+      .slice(primary.trim().length)
+      .replace(/^[\s.]+/, "")
+      .trim();
+    return rest || null;
+  }
+  if (a.includes(b)) return null;
+  return extra.trim();
+}
+
+function normalizeCopy(value: string): string {
+  return value.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
 /**
  * Poslednja odbrana: `snake_case` ili `dotted.id` u rečenicu, da nepoznat kod
  * bude bar čitljiv umesto da ostane kao identifikator.
