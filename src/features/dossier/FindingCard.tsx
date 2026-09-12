@@ -26,6 +26,7 @@ import {
   observationValue,
   slotLabel,
 } from "./engineLabels.ts";
+import { resolveFindingLoop } from "./findingLoop.ts";
 
 const ACTOR = "M. Jovanović";
 
@@ -108,22 +109,20 @@ export function FindingCard({
     rule && finding.rationale
       ? extraFindingDetail(rule.primedba, finding.rationale)
       : null;
-  const next = dossier.next_actions.find((action) => {
-    if (action.kind === "ask") {
-      return dossier.questions.some(
-        (question) =>
-          question.id === action.question_id &&
-          question.finding_ids.includes(finding.id),
-      );
-    }
-    if (action.kind === "propose_patch") {
-      return action.change_set_id === `cs_${finding.id}`;
-    }
-    if (action.kind === "design_task") {
-      return action.description.includes(finding.rule_id);
-    }
-    return false;
+  const loop = resolveFindingLoop({
+    finding,
+    dossier,
+    evidence,
+    documents,
   });
+  const nextKind = loop.actionKind;
+  const sourceDocument = documents.find(
+    (doc) => String(doc._id) === loop.document?._id,
+  );
+  const designTaskCopy = dossier.next_actions.find(
+    (action): action is Extract<(typeof dossier.next_actions)[number], { kind: "design_task" }> =>
+      action.kind === "design_task" && action.description.includes(finding.rule_id),
+  );
 
   return (
     <article
@@ -178,16 +177,19 @@ export function FindingCard({
 
       <section className="finding-next">
         <h4>Sledeći korak</h4>
-        {next?.kind === "design_task" && (
-          <p>{next.description}</p>
+        {nextKind === "design_task" && (
+          <p>
+            {designTaskCopy?.description ??
+              "Ovo se ne ispravlja automatski. Potrebna je ručna provera na crtežu ili u nedostajućem prilogu."}
+          </p>
         )}
-        {next?.kind === "propose_patch" && relatedSets.length === 0 && (
+        {nextKind === "propose_patch" && relatedSets.length === 0 && (
           <p>
             Ispravka se predlaže na kopiji dokumenta. Original ostaje nedirnut.
             Prihvatanje nije potvrda.
           </p>
         )}
-        {next?.kind === "ask" && relatedThreads.length === 0 && (
+        {nextKind === "ask" && relatedThreads.length === 0 && (
           <p>
             Dokumenti se ne slažu. Projektant mora da kaže koji podatak važi
             pre nego što se predloži ispravka.
@@ -197,11 +199,12 @@ export function FindingCard({
           projectId={projectId}
           finding={finding}
           documents={documents}
+          sourceDocument={sourceDocument}
           threads={relatedThreads}
           changeSets={relatedSets}
           revisions={revisions}
           review={review}
-          actionKind={next?.kind ?? null}
+          actionKind={nextKind}
           suggestedPrompt={
             rule?.korekcija ??
             dossier.questions.find((row) => row.finding_ids.includes(finding.id))
@@ -309,6 +312,7 @@ function FindingActions({
   projectId,
   finding,
   documents,
+  sourceDocument,
   threads,
   changeSets,
   revisions,
@@ -319,6 +323,7 @@ function FindingActions({
   projectId: Id<"projects">;
   finding: Finding;
   documents: FindingDocument[];
+  sourceDocument: FindingDocument | undefined;
   threads: Thread[];
   changeSets: ChangeSetRow[];
   revisions: Array<{ _id: Id<"revisions">; index: number; createdAt: number }>;
@@ -339,7 +344,7 @@ function FindingActions({
   const [reply, setReply] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const documentId = documents[0]?._id;
+  const documentId = sourceDocument?._id;
 
   async function run(task: () => Promise<void>) {
     setBusy(true);
@@ -381,13 +386,21 @@ function FindingActions({
                 return;
               }
               void run(async () => {
-                await ask({
+                const questionId = await ask({
                   projectId,
                   findingId: finding.id,
                   documentId,
                   prompt,
                   createdBy: ACTOR,
                 });
+                if (actionKind === "propose_patch") {
+                  await answer({
+                    questionId,
+                    body: prompt,
+                    author: ACTOR,
+                  });
+                  await propose({ questionId });
+                }
               });
             }}
           >

@@ -143,6 +143,14 @@ export function ProjectPage({
                 message={payload.sourceNote ?? ""}
               />
             )}
+            {payload.source === "ingest" && documents.length === 0 && (
+              <StatePanel
+                tone="warning"
+                label="Nova provera"
+                title="Tekuća provera još nema fajlove"
+                message="Nalazi ispod su sa prethodne provere koja ima ingestovani tekst. Ubaci ispravljenu dokumentaciju da se novo čitanje veže za ovu proveru."
+              />
+            )}
             <div className="finding-filters" role="tablist" aria-label="Filter primedbi">
               {(
                 [
@@ -182,7 +190,7 @@ export function ProjectPage({
                       findingIds={findingIds}
                       dossier={dossier!}
                       evidence={evidence}
-                      documents={documents}
+                      documents={allDocuments}
                       threads={threads}
                       changeSets={changeSets}
                       revisions={revisions}
