@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "document_id": "doc_anon_two_page",
+  "source_filename": "anon-two-page.pdf",
+  "input_hash": "sha256:061091a56c93f2059be56bc8c97d7213f4565c4e2f3c20cf4b994ccda3e81505",
+  "page_count": 2,
+  "pages": [
+    {
+      "page_no": 1,
+      "width_pt": 595.0,
+      "height_pt": 842.0,
+      "rotation": 0,
+      "has_text": true,
+      "is_scanned": false,
+      "text_layer_count": 2,
+      "char_count": 51,
+      "readability": "full",
+      "regions": [
+        {
+          "x": 0.121,
+          "y": 0.0651,
+          "w": 0.3543,
+          "h": 0.0261
+        },
+        {
+          "x": 0.121,
+          "y": 0.1153,
+          "w": 0.2208,
+          "h": 0.0196
+        }
+      ],
+      "text_artifact": "pages/0001.txt",
+      "render_artifact": "pages/0001.png"
+    },
+    {
+      "page_no": 2,
+      "width_pt": 595.0,
+      "height_pt": 842.0,
+      "rotation": 0,
+      "has_text": false,
+      "is_scanned": true,
+      "text_layer_count": 0,
+      "char_count": 0,
+      "readability": "partial",
+      "regions": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "w": 1.0,
+          "h": 1.0
+        }
+      ],
+      "text_artifact": "pages/0002.txt",
+      "render_artifact": "pages/0002.png"
+    }
+  ]
+}

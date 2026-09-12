@@ -40,6 +40,7 @@ type Rule = {
   chapter: 'I'|'II'|'III'|'IV'|'V'|'VI'|'VII'|'VIII'
   primedba: string               // generička formulacija nedostatka
   osnov: {
+    raw?: string                 // sačuvan tekst; jedini zapis kad nema source_key
     sources: Array<{ source_key: string; articles?: string[] }>  // 1..n propisa
     standards?: string[]
   }
@@ -181,3 +182,37 @@ proposed  →  accepted  →  applied  →  verified
               prihvatio)   izmenjen)   potvrdilo)
 ```
 `accepted` **nije** `verified`. `applied` **nije** `verified`.
+
+## DocumentManifest (ingest)
+
+`page_no` je **fizički indeks** iz PDF-a (1…N). Model ga ne sme izmišljati ni
+čitati sa odštampane paginacije. `readability` je samo `full` | `partial` —
+nečitljiva strana nije prazna. Render i tekst idu u `sandbox/artifacts/`.
+
+```ts
+type PageReadability = 'full' | 'partial'
+
+type PageManifest = {
+  page_no: number
+  width_pt: number
+  height_pt: number
+  rotation: number
+  has_text: boolean
+  is_scanned: boolean
+  text_layer_count: number
+  char_count: number
+  readability: PageReadability
+  regions: EvidenceRegion[]
+  text_artifact: string
+  render_artifact: string
+}
+
+type DocumentManifest = {
+  schema_version: SchemaVersion
+  document_id: string
+  source_filename: string
+  input_hash: string
+  page_count: number
+  pages: PageManifest[]
+}
+```

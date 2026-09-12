@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #2 S01
-DONE: Contracts 1.0.0 + fixture. `Rule.osnov.sources` je 1..n (365/652 pravila citira više propisa). Validacija preko `evals/validate_fixture.py` (`Draft202012Validator`), ne uklonjenog `python -m jsonschema` CLI. `requirements.txt` za jsonschema. Grana `feat/A/2-contracts-v2` cherry-pick sa `origin/main` — bez merge-a stare grane koja vraća pack.
-CONTRACT: `osnov.sources[]` + `standards?`. Ostalo kao u `docs/CONTRACTS.md`.
-VALIDATION: `bash evals/validate-fixture.sh` OK.
-NEEDS: B review novog PR-a (stari #21 zatvoren — pogrešan merge-base).
-NEXT: Posle merge S01 — #20 pack uskladiti sa `sources[]`, ili S04 ingest.
+ISSUE: #6 S05 pack (merge sa #24 ingest)
+DONE: Pack `3945b58` usklađen sa ingest `main`. II-14/II-35 članovi po propisu. `RuleOsnov.raw?`. Ingest već u `main`.
+CONTRACT: `osnov.raw?` + `sources[]`; `DocumentManifest` iz #24.
+VALIDATION: II-35 P04[50] P05[53]; ingest fixture 2 strane.
+NEEDS: squash merge #20. Review #25 (B shell).
+NEXT: S06 ekstrakcija.
