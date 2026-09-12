@@ -1,9 +1,9 @@
 # Handoff — Builder B
 
 CURRENT PR: [#34](https://github.com/Excapex/GROKHakaton/pull/34) `feat/B/10-dosije` → `main` (#10 S09)
-DEPS: `#33` je u `main` (`7702256`). Approve na `#34` je bio `d79c5b5`; posle merge `origin/main` treba nov review.
-BLOCKER: čeka partner approve na HEAD posle sync sa `main`. Stari approve (`d79c5b5`) ne važi.
-NEXT: push + `gh pr edit 34 --base main` + re-review. Merge tek posle approve-a na novi SHA.
+DEPS: `origin/main` je `aca56f9` (#30 reread). `#33` je u `main`.
+BLOCKER: CHANGES_REQUESTED na `7e7a0af` — nije bilo GitHub `web` checka, i PR je bio iza `main`. Uvezen #30; push da se pokrene CI.
+NEXT: verify + push + re-review na novi SHA. Merge tek posle approve-a na HEAD.
 
 ISSUE: #10 S09 — dosije i dokazi
 DONE:
