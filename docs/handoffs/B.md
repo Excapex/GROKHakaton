@@ -1,5 +1,16 @@
 # Handoff — Builder B
 
+ISSUE: #10 S09 — dosije i dokazi
+DONE:
+- Pregled je trokolonski radni prostor: nalazi · original · akcije. Zoom +/- i tastatura.
+- Konflikt layout (dva izvora) i četiri odvojena stanja izmene su u UI-ju.
+- `dossiers.getActive` namerno vraća `pipelineReady: false` i `dossier: null` — nema lažnog nalaza
+  dok engine (#9) ne upiše dosije.
+CONTRACT: nema izmene `contracts/`. Konzumira `Dossier`, `Finding`, `Observation`, `ChangeLifecycle`.
+VALIDATION: `npm run verify` 18 testova. Browser `#pregled` pokazuje prazan dosije i lifecycle.
+NEEDS: A da upiše stvarni dosije (R3 dva izvora). Tada klik na nalaz otvara stranu+region.
+NEXT: #11 S10 pitanja/ChangeSet, pa #13 izvoz.
+
 ISSUE: #4 S03 — upload, dokumenti, revizije
 DONE:
 - `LOCK convex/schema.ts`: tabele `projects`, `documents`, `revisions`, `artifacts`, `events`.
