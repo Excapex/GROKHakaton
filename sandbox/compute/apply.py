@@ -5,6 +5,7 @@ CAD / DWG is a design_task, not a patch. Stale base_hashes refuse the apply.
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 from pathlib import Path
 
@@ -53,11 +54,26 @@ def apply_changeset(
     skipped = [
         t for t in change_set.get("design_tasks", []) if t.get("reason") == "unsupported_format"
     ]
+    provenance = {
+        "schema_version": "1.0.0",
+        "change_set_id": change_set.get("id"),
+        "lifecycle_note": "applied_on_copies",
+        "not_consent": True,
+        "originals_untouched": True,
+        "written": written,
+        "design_tasks": skipped,
+        "base_hashes": change_set.get("base_hashes", {}),
+    }
+    (out_dir / "provenance.json").write_text(
+        json.dumps(provenance, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
     return {
         "ok": True,
         "written": written,
         "design_tasks": skipped,
         "out_dir": str(out_dir),
+        "provenance": str(out_dir / "provenance.json"),
     }
 
 
