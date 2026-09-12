@@ -23,10 +23,12 @@ import type * as lib_perception_slots from "../lib/perception/slots.js";
 import type * as lib_perception_types from "../lib/perception/types.js";
 import type * as lib_providers_xai from "../lib/providers/xai.js";
 import type * as lib_verify from "../lib/verify.js";
+import type * as pageRoles from "../pageRoles.js";
 import type * as projects from "../projects.js";
 import type * as questions from "../questions.js";
 import type * as revisions from "../revisions.js";
 import type * as workflows_extract from "../workflows/extract.js";
+import type * as workflows_apply from "../workflows/apply.js";
 import type * as workflows_review from "../workflows/review.js";
 
 import type {
@@ -51,10 +53,12 @@ declare const fullApi: ApiFromModules<{
   "lib/perception/types": typeof lib_perception_types;
   "lib/providers/xai": typeof lib_providers_xai;
   "lib/verify": typeof lib_verify;
+  pageRoles: typeof pageRoles;
   projects: typeof projects;
   questions: typeof questions;
   revisions: typeof revisions;
   "workflows/extract": typeof workflows_extract;
+  "workflows/apply": typeof workflows_apply;
   "workflows/review": typeof workflows_review;
 }>;
 

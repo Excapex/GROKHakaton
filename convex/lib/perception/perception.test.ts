@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { assembleFromRoles } from "./assemble";
+import { anonExtractRoles } from "./anonFixture";
+import { guessRole, rolesFromPageTexts } from "./pageTexts";
 import { gate, judge } from "./judge";
 import { runExtract } from "./slots";
 import type { IngestDoc } from "./types";
@@ -54,6 +56,17 @@ describe("perception R1–R6", () => {
     if (empty.pipelineReady === false) expect(empty.dossier).toBeNull();
   });
 
+  it("anonExtractRoles daje isti R3 conflict za B getActive", () => {
+    const ready = assembleFromRoles(anonExtractRoles(), {
+      projectId: "proj_anon",
+      revisionId: "rev_extract",
+    });
+    expect(ready.pipelineReady).toBe(true);
+    if (ready.pipelineReady) {
+      expect(ready.dossier.findings.find((f) => f.id === "find_r3")?.status).toBe("conflict");
+    }
+  });
+
   it("R1 fail, R3 conflict sa dva izvora, R5 unknown, R6 unknown", () => {
     const extracted = runExtract(FIX);
     const r1 = extracted.observations.find(
@@ -99,5 +112,33 @@ describe("perception R1–R6", () => {
 describe("daytona adapter", () => {
   it("bez ingest-a ne izmišlja strane", () => {
     expect(ingestUnavailableReason()).toMatch(/nije pokrenut/i);
+  });
+});
+
+describe("pageTexts mapper", () => {
+  it("prazni redovi ne izmišljaju dosije", () => {
+    expect(rolesFromPageTexts([], {})).toEqual({});
+    expect(guessRole("tlocrt.dwg")).toBeNull();
+    expect(guessRole("anon-gpzop.pdf")).toBe("gpzop");
+    expect(guessRole("anon-arh.pdf")).toBe("arh");
+  });
+
+  it("sklapa role iz pageNo+text+hash", () => {
+    const roles = rolesFromPageTexts(
+      [
+        {
+          documentId: "doc_anon_gpzop",
+          revisionId: "rev_extract",
+          pageNo: 1,
+          text: "Otpornost: F60. Fasada A1 obloga.",
+          inputHash: "sha256:anon-extract-gpzop",
+          filename: "anon-gpzop.pdf",
+        },
+      ],
+      {},
+    );
+    expect(roles.gpzop?.pages[0]?.page_no).toBe(1);
+    const ready = assembleFromRoles(roles, { projectId: "p", revisionId: "rev_extract" });
+    expect(ready.pipelineReady).toBe(true);
   });
 });

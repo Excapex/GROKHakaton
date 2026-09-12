@@ -1,9 +1,9 @@
 # Handoff — Builder B
 
 CURRENT PR: [#41](https://github.com/Excapex/GROKHakaton/pull/41) `feat/B/s14-diff-revizija` → `main` (#15 S14)
-DEPS: `origin/main` je `67c8051` (#36 perception). [#40](https://github.com/Excapex/GROKHakaton/pull/40) povezuje `dossiers.getActive` na `assembleFromRoles` i čeka A review; #39 sam Approve-ovao na `71e419e`.
-BLOCKER: strana uz ChangeSet u diff-u ostaje „nije zabeležena" dok #40 ne uđe u `main` — tek tada dosije nosi `evidence` sa `page_no`.
-NEXT: #40 i #41 u `main` → #17 Render deploy + Convex prod → #18 README (A-ova izmerena R1–R6 tabela) i video.
+DEPS: `origin/main` je `bb65239` (#39 apply + #40 dosije). [#43](https://github.com/Excapex/GROKHakaton/pull/43) je S12b Preuzmi.
+BLOCKER: nema. #41 je bio `CONFLICTING`; `origin/main` je umergovan bez rebase-a.
+NEXT: #41 i #43 u `main` → #17 Render deploy + Convex prod → #18 README (A-ova izmerena R1–R6 tabela) i video.
 
 ISSUE: #15 S14 — razlike revizija i javni tok
 DONE:
@@ -13,16 +13,16 @@ DONE:
 - `render.yaml`: rewrite `/*` → `/index.html`, `CONVEX_DEPLOY_KEY` bez `VITE_` prefiksa, PR preview isključen.
 
 ISSUE: #11 S10 — pitanja, odluke, prihvatanje ChangeSet-a
-DONE:
-- `LOCK convex/schema.ts`: tabele `questions`, `answers`, `changeSets`.
+DONE: squash-merge [#37](https://github.com/Excapex/GROKHakaton/pull/37) na `b57cd248` (A Approve + zeleni `web`). `UNLOCK convex/schema.ts`.
 - Pitanje zahteva `findingId` i `documentId` originala. Odgovor čuva autora i vreme.
 - Prihvatanje je `proposed` → `accepted`, nikad `verified`. Ponovljen klik vraća `duplicated: true`.
 - CAD predlog ide u `designTask`, bez lažnog patch-a. Saglasnik ne izdaje saglasnost.
-- UI `#zadaci` (pitaj / odgovori / predloži / prihvati).
-CONTRACT: nema izmene `contracts/`. Čuva `ChangeSet.approval` i `base_hashes`; patch fajla je #13.
-VALIDATION: `applyAcceptance` testovi + `npm run verify`. Browser: pitanje → odgovor → prihvati, drugi klik bez duplikata.
-NEEDS: A-ov review na aktuelnom SHA. Engine (#9) da upiše dosije pa će ID nalaza moći da se bira sa Pregleda.
-NEXT: squash-merge posle approve-a na HEAD, zatim #13.
+CONTRACT: nema izmene `contracts/`.
+NEXT: zatvoreno.
+
+ISSUE: #13 S12 — ACK split
+DONE: na issue #13: `ACK S12a A / S12b B`. B ne dira `sandbox/compute/` ni `engine/`. S12b (Preuzmi + screenshot) kreće kad S12a da putanju.
+NEXT: čekam A artifact/path.
 
 ISSUE: #10 S09 — dosije i dokazi
 DONE:
