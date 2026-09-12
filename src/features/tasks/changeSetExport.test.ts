@@ -24,6 +24,31 @@ describe("buildChangeSetExport", () => {
     expect(out.apply.originals_untouched).toBe(true);
   });
 
+  it("nosi engine patches kad su sačuvani na ChangeSet-u", () => {
+    const out = buildChangeSetExport(
+      {
+        ...accepted,
+        patches: [
+          {
+            document_id: "d1",
+            format: "docx",
+            op: "replace_text",
+            locator: "body:fire-resistance-mark",
+            from: "F60",
+            to: "EI 60 prema SRPS EN 13501-2",
+          },
+        ],
+      },
+      documents,
+    );
+    expect(out.patches).toHaveLength(1);
+    expect(out.patches[0]?.from).toBe("F60");
+  });
+
+  it("bez plana ne izmišlja patch", () => {
+    expect(buildChangeSetExport(accepted, documents).patches).toEqual([]);
+  });
+
   it("CAD ostaje projektantski zadatak, bez patch-a", () => {
     const out = buildChangeSetExport(
       { ...accepted, designTask: "CAD izvor se ne krpi." },

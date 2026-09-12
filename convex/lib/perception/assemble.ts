@@ -91,7 +91,7 @@ export function assembleFromRoles(
         status: "unknown",
         observation_ids: [extracted.observations[0].id],
         severity: "low",
-        rationale: "Nema izvršivog nalaza; nije PASS.",
+        rationale: "Nema izvršivog nalaza u dokumentaciji. To nije potvrda usaglašenosti.",
       },
     ];
   }
@@ -110,7 +110,7 @@ export function assembleFromRoles(
       questions.push({
         schema_version: SCHEMA,
         id: qid,
-        prompt: `Koje opažanje važi za konflikt ${f.rule_id}?`,
+        prompt: `Dokumenti se ne slažu (pravilo ${f.rule_id}). Koji podatak je važeći?`,
         finding_ids: [f.id],
         blocking: true,
       });
@@ -120,7 +120,7 @@ export function assembleFromRoles(
     } else if (f.status === "unknown") {
       next_actions.push({
         kind: "design_task",
-        description: `Ručno proveriti preduslov za ${f.rule_id}`,
+        description: `Podatak nije pronađen u dokumentaciji; potrebna je ručna provera (pravilo ${f.rule_id}).`,
         reason: "physical_change",
       });
     }
@@ -143,7 +143,8 @@ export function assembleFromRoles(
   const dossier: Dossier = {
     schema_version: SCHEMA,
     review_run_id: run.id,
-    summary: "Pregled ZOP pack v1 nad izvučenim slotovima R1–R6. Nepoznato nije PASS.",
+    summary:
+      "Pregled ZOP pack v1 nad izvučenim slotovima R1–R6. Ako podatak nije nađen, to nije potvrda usaglašenosti.",
     coverage: {
       checked_rules: checked,
       skipped_rules: [...skipped],
