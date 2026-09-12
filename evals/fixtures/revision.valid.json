@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0.0",
+  "id": "rev_1",
+  "project_id": "proj_fixture_001",
+  "index": 1,
+  "document_ids": ["doc_gpzop", "doc_arh", "doc_elektro_ss"],
+  "created_at": 1757671200000
+}

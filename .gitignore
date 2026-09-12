@@ -17,3 +17,26 @@ private-data/
 artifacts-local/
 test-results/
 playwright-report/
+
+# --- appended by S00 bootstrap ---
+
+# macOS
+.DS_Store
+
+# --- Lokalni stručni korpus: NIKAD u Git ---
+# Očevi projekti, sirove primedbe i licencirani SRPS/EN standardi.
+# Žive IZVAN repoa (../za sergeja, ../neki bitni standardi,
+# ../izgradnja zakoni i pravlinici). Oba člana ih imaju lokalno.
+local-corpus/
+**/za sergeja/
+**/neki bitni standardi/
+**/izgradnja zakoni i pravlinici/
+*.dwg
+*.dwfx
+*.DWG
+# Standardi i propisi su licencirani — ne redistribuiraju se kroz repo.
+standardi/
+propisi/
+
+# Lista stvarnih predmeta ostaje lokalno (ne objavljivati klijente).
+scripts/setup/cases.local.txt

@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0.0",
+  "id": "cs_door_class_001",
+  "lifecycle": "proposed",
+  "base_hashes": {
+    "doc_gpzop": "sha256:fixture-gpzop-rev1"
+  },
+  "patches": [
+    {
+      "document_id": "doc_gpzop",
+      "format": "docx",
+      "op": "replace_text",
+      "locator": "body:fire-door-D-12",
+      "from": "F60",
+      "to": "EI 60 prema SRPS EN 13501-2"
+    }
+  ],
+  "design_tasks": [
+    {
+      "id": "dt_facade_dwg",
+      "description": "Izmena fasade na DWG nije podržan patch.",
+      "reason": "unsupported_format",
+      "document_id": "doc_arh_dwg"
+    }
+  ],
+  "dependencies": [],
+  "approval": { "state": "proposed" },
+  "artifact_ids": []
+}
