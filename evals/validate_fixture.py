@@ -26,6 +26,10 @@ PAIRS = (
         ROOT / "evals/fixtures/changeset.valid.json",
         ROOT / "contracts/jsonschema/changeset.schema.json",
     ),
+    (
+        ROOT / "evals/fixtures/ingest/anon-two-page/manifest.json",
+        ROOT / "contracts/jsonschema/document-manifest.schema.json",
+    ),
 )
 
 

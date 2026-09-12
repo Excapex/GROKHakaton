@@ -99,6 +99,33 @@ export type DomainPack = {
 
 export type EvidenceRegion = { x: number; y: number; w: number; h: number }
 
+/** Ingest assigns physical page_no. The model must not invent it. */
+export type PageReadability = 'full' | 'partial'
+
+export type PageManifest = {
+  page_no: number
+  width_pt: number
+  height_pt: number
+  rotation: number
+  has_text: boolean
+  is_scanned: boolean
+  text_layer_count: number
+  char_count: number
+  readability: PageReadability
+  regions: EvidenceRegion[]
+  text_artifact: string
+  render_artifact: string
+}
+
+export type DocumentManifest = {
+  schema_version: SchemaVersion
+  document_id: string
+  source_filename: string
+  input_hash: string
+  page_count: number
+  pages: PageManifest[]
+}
+
 export type Evidence = {
   schema_version: SchemaVersion
   id: string
