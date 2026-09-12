@@ -44,7 +44,7 @@ export function TasksPage({
   const threads = useQuery(api.questions.listForProject, { projectId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const review = useQuery(api.dossiers.getActive, { projectId });
-  const workspace = useQuery(api.projects.getWorkspace);
+  const workspace = useQuery(api.projects.getWorkspace, { projectId });
   const ask = useMutation(api.questions.ask);
   const answer = useMutation(api.questions.answer);
   const propose = useMutation(api.changeSets.proposeFromQuestion);

@@ -284,6 +284,93 @@ input {
 .project-switch button:hover {
   background: #2b433b;
 }
+.project-switch-static {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #485950;
+  background: #223833;
+  color: #e5eee7;
+  border-radius: 8px;
+  padding: 11px 10px;
+  font-size: 12px;
+  margin: 0;
+}
+.project-picker {
+  display: grid;
+  gap: 8px;
+}
+.project-picker-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #485950;
+  background: #223833;
+  color: #e5eee7;
+  border-radius: 8px;
+  padding: 0 10px;
+}
+.project-picker-field select {
+  flex: 1;
+  min-width: 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #e5eee7;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 11px 0;
+  cursor: pointer;
+}
+.project-picker-field:focus-within {
+  border-color: var(--accent);
+}
+.project-picker-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: 1px dashed #485950;
+  background: transparent;
+  color: #bed0c6;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.project-picker-add:hover {
+  background: #263e35;
+  color: white;
+}
+.project-picker-new {
+  display: grid;
+  gap: 8px;
+}
+.project-picker-new input,
+.project-picker-new select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #485950;
+  background: #1b2e29;
+  color: #e5eee7;
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 12px;
+}
+.project-picker-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.project-picker-new .button {
+  width: 100%;
+  justify-content: center;
+  padding: 8px 10px;
+  font-size: 12px;
+}
+.rail-collapsed .project-picker-add span:last-child,
+.rail-collapsed .project-picker-new {
+  display: none;
+}
 .nav-list {
   display: grid;
   gap: 5px;
@@ -1345,9 +1432,12 @@ summary::-webkit-details-marker {
   }
   .workspace-identity,
   .sidebar-bottom .sidebar-note,
-  .project-switch,
   .collapse-toggle {
     display: none;
+  }
+  /* Izbor predmeta mora da radi i na telefonu, pa se ne skriva. */
+  .project-switch {
+    margin: 12px 0 16px;
   }
   .rail-collapsed .nav-list a,
   .rail-collapsed .sidebar-help {

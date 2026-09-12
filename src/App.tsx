@@ -10,7 +10,8 @@ import {
   toContractProject,
 } from "./features/documents/projectMap.ts";
 import { RevisionsPage } from "./features/documents/RevisionsPage.tsx";
-import { useDemoWorkspace } from "./features/documents/useDemoWorkspace.ts";
+import { useWorkspace } from "./features/documents/useDemoWorkspace.ts";
+import { ProjectSwitcher } from "./features/shell/ProjectSwitcher.tsx";
 import { ModulesPage } from "./features/modules/ModulesPage.tsx";
 import { ModulesUnavailable } from "./features/modules/ModulesUnavailable.tsx";
 import { PlannedScreen } from "./features/shell/PlannedScreen.tsx";
@@ -68,6 +69,7 @@ function ShellFrame({
   projectCode,
   facts,
   fixtureLabel,
+  projectSwitcher,
 }: {
   children: ReactNode;
   activeNavId: NavId;
@@ -76,6 +78,7 @@ function ShellFrame({
   projectCode: string;
   facts: ReturnType<typeof buildProjectFacts>;
   fixtureLabel?: string;
+  projectSwitcher?: ReactNode;
 }) {
   return (
     <AppShell
@@ -91,6 +94,7 @@ function ShellFrame({
       facts={facts}
       factsNote={FIELDS_SEPARATION_NOTE}
       fixtureLabel={fixtureLabel}
+      projectSwitcher={projectSwitcher}
       account={{ initials: "MJ", name: "M. Jovanović" }}
     >
       {children}
@@ -105,9 +109,24 @@ function LiveApp({
   activeNavId: NavId;
   navigate: (navId: NavId) => void;
 }) {
-  const workspace = useDemoWorkspace();
-  const [selectedModule, setSelectedModule] =
-    useState<SelectedReviewModule | null>(null);
+  const { projects, workspace, selectedId, select } = useWorkspace();
+  // Pokrenut pregled pripada predmetu nad kojim je pokrenut i ne nasleđuje se.
+  const [review, setReview] = useState<{
+    projectId: string;
+    module: SelectedReviewModule;
+  } | null>(null);
+
+  const activeProjectId = workspace?.project._id ?? null;
+  const selectedModule =
+    review && review.projectId === activeProjectId ? review.module : null;
+
+  const switcher = projects.length > 0 && (
+    <ProjectSwitcher
+      projects={projects}
+      selectedId={selectedId ?? workspace?.project._id ?? null}
+      onSelect={select}
+    />
+  );
 
   if (!workspace) {
     return (
@@ -117,6 +136,7 @@ function LiveApp({
         projectTitle="Učitavanje predmeta"
         projectCode={DEMO_PROJECT_CODE}
         facts={buildProjectFacts(DEMO_PROJECT, null, selectedModule)}
+        projectSwitcher={switcher || undefined}
       >
         <div className="state-wrap">
           <StatePanel
@@ -157,12 +177,17 @@ function LiveApp({
       projectCode={DEMO_PROJECT_CODE}
       facts={facts}
       fixtureLabel="predmet iz Convex-a"
+      projectSwitcher={switcher || undefined}
     >
       {activeNavId === "moduli" ? (
         <ModulesPage
           projectId={mapped.project.id}
           revisionId={mapped.project.active_revision_id}
-          onReviewAccepted={setSelectedModule}
+          onReviewAccepted={(module) =>
+            setReview(
+              activeProjectId ? { projectId: activeProjectId, module } : null,
+            )
+          }
         />
       ) : activeNavId === "pregled" ? (
         <DossierPage
