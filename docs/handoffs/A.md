@@ -1,9 +1,18 @@
-# Handoff — Builder A
+# Handoff — Builder A (Agent 2 / wt2)
 
-ISSUE: #38 S12a apply
-PR: https://github.com/Excapex/GROKHakaton/pull/39
-DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
-CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
-VALIDATION: test_apply_patch; changeset vitest; perception vitest
-DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
-NEXT: push restack #39; B review HEAD.
+ISSUE: #56 S25 UI + pozivi (ne engine)
+BRANCH: `feat/A/56-ui-reread-wire` u `/home/mihajlo/GROKHakaton-wt2`
+PR: https://github.com/Excapex/GROKHakaton/pull/69
+
+DONE:
+- `origin/main` uključuje #66 ingest, #68 engine copy, #70 mapped rules.
+- UI: Prihvati ≠ primenjeno ≠ provereno. CAD bez patch dugmeta.
+- `markApplied` / `markVerified({ changeSetId, revisionId })` — bez klijentskog boolean-a. Zatvaranje prati `findingClosedOnReread` (ne zahteva PASS). Isti hash nije primena.
+
+CONTRACT: unknown ostaje unknown u prikazu. Original se ne prepisuje. Ne izmišljati finding ID / page_no / patch.
+
+VALIDATION: `npm test` + `npx tsc -b` u wt2.
+
+NEEDS: B Approve #69 na tačan HEAD. Ne merge-ujem B PR-ove (#67).
+
+NEXT: squash posle B Approve `--match-head-commit`.

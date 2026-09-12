@@ -1,6 +1,9 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import { api } from "./_generated/api";
 import { isCadKind, policyForFilename } from "./filePolicy";
+
+/** OWNERSHIP EXCEPTION (#48): A schedules ingest after register; B keeps `src/`. */
 
 export const generateUploadUrl = mutation({
   args: {},
@@ -36,6 +39,16 @@ export const register = mutation({
       )
       .unique();
     if (duplicate) {
+      if (duplicate.parsePolicy === "ingest") {
+        await ctx.scheduler.runAfter(0, api.workflows.ingest.fromStorage, {
+          storageId: duplicate.storageId,
+          filename: duplicate.filename,
+          parsePolicy: duplicate.parsePolicy,
+          projectId: args.projectId,
+          revisionId: args.revisionId,
+          documentId: duplicate._id,
+        });
+      }
       return duplicate._id;
     }
     const documentId = await ctx.db.insert("documents", {
@@ -71,6 +84,15 @@ export const register = mutation({
         documentId,
         revisionId: args.revisionId,
         createdAt: Date.now(),
+      });
+    } else {
+      await ctx.scheduler.runAfter(0, api.workflows.ingest.fromStorage, {
+        storageId: args.storageId,
+        filename: args.filename,
+        parsePolicy: policy.parsePolicy,
+        projectId: args.projectId,
+        revisionId: args.revisionId,
+        documentId,
       });
     }
     return documentId;

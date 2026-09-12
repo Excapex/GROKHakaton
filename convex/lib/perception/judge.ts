@@ -122,13 +122,27 @@ export function judge(observations: Observation[], evidence: Evidence[]): Findin
             "high",
             "Navedena je povučena oznaka F30/F60/F90 umesto EI/REI prema SRPS EN 13501-2.",
           )
-        : find("find_r1", "I-35", "unknown", r1Pos.map((o) => o.id), "high", "Oznaka F* postoji u opažanju ali nema dokaza; nije PASS."),
+        : find(
+            "find_r1",
+            "I-35",
+            "unknown",
+            r1Pos.map((o) => o.id),
+            "high",
+            "Oznaka F* je navedena, ali nema dokaza u dokumentaciji. To nije potvrda usaglašenosti.",
+          ),
     );
   } else if (r1.some((o) => o.value === null)) {
     const miss = r1.find((o) => o.value === null);
     if (miss) {
       findings.push(
-        find("find_r1", "I-35", "unknown", [miss.id], "high", "Oznaka otpornosti nije nađena; preduslov unknown."),
+        find(
+            "find_r1",
+            "I-35",
+            "unknown",
+            [miss.id],
+            "high",
+            "Oznaka otpornosti nije nađena u dokumentaciji.",
+          ),
       );
     }
   }
@@ -160,7 +174,7 @@ export function judge(observations: Observation[], evidence: Evidence[]): Findin
             "conflict",
             r3.map((o) => o.id),
             "high",
-            "Dva suprotna opažanja materijala fasade. Nije PASS ni FAIL.",
+            "Dva suprotna navoda materijala fasade. To nije ni potvrda ni odbijanje.",
           )
         : find("find_r3", "I-87", "unknown", r3.map((o) => o.id), "high", "Konflikt bez oba dokaza; unknown."),
     );
@@ -216,7 +230,7 @@ export function judge(observations: Observation[], evidence: Evidence[]): Findin
             "unknown",
             oids,
             "high",
-            "Površina i broj lica su izvučeni; odnos nije automatski PASS ni FAIL.",
+            "Površina i broj lica su izvučeni; odnos se ne ocenjuje automatski.",
           )
         : find("find_r6", "I-61", "unknown", oids, "high", "R6 bez dokaza; unknown."),
     );

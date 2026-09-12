@@ -10,6 +10,8 @@ import {
 } from "../dossier/dossierView.ts";
 import { eventLabel, findingTitle } from "../dossier/engineLabels.ts";
 import { formatBytes, KIND_LABELS, revisionLabel } from "./projectMap.ts";
+import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
+import { changeSetsVisibleOnRevision } from "../tasks/changeSetLifecycle.ts";
 
 type WorkspaceRevision = {
   _id: Id<"revisions">;
@@ -50,13 +52,18 @@ export function RevisionsPage({
 }) {
   const createNext = useMutation(api.revisions.createNext);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function openNextRevision() {
     setPending(true);
     setError(null);
+    setNotice(null);
     try {
       await createNext({ projectId });
+      setNotice(
+        "Nova revizija je prazna. Otpremi kopije na Dokumentima, zatim Označi primenjeno — Prihvati to ne radi.",
+      );
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "Revizija nije otvorena.",
@@ -73,7 +80,8 @@ export function RevisionsPage({
           <h2>Revizije</h2>
           <p>
             Lanac se dodaje. Originali prethodne revizije ostaju na svom
-            indeksu i ostaju otvorljivi posle osvežavanja.
+            indeksu i ostaju otvorljivi posle osvežavanja. Isti hash na novoj
+            reviziji nije provera. Prihvaćeno nije primenjeno.
           </p>
         </div>
         <button
@@ -90,6 +98,11 @@ export function RevisionsPage({
       {error && (
         <p className="inline-error" role="alert">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p className="inline-status" role="status">
+          {notice} <a href="#dokumenti">Otvori Dokumente</a>
         </p>
       )}
 
@@ -178,16 +191,30 @@ function RevisionDiff({
   revisionId: Id<"revisions">;
 }) {
   const diff = useQuery(api.revisions.diff, { projectId, revisionId });
+  const changeSets = useQuery(api.changeSets.listForProject, { projectId });
+  const threads = useQuery(api.questions.listForProject, { projectId });
+  const workspace = useQuery(api.projects.getWorkspace);
   // The payload widens once the engine writes a dossier; page stays null until then.
   const review = useQuery(api.dossiers.getActive, { projectId }) as
-    | { pipelineReady: boolean; dossier: Dossier | null; evidence?: Evidence[] }
+    | {
+        pipelineReady: boolean;
+        source?: string;
+        dossier: Dossier | null;
+        evidence?: Evidence[];
+        review_run?: { revision_id?: string };
+      }
     | null
     | undefined;
   const dossier = review?.pipelineReady ? review.dossier : null;
   const evidence = review?.evidence ?? [];
   const findingIds = dossier?.findings.map((row) => row.id) ?? [];
 
-  if (diff === undefined) {
+  if (
+    diff === undefined ||
+    changeSets === undefined ||
+    threads === undefined ||
+    workspace === undefined
+  ) {
     return (
       <div className="revision-diff">
         <h3>Razlika prema prethodnoj reviziji</h3>
@@ -198,7 +225,7 @@ function RevisionDiff({
       </div>
     );
   }
-  if (diff === null) return null;
+  if (diff === null || workspace === null) return null;
 
   const changed = diff.entries.filter((row) => row.state !== "unchanged");
 
@@ -224,7 +251,7 @@ function RevisionDiff({
         <p className="availability-note">
           <Icon name="info-circle" size={16} />
           Nijedan original nije zamenjen. Poređenje ide po nazivu i sha256, pa
-          ista datoteka nije izmena.
+          ista datoteka nije izmena i nije nova provera.
         </p>
       ) : (
         <ul className="diff-list">
@@ -243,42 +270,73 @@ function RevisionDiff({
       )}
 
       <h4>Po kom predlogu ispravke</h4>
-      {diff.changeSets.length === 0 ? (
-        <p className="availability-note">
-          <Icon name="info-circle" size={16} />
-          Nema prihvaćene ispravke za ovu reviziju. Zamenjen fajl bez predloga
-          ispravke ostaje ručna izmena projektanta.
-        </p>
-      ) : (
-        <ul className="diff-list">
-          {diff.changeSets.map((entry) => {
-            const finding = dossier?.findings.find(
-              (row) => row.id === entry.findingId,
-            );
-            const page =
-              dossier && finding
-                ? pageForFinding(dossier, finding, evidence)
-                : null;
-            return (
-              <li key={entry.changeSetId}>
-                <span className="kind-chip">
-                  {LIFECYCLE_LABELS[entry.lifecycle] ?? entry.lifecycle}
-                </span>
-                <span>
-                  {entry.filename}
-                  {entry.findingId
-                    ? ` · ${findingTitle(entry.findingId, findingIds)}`
-                    : ""}
-                  {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
-                </span>
-                {entry.designTask && (
-                  <span className="inline-status">{entry.designTask}</span>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <p className="availability-note">
+        <Icon name="info-circle" size={16} />
+        Označi primenjeno ide samo posle kopija na novoj reviziji.
+        Proveri novu reviziju ide samo ako je hash promenjen i
+        nalaz zatvoren na ingestovanom čitanju. Integritet šeme nije semantika.
+        Veza ide po nazivu fajla, jer original ostaje na prethodnoj reviziji.
+      </p>
+      {(() => {
+        const visible = changeSetsVisibleOnRevision(
+          changeSets,
+          workspace.documents,
+          revisionId,
+        );
+        const findingByQuestion = new Map(
+          threads.map(({ question }) => [String(question._id), question.findingId]),
+        );
+        if (visible.length === 0) {
+          return (
+            <p className="availability-note">
+              <Icon name="info-circle" size={16} />
+              Nema predloga ispravke vezanog za fajl na ovoj reviziji. Zamenjen
+              fajl bez predloga ostaje ručna izmena projektanta.
+            </p>
+          );
+        }
+        return (
+          <ul className="diff-list">
+            {visible.map((row) => {
+              const findingId = findingByQuestion.get(String(row.questionId)) ?? null;
+              const finding = findingId
+                ? dossier?.findings.find((item) => item.id === findingId)
+                : undefined;
+              const page =
+                dossier && finding
+                  ? pageForFinding(dossier, finding, evidence)
+                  : null;
+              const original = workspace.documents.find(
+                (doc) => doc._id === row.documentId,
+              );
+              return (
+                <li key={row._id}>
+                  <span className="kind-chip">
+                    {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle}
+                  </span>
+                  <span>
+                    {original?.filename ?? "dokument"}
+                    {findingId
+                      ? ` · ${findingTitle(findingId, findingIds)}`
+                      : ""}
+                    {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
+                  </span>
+                  {row.designTask && (
+                    <span className="inline-status">{row.designTask}</span>
+                  )}
+                  <ChangeSetLifecycleActions
+                    changeSet={row}
+                    documents={workspace.documents}
+                    revisions={workspace.revisions}
+                    findingId={findingId}
+                    review={review}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        );
+      })()}
     </div>
   );
 }
