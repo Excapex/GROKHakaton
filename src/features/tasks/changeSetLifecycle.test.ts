@@ -57,6 +57,34 @@ describe("changeSetLifecycle API surface", () => {
     expect(surface.markVerified).toBeNull();
   });
 
+  it("korisničke poruke nemaju ime mutacije", () => {
+    const apply = evaluateMarkApplied({
+      hasApi: false,
+      changeSet: accepted,
+      documents: officeDocs,
+      revisions,
+    });
+    const verify = evaluateMarkVerified({
+      hasApi: false,
+      changeSet: applied,
+      documents: officeDocs,
+      revisions,
+      findingId: "f1",
+      pipelineReady: true,
+      dossierSource: "ingest",
+      findings: [{ id: "f1", status: "pass" }],
+      reviewRevisionId: "rev2",
+    });
+    expect(apply.ok).toBe(false);
+    expect(verify.ok).toBe(false);
+    if (!apply.ok) {
+      expect(apply.reason).not.toMatch(/markApplied|api\.changeSets/);
+    }
+    if (!verify.ok) {
+      expect(verify.reason).not.toMatch(/markVerified|api\.changeSets/);
+    }
+  });
+
   it("kad mutacije stignu na objekat, vidi ih", () => {
     const surface = readChangeSetLifecycleApi({
       accept: {},
@@ -77,7 +105,7 @@ describe("evaluateMarkApplied", () => {
       revisions,
     });
     expect(gate.ok).toBe(false);
-    if (!gate.ok) expect(gate.reason).toMatch(/markApplied/);
+    if (!gate.ok) expect(gate.reason).toMatch(/serverski korak|glavnoj grani/);
   });
 
   it("ne zove se dok kopije nisu na novoj reviziji", () => {

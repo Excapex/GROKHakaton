@@ -160,7 +160,7 @@ export function evaluateMarkApplied(input: {
     return {
       ok: false,
       reason:
-        "Označi primenjeno čeka api.changeSets.markApplied na main. Prihvatanje ga ne zamenjuje.",
+        "Označi primenjeno čeka serverski korak na glavnoj grani. Prihvatanje ga ne zamenjuje.",
     };
   }
   if (input.changeSet.approvalState !== "accepted") {
@@ -184,7 +184,7 @@ export function evaluateMarkApplied(input: {
   if (input.changeSet.lifecycle !== "accepted") {
     return {
       ok: false,
-      reason: `Stanje ${input.changeSet.lifecycle} nije korak za primenu.`,
+      reason: "Ovo stanje nije korak za primenu.",
     };
   }
   return copiesOnNewerRevision(input.changeSet, input.documents, input.revisions);
@@ -205,7 +205,7 @@ export function evaluateMarkVerified(input: {
     return {
       ok: false,
       reason:
-        "Proveri novu reviziju čeka api.changeSets.markVerified na main. Prihvatanje i primena to nisu.",
+        "Proveri novu reviziju čeka serverski korak na glavnoj grani. Prihvatanje i primena to nisu.",
     };
   }
   if (input.changeSet.lifecycle === "accepted" || input.changeSet.lifecycle === "proposed") {

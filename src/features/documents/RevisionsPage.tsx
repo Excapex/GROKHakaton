@@ -270,8 +270,8 @@ function RevisionDiff({
       <h4>Po kom ChangeSet-u</h4>
       <p className="availability-note">
         <Icon name="info-circle" size={16} />
-        Označi primenjeno zove markApplied samo posle kopija na novoj reviziji.
-        Proveri novu reviziju zove markVerified samo ako je hash promenjen i
+        Označi primenjeno ide samo posle kopija na novoj reviziji.
+        Proveri novu reviziju ide samo ako je hash promenjen i
         nalaz zatvoren na ingestovanom čitanju. Integritet šeme nije semantika.
         Veza ide po nazivu fajla, jer original ostaje na prethodnoj reviziji.
       </p>

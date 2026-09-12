@@ -69,7 +69,7 @@ export function ChangeSetLifecycleActions({
       });
       setNotice({
         tone: "ok",
-        text: "Označeno primenjeno (markApplied). To još nije provera nalaza.",
+        text: "Označeno primenjeno na kopijama nove revizije. To još nije provera nalaza.",
       });
     } catch (error) {
       setNotice({
@@ -92,7 +92,7 @@ export function ChangeSetLifecycleActions({
       });
       setNotice({
         tone: "ok",
-        text: "Provera upisana (markVerified): hash je promenjen i nalaz je zatvoren na novom čitanju.",
+        text: "Provera upisana: hash je promenjen i nalaz je zatvoren na novom čitanju.",
       });
     } catch (error) {
       setNotice({
