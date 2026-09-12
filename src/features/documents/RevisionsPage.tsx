@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useConvex, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { Dossier, Evidence } from "../../../contracts/types.ts";
@@ -9,12 +9,8 @@ import {
   pageForFinding,
 } from "../dossier/dossierView.ts";
 import { formatBytes, KIND_LABELS, revisionLabel } from "./projectMap.ts";
-import {
-  evaluateMarkApplied,
-  evaluateMarkVerified,
-  readChangeSetLifecycleApi,
-  type FindingSnapshot,
-} from "../tasks/changeSetLifecycle.ts";
+import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
+import { changeSetsVisibleOnRevision } from "../tasks/changeSetLifecycle.ts";
 
 type WorkspaceRevision = {
   _id: Id<"revisions">;
@@ -55,13 +51,18 @@ export function RevisionsPage({
 }) {
   const createNext = useMutation(api.revisions.createNext);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function openNextRevision() {
     setPending(true);
     setError(null);
+    setNotice(null);
     try {
       await createNext({ projectId });
+      setNotice(
+        "Nova revizija je prazna. Otpremi kopije na Dokumentima, zatim Označi primenjeno — Prihvati to ne radi.",
+      );
     } catch (caught) {
       setError(
         caught instanceof Error ? caught.message : "Revizija nije otvorena.",
@@ -96,6 +97,11 @@ export function RevisionsPage({
       {error && (
         <p className="inline-error" role="alert">
           {error}
+        </p>
+      )}
+      {notice && (
+        <p className="inline-status" role="status">
+          {notice} <a href="#dokumenti">Otvori Dokumente</a>
         </p>
       )}
 
@@ -184,9 +190,8 @@ function RevisionDiff({
   revisionId: Id<"revisions">;
 }) {
   const diff = useQuery(api.revisions.diff, { projectId, revisionId });
-  const convex = useConvex();
-  const lifecycleApi = readChangeSetLifecycleApi(api.changeSets);
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
+  const threads = useQuery(api.questions.listForProject, { projectId });
   const workspace = useQuery(api.projects.getWorkspace);
   // The payload widens once the engine writes a dossier; page stays null until then.
   const review = useQuery(api.dossiers.getActive, { projectId }) as
@@ -202,7 +207,12 @@ function RevisionDiff({
   const dossier = review?.pipelineReady ? review.dossier : null;
   const evidence = review?.evidence ?? [];
 
-  if (diff === undefined || changeSets === undefined || workspace === undefined) {
+  if (
+    diff === undefined ||
+    changeSets === undefined ||
+    threads === undefined ||
+    workspace === undefined
+  ) {
     return (
       <div className="revision-diff">
         <h3>Razlika prema prethodnoj reviziji</h3>
@@ -263,97 +273,66 @@ function RevisionDiff({
         Označi primenjeno zove markApplied samo posle kopija na novoj reviziji.
         Proveri novu reviziju zove markVerified samo ako je hash promenjen i
         nalaz zatvoren na ingestovanom čitanju. Integritet šeme nije semantika.
+        Veza ide po nazivu fajla, jer original ostaje na prethodnoj reviziji.
       </p>
-      {diff.changeSets.length === 0 ? (
-        <p className="availability-note">
-          <Icon name="info-circle" size={16} />
-          Nema prihvaćenog paketa izmena za ovu reviziju. Zamenjen fajl bez
-          ChangeSet-a ostaje ručna izmena projektanta.
-        </p>
-      ) : (
-        <ul className="diff-list">
-          {diff.changeSets.map((entry) => {
-            const finding = dossier?.findings.find(
-              (row) => row.id === entry.findingId,
-            );
-            const page =
-              dossier && finding
-                ? pageForFinding(dossier, finding, evidence)
-                : null;
-            const row = changeSets.find((item) => item._id === entry.changeSetId);
-            const applyGate = row
-              ? evaluateMarkApplied({
-                  hasApi: lifecycleApi.hasMarkApplied,
-                  changeSet: row,
-                  documents: workspace.documents,
-                  revisions: workspace.revisions,
-                })
-              : { ok: false as const, reason: "ChangeSet nije u listi predmeta." };
-            const verifyGate = row
-              ? evaluateMarkVerified({
-                  hasApi: lifecycleApi.hasMarkVerified,
-                  changeSet: row,
-                  documents: workspace.documents,
-                  revisions: workspace.revisions,
-                  findingId: entry.findingId,
-                  pipelineReady: review?.pipelineReady === true,
-                  dossierSource: review?.source ?? "none",
-                  findings: (dossier?.findings ?? []) as FindingSnapshot[],
-                  reviewRevisionId: review?.review_run?.revision_id ?? null,
-                })
-              : { ok: false as const, reason: "ChangeSet nije u listi predmeta." };
-            return (
-              <li key={entry.changeSetId}>
-                <span className="kind-chip">
-                  {LIFECYCLE_LABELS[entry.lifecycle] ?? entry.lifecycle}
-                </span>
-                <span>
-                  {entry.filename}
-                  {entry.findingId ? ` · nalaz ${entry.findingId}` : ""}
-                  {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
-                </span>
-                {entry.designTask && (
-                  <span className="inline-status">{entry.designTask}</span>
-                )}
-                {row && (
-                  <div className="task-actions">
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      disabled={!applyGate.ok}
-                      onClick={() => {
-                        if (!applyGate.ok || !lifecycleApi.markApplied) return;
-                        void convex.mutation(lifecycleApi.markApplied, {
-                          changeSetId: row._id,
-                          revisionId: applyGate.revisionId as Id<"revisions">,
-                        });
-                      }}
-                    >
-                      Označi primenjeno
-                    </button>
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      disabled={!verifyGate.ok}
-                      onClick={() => {
-                        if (!verifyGate.ok || !lifecycleApi.markVerified) return;
-                        void convex.mutation(lifecycleApi.markVerified, {
-                          changeSetId: row._id,
-                          revisionId: verifyGate.revisionId as Id<"revisions">,
-                        });
-                      }}
-                    >
-                      Proveri novu reviziju
-                    </button>
-                  </div>
-                )}
-                {!applyGate.ok && <p className="dossier-hint">{applyGate.reason}</p>}
-                {!verifyGate.ok && <p className="dossier-hint">{verifyGate.reason}</p>}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      {(() => {
+        const visible = changeSetsVisibleOnRevision(
+          changeSets,
+          workspace.documents,
+          revisionId,
+        );
+        const findingByQuestion = new Map(
+          threads.map(({ question }) => [String(question._id), question.findingId]),
+        );
+        if (visible.length === 0) {
+          return (
+            <p className="availability-note">
+              <Icon name="info-circle" size={16} />
+              Nema paketa izmena vezanog za fajl na ovoj reviziji. Zamenjen fajl
+              bez ChangeSet-a ostaje ručna izmena projektanta.
+            </p>
+          );
+        }
+        return (
+          <ul className="diff-list">
+            {visible.map((row) => {
+              const findingId = findingByQuestion.get(String(row.questionId)) ?? null;
+              const finding = findingId
+                ? dossier?.findings.find((item) => item.id === findingId)
+                : undefined;
+              const page =
+                dossier && finding
+                  ? pageForFinding(dossier, finding, evidence)
+                  : null;
+              const original = workspace.documents.find(
+                (doc) => doc._id === row.documentId,
+              );
+              return (
+                <li key={row._id}>
+                  <span className="kind-chip">
+                    {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle}
+                  </span>
+                  <span>
+                    {original?.filename ?? "dokument"}
+                    {findingId ? ` · nalaz ${findingId}` : ""}
+                    {page !== null ? ` · strana ${page}` : " · strana nije zabeležena"}
+                  </span>
+                  {row.designTask && (
+                    <span className="inline-status">{row.designTask}</span>
+                  )}
+                  <ChangeSetLifecycleActions
+                    changeSet={row}
+                    documents={workspace.documents}
+                    revisions={workspace.revisions}
+                    findingId={findingId}
+                    review={review}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        );
+      })()}
     </div>
   );
 }

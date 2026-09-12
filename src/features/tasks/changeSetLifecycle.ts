@@ -17,6 +17,7 @@ export type LifecycleRevision = {
 export type LifecycleChangeSet = {
   _id: string;
   documentId: string;
+  questionId?: string;
   lifecycle: "proposed" | "accepted" | "applied" | "verified" | string;
   approvalState: "proposed" | "accepted" | "rejected" | string;
   baseHashes: Record<string, string>;
@@ -285,4 +286,26 @@ export function evaluateMarkVerified(input: {
     };
   }
   return { ok: true, revisionId: copies.revisionId };
+}
+
+/**
+ * Diff on main links ChangeSet by original documentId, which stays on the
+ * previous revision after copies are uploaded. Match by filename instead so
+ * apply/verify remain visible on the new revision.
+ */
+export function changeSetsVisibleOnRevision<T extends LifecycleChangeSet>(
+  changeSets: T[],
+  documents: LifecycleDoc[],
+  revisionId: string,
+): T[] {
+  const names = new Set(
+    documents
+      .filter((doc) => doc.revisionId === revisionId)
+      .map((doc) => doc.filename),
+  );
+  return changeSets.filter((changeSet) => {
+    const original = documents.find((doc) => doc._id === changeSet.documentId);
+    if (!original) return false;
+    return original.revisionId === revisionId || names.has(original.filename);
+  });
 }

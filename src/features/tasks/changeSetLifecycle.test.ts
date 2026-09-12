@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  changeSetsVisibleOnRevision,
   evaluateMarkApplied,
   evaluateMarkVerified,
   patchButtonVisible,
@@ -157,6 +158,16 @@ describe("evaluateMarkVerified", () => {
       ok: true,
       revisionId: "rev2",
     });
+  });
+});
+
+describe("changeSetsVisibleOnRevision", () => {
+  it("vidi ChangeSet na reviziji 2 i kad je original i dalje na reviziji 1", () => {
+    const visible = changeSetsVisibleOnRevision([accepted], officeDocs, "rev2");
+    expect(visible.map((row) => row._id)).toEqual(["cs1"]);
+    expect(changeSetsVisibleOnRevision([accepted], [officeDocs[0]], "rev2")).toEqual(
+      [],
+    );
   });
 });
 

@@ -1,18 +1,15 @@
 import { useState } from "react";
-import { useConvex, useMutation, useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
+import { ChangeSetLifecycleActions } from "./ChangeSetLifecycleActions.tsx";
 import { downloadChangeSet } from "./changeSetExport.ts";
 import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
 import {
-  evaluateMarkApplied,
-  evaluateMarkVerified,
   patchButtonVisible,
-  readChangeSetLifecycleApi,
   type FindingSnapshot,
-  type LifecycleChangeSet,
 } from "./changeSetLifecycle.ts";
 
 const ACTOR = "M. Jovanović";
@@ -42,8 +39,6 @@ export function TasksPage({
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const review = useQuery(api.dossiers.getActive, { projectId });
   const workspace = useQuery(api.projects.getWorkspace);
-  const convex = useConvex();
-  const lifecycleApi = readChangeSetLifecycleApi(api.changeSets);
   const ask = useMutation(api.questions.ask);
   const answer = useMutation(api.questions.answer);
   const propose = useMutation(api.changeSets.proposeFromQuestion);
@@ -166,99 +161,6 @@ export function TasksPage({
       }
     | null
     | undefined;
-
-  function applyGateFor(row: LifecycleChangeSet & { questionId?: string }) {
-    return evaluateMarkApplied({
-      hasApi: lifecycleApi.hasMarkApplied,
-      changeSet: row,
-      documents: allDocuments,
-      revisions,
-    });
-  }
-
-  function verifyGateFor(row: LifecycleChangeSet & { questionId?: string }) {
-    return evaluateMarkVerified({
-      hasApi: lifecycleApi.hasMarkVerified,
-      changeSet: row,
-      documents: allDocuments,
-      revisions,
-      findingId: findingByQuestion.get(String(row.questionId ?? "")) || null,
-      pipelineReady: reviewRecord?.pipelineReady === true,
-      dossierSource: reviewRecord?.source ?? "none",
-      findings: reviewRecord?.dossier?.findings ?? [],
-      reviewRevisionId: reviewRecord?.review_run?.revision_id ?? null,
-    });
-  }
-
-  async function markAppliedSet(
-    changeSetId: Id<"changeSets">,
-    row: LifecycleChangeSet & { questionId?: string },
-  ) {
-    const gate = applyGateFor(row);
-    if (!gate.ok || !lifecycleApi.markApplied) {
-      setNotice({
-        tone: "error",
-        text: gate.ok
-          ? "api.changeSets.markApplied još nije na main."
-          : gate.reason,
-      });
-      return;
-    }
-    setBusy(true);
-    setNotice(null);
-    try {
-      await convex.mutation(lifecycleApi.markApplied, {
-        changeSetId,
-        revisionId: gate.revisionId as Id<"revisions">,
-      });
-      setNotice({
-        tone: "ok",
-        text: "Označeno primenjeno na kopijama nove revizije. To još nije provera nalaza.",
-      });
-    } catch (error) {
-      setNotice({
-        tone: "error",
-        text: error instanceof Error ? error.message : "Primena nije upisana.",
-      });
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function markVerifiedSet(
-    changeSetId: Id<"changeSets">,
-    row: LifecycleChangeSet & { questionId?: string },
-  ) {
-    const gate = verifyGateFor(row);
-    if (!gate.ok || !lifecycleApi.markVerified) {
-      setNotice({
-        tone: "error",
-        text: gate.ok
-          ? "api.changeSets.markVerified još nije na main."
-          : gate.reason,
-      });
-      return;
-    }
-    setBusy(true);
-    setNotice(null);
-    try {
-      await convex.mutation(lifecycleApi.markVerified, {
-        changeSetId,
-        revisionId: gate.revisionId as Id<"revisions">,
-      });
-      setNotice({
-        tone: "ok",
-        text: "Provera upisana jer je hash promenjen i nalaz zatvoren na novom čitanju.",
-      });
-    } catch (error) {
-      setNotice({
-        tone: "error",
-        text: error instanceof Error ? error.message : "Provera nije upisana.",
-      });
-    } finally {
-      setBusy(false);
-    }
-  }
 
   if (
     threads === undefined ||
@@ -492,23 +394,15 @@ export function TasksPage({
                         Preuzmi paket izmena
                       </button>
                     )}
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      disabled={busy || !applyGateFor(row).ok}
-                      onClick={() => void markAppliedSet(row._id, row)}
-                    >
-                      Označi primenjeno
-                    </button>
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      disabled={busy || !verifyGateFor(row).ok}
-                      onClick={() => void markVerifiedSet(row._id, row)}
-                    >
-                      Proveri novu reviziju
-                    </button>
                   </div>
+                  <ChangeSetLifecycleActions
+                    changeSet={row}
+                    documents={allDocuments}
+                    revisions={revisions}
+                    findingId={findingByQuestion.get(String(row.questionId)) ?? null}
+                    review={reviewRecord}
+                    busy={busy}
+                  />
                   {!patchButtonVisible(row, allDocuments) && (
                     <p className="dossier-hint">
                       CAD nema patch. DWG/DWFX ostaje zadatak projektanta, bez
@@ -522,20 +416,6 @@ export function TasksPage({
                       paket za primenu.
                     </p>
                   )}
-                  {(() => {
-                    const applyGate = applyGateFor(row);
-                    const verifyGate = verifyGateFor(row);
-                    return (
-                      <>
-                        {!applyGate.ok && (
-                          <p className="dossier-hint">{applyGate.reason}</p>
-                        )}
-                        {!verifyGate.ok && (
-                          <p className="dossier-hint">{verifyGate.reason}</p>
-                        )}
-                      </>
-                    );
-                  })()}
                 </li>
               ))}
             </ul>
