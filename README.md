@@ -60,6 +60,36 @@ Ako je repo već kloniran, otvorite taj direktorijum umesto ponovnog kloniranja.
 5. Kreirajte `docs/PRODUCT.md` i `docs/CONTRACTS.md` iz prihvaćene specifikacije, kako nalaže setup. Tek nakon prenosa aplikacionog scaffolda postoje `package.json`, `npm install` / `npm ci` i lokalni app build.
 6. Svaki član koristi **svoj Convex dev deployment**. B vodi produkcioni deploy iz pregledanog `main`-a.
 
+## Razvojno okruženje — pročitajte pre prvog builda
+
+**Node.** `package.json` ima `engines.node: ">=24"`. Floor je 24 zbog Vite 7 i
+`ci.bootstrap.yml` koji koristi Node 24; lokalno je testirano i na Node 26.
+**Node 22 neće raditi** — ako si na 22, nadogradi pre `npm ci` da ne gubiš vreme
+na nejasne greške iz Vite-a.
+
+**Provere pre commita.** Jedna komanda pokriva sve:
+
+```bash
+npm run verify   # check:private + lint + build + test
+```
+
+- `npm run check:private` — guard koji blokira privatni korpus, licencirane
+  standarde, CAD izvore, API ključeve i nazive stvarnih predmeta. Lista naziva je
+  lokalna: `cp scripts/setup/cases.example.txt scripts/setup/cases.local.txt`.
+- `npm test` — Vitest. **Trenutno nema ni jednog testa** i skripta koristi
+  `--passWithNoTests`, pa zeleno `npm test` **nije dokaz pokrivenosti**. Stvarni
+  testovi dolaze kao prihvatni uslov zadataka koji ih zahtevaju (ugovori, pravila,
+  izmena dokumenata).
+- `npm run test:e2e` — Playwright, pokriva petlju upload → nalaz → odluka → izlaz
+  → revizija. Namerno nije u CI-ju dok testovi ne postoje.
+
+**Kontekst za agente.** Svaki alat čita ista pravila iz `docs/`:
+`AGENTS.md` (Codex, Cursor, Grok Bot) · `CLAUDE.md` (Claude Code) ·
+`.cursor/rules/` (Cursor). Počni od [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — ko radi
+šta, u kom alatu. Podela fajlova i pravila pushovanja su u
+[`docs/GIT-PROTOCOL.md`](docs/GIT-PROTOCOL.md). Šta nikad ne ide u Git:
+[`docs/LOCAL-DATA.md`](docs/LOCAL-DATA.md).
+
 CI šablon je pripremljen u setup paketu. Aktivira se u `.github/workflows/ci.yml` kada postoje aplikacioni fajlovi i npm komande koje proverava.
 
 ## Podela posla i Git protokol
