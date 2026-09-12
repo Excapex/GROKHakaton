@@ -39,7 +39,12 @@ done <<< "$staged"
 # Sadržaj: naziv predmeta u dodatim linijama.
 scan=$(printf '%s\n' "$staged" | grep -E '\.(md|json|ts|tsx|js|mjs|py|txt|html)$' || true)
 if [ -n "$CASES" ] && [ -n "$scan" ]; then
-  hits=$(git diff --cached -- $(printf '%s ' $scan) 2>/dev/null \
+  # Putanje se citaju u niz — word-splitting puca na imenima sa razmakom.
+  files=()
+  while IFS= read -r line; do
+    [ -n "$line" ] && files+=("$line")
+  done <<< "$scan"
+  hits=$(git diff --cached -- "${files[@]}" 2>/dev/null \
           | grep -nEi "^\+.*($CASES)" | head -5 || true)
   if [ -n "$hits" ]; then
     echo "  BLOKIRANO: naziv stvarnog predmeta u sadržaju:"

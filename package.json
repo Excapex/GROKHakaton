@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run --passWithNoTests",
+    "test:e2e": "playwright test",
+    "check:private": "bash scripts/setup/check-no-private-data.sh",
+    "verify": "npm run check:private && npm run lint && npm run build && npm test"
   },
   "dependencies": {
     "@convex-dev/workflow": "^0.4.7",

@@ -19,18 +19,6 @@ test-results/
 playwright-report/
 
 # --- appended by S00 bootstrap ---
-.env
-.env.*
-!.env.example
-CLAUDE.local.md
-.venv/
-__pycache__/
-.pytest_cache/
-private-data/
-artifacts-local/
-*.local.json
-issue-body.local.md
-docs/pr-body.local.md
 
 # macOS
 .DS_Store
@@ -40,7 +28,6 @@ docs/pr-body.local.md
 # Žive IZVAN repoa (../za sergeja, ../neki bitni standardi,
 # ../izgradnja zakoni i pravlinici). Oba člana ih imaju lokalno.
 local-corpus/
-private-data/
 **/za sergeja/
 **/neki bitni standardi/
 **/izgradnja zakoni i pravlinici/
