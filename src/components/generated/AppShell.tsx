@@ -26,6 +26,7 @@ export type AppShellProps = {
   children: ReactNode;
 };
 const navIcons: Record<string, IconName> = {
+  projekat: "layout-dashboard",
   pregled: "layout-dashboard",
   dokumenti: "files",
   zadaci: "list-check",

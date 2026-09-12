@@ -37,8 +37,8 @@ export function buildProjectFacts(
     },
     {
       id: "revision",
-      label: "Aktivna revizija",
-      value: revisionLabel ?? "Nema revizije",
+      label: "Tekuća provera",
+      value: revisionLabel ?? "Nema provere",
       code: project.active_revision_id ?? "—",
       note: PROJECT_FIELD_NOTE,
     },

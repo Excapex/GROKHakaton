@@ -29,8 +29,8 @@ describe("toContractProject", () => {
 });
 
 describe("labels", () => {
-  it("označava reviziju i veličinu", () => {
-    expect(revisionLabel(2)).toBe("Revizija 2");
+  it("označava krug provere, ne izmenu projekta, i veličinu", () => {
+    expect(revisionLabel(2)).toBe("Provera 2");
     expect(formatBytes(512)).toBe("512 B");
     expect(formatBytes(2048)).toBe("2.0 KB");
   });

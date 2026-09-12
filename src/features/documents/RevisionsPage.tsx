@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { Dossier, Evidence } from "../../../contracts/types.ts";
@@ -43,73 +43,40 @@ export function RevisionsPage({
   revisions,
   documents,
   events,
+  embedded = false,
 }: {
   projectId: Id<"projects">;
   activeRevisionId: Id<"revisions"> | null;
   revisions: WorkspaceRevision[];
   documents: WorkspaceDocument[];
   events: WorkspaceEvent[];
+  embedded?: boolean;
 }) {
-  const createNext = useMutation(api.revisions.createNext);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-
-  async function openNextRevision() {
-    setPending(true);
-    setError(null);
-    setNotice(null);
-    try {
-      await createNext({ projectId });
-      setNotice(
-        "Nova revizija je prazna. Otpremi kopije na Dokumentima, zatim Označi primenjeno — Prihvati to ne radi.",
-      );
-    } catch (caught) {
-      setError(
-        caught instanceof Error ? caught.message : "Revizija nije otvorena.",
-      );
-    } finally {
-      setPending(false);
-    }
-  }
+  const [openIndex, setOpenIndex] = useState<Id<"revisions"> | null>(
+    activeRevisionId,
+  );
 
   return (
-    <section className="page-content" aria-label="Revizije">
-      <div className="page-heading page-heading-split">
-        <div>
-          <h2>Revizije</h2>
+    <section
+      className={embedded ? "embedded-section" : "page-content"}
+      aria-label="Provere"
+    >
+      {!embedded && (
+        <div className="page-heading">
+          <h2>Provere</h2>
           <p>
-            Lanac se dodaje. Originali prethodne revizije ostaju na svom
-            indeksu i ostaju otvorljivi posle osvežavanja. Isti hash na novoj
-            reviziji nije provera. Prihvaćeno nije primenjeno.
+            Provera je jedan krug pregleda dokumentacije. Kad ispravite projekat
+            i ubacite novu dokumentaciju, otvara se sledeća provera i vidi se šta
+            se promenilo. Originali starijih provera ostaju nedirnuti.
           </p>
         </div>
-        <button
-          className="button button-primary"
-          type="button"
-          disabled={pending}
-          onClick={() => void openNextRevision()}
-        >
-          Nova revizija
-          <Icon name="history" size={18} />
-        </button>
-      </div>
-
-      {error && (
-        <p className="inline-error" role="alert">
-          {error}
-        </p>
-      )}
-      {notice && (
-        <p className="inline-status" role="status">
-          {notice} <a href="#dokumenti">Otvori Dokumente</a>
-        </p>
       )}
 
       {revisions.length === 0 ? (
         <p className="availability-note">
           <Icon name="info-circle" size={16} />
-          Lanac počinje prvim otpremanjem na stranici Dokumenti.
+          Prva provera nastaje kad na stranici Dokumenti ubacite prvi set
+          dokumentacije. Prazna provera se ne otvara.
         </p>
       ) : (
         <ol className="revision-chain">
@@ -118,45 +85,78 @@ export function RevisionsPage({
               (doc) => doc.revisionId === revision._id,
             );
             const active = revision._id === activeRevisionId;
+            const open = revision._id === openIndex;
             return (
-              <li key={revision._id} className={active ? "is-active" : ""}>
-                <header>
-                  <h3>{revisionLabel(revision.index)}</h3>
-                  <time dateTime={new Date(revision.createdAt).toISOString()}>
-                    {new Date(revision.createdAt).toLocaleString("sr-Latn")}
-                  </time>
-                  {active && <span className="status-badge">Aktivna</span>}
-                </header>
-                {files.length === 0 ? (
-                  <p>
-                    Čeka originale. Stari fajlovi ostaju na prethodnoj reviziji.
-                  </p>
-                ) : (
-                  <ul>
-                    {files.map((doc) => (
-                      <li key={doc._id}>
-                        <span>
-                          {doc.filename} · {KIND_LABELS[doc.kind] ?? doc.kind} ·{" "}
-                          {formatBytes(doc.byteSize)}
-                        </span>
-                        <code className="hash-value">{doc.sha256}</code>
-                        {doc.downloadUrl && (
-                          <a href={doc.downloadUrl} target="_blank" rel="noreferrer">
-                            Otvori original
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+              <li
+                key={revision._id}
+                className={`check-card${active ? " is-active" : ""}${
+                  files.length === 0 ? " is-empty" : ""
+                }`}
+              >
+                <button
+                  type="button"
+                  className="check-head"
+                  aria-expanded={open}
+                  onClick={() => setOpenIndex(open ? null : revision._id)}
+                >
+                  <span className="check-number" aria-hidden="true">
+                    {revision.index}
+                  </span>
+                  <span className="check-title">
+                    <strong>{revisionLabel(revision.index)}</strong>
+                    <small>
+                      {new Date(revision.createdAt).toLocaleString("sr-Latn")} ·{" "}
+                      {files.length === 0
+                        ? "bez dokumenata"
+                        : `${files.length} ${files.length === 1 ? "dokument" : "dokumenta"}`}
+                    </small>
+                  </span>
+                  {active && <span className="status-badge">Tekuća</span>}
+                  <Icon name={open ? "chevron-down" : "chevron-right"} size={16} />
+                </button>
+
+                {open && (
+                  <div className="check-body">
+                    {files.length === 0 ? (
+                      <p className="availability-note">
+                        <Icon name="info-circle" size={16} />
+                        Ova provera je otvorena bez dokumenata, pa nije ni
+                        pokrenuta. Nove provere se otvaraju samo uz ubačenu
+                        dokumentaciju.
+                      </p>
+                    ) : (
+                      <ul>
+                        {files.map((doc) => (
+                          <li key={doc._id}>
+                            <span>
+                              {doc.filename} ·{" "}
+                              {KIND_LABELS[doc.kind] ?? doc.kind} ·{" "}
+                              {formatBytes(doc.byteSize)}
+                            </span>
+                            <code className="hash-value">{doc.sha256}</code>
+                            {doc.downloadUrl && (
+                              <a
+                                href={doc.downloadUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                Otvori original
+                              </a>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <RevisionDiff
+                      projectId={projectId}
+                      revisionId={revision._id}
+                    />
+                  </div>
                 )}
               </li>
             );
           })}
         </ol>
-      )}
-
-      {activeRevisionId && (
-        <RevisionDiff projectId={projectId} revisionId={activeRevisionId} />
       )}
 
       {events.length > 0 && (
@@ -193,7 +193,7 @@ function RevisionDiff({
   const diff = useQuery(api.revisions.diff, { projectId, revisionId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const threads = useQuery(api.questions.listForProject, { projectId });
-  const workspace = useQuery(api.projects.getWorkspace);
+  const workspace = useQuery(api.projects.getWorkspace, { projectId });
   // The payload widens once the engine writes a dossier; page stays null until then.
   const review = useQuery(api.dossiers.getActive, { projectId }) as
     | {
@@ -217,7 +217,7 @@ function RevisionDiff({
   ) {
     return (
       <div className="revision-diff">
-        <h3>Razlika prema prethodnoj reviziji</h3>
+        <h3>Šta se promenilo prema prethodnoj proveri</h3>
         <p className="availability-note">
           <Icon name="info-circle" size={16} />
           Poređenje se učitava.
@@ -232,10 +232,10 @@ function RevisionDiff({
   return (
     <div className="revision-diff">
       <h3>
-        Razlika prema prethodnoj reviziji
+        Šta se promenilo prema prethodnoj proveri
         {diff.previousIndex !== null && (
           <span className="status-badge">
-            Revizija {diff.previousIndex} → {diff.revisionIndex}
+            Provera {diff.previousIndex} → {diff.revisionIndex}
           </span>
         )}
       </h3>

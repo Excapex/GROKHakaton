@@ -29,8 +29,12 @@ export function toContractProject(row: {
   };
 }
 
+/**
+ * Krug provere, ne izmena projekta. Inženjeru „revizija" znači promenu
+ * dokumentacije, a ovde označava koliko je puta dokumentacija pregledana.
+ */
 export function revisionLabel(index: number): string {
-  return `Revizija ${index}`;
+  return `Provera ${index}`;
 }
 
 export function formatBytes(bytes: number): string {
