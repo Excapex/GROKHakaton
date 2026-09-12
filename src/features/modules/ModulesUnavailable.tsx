@@ -1,4 +1,4 @@
-import { StatePanel } from '../../components/generated/StatePanel.tsx'
+import { StatePanel } from "../../components/generated/StatePanel.tsx";
 
 /**
  * Katalog modula je serverski podatak. Bez Convex URL-a nema ni kataloga ni
@@ -6,16 +6,22 @@ import { StatePanel } from '../../components/generated/StatePanel.tsx'
  */
 export function ModulesUnavailable() {
   return (
-    <section aria-label="Stanje kataloga" className="px-4 py-9 sm:px-10">
-      <div className="max-w-[520px]">
+    <section aria-label="Stanje kataloga" className="page-content">
+      <div className="page-heading">
+        <h2>Stručni moduli</h2>
+        <p>
+          Različite discipline. Jedan prostor za precizan pregled dokumentacije.
+        </p>
+      </div>
+      <div>
         <StatePanel
           tone="error"
           label="Greška"
-          title="Backend nije podešen"
-          message="Katalog stručnih modula i provera zahteva žive na serveru. Bez Convex deployment-a nema kataloga; lokalna zamena bi bila izmišljen podatak."
+          title="Katalog trenutno nije dostupan"
+          message="Veza sa servisom za stručne module nije podešena. Administrator radnog prostora treba da poveže servis pre pokretanja pregleda."
           code="VITE_CONVEX_URL nije postavljen"
         />
       </div>
     </section>
-  )
+  );
 }

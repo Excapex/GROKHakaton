@@ -1,36 +1,24 @@
-/**
- * Generisano kroz Wonder, očišćeno prema docs/TOOLSTACK.md §5.
- * Komponenta ne zna ni jedan konkretan modul: sve stiže kroz `items`.
- * Planirana stavka nema mesto za rezultat, ocenu ni procenat — to polje ne postoji.
- */
+import { useId, useState, type ReactNode } from "react";
+import { Icon } from "./Icon.tsx";
 
-export type ModuleAvailability = 'active' | 'planned'
-
+export type ModuleAvailability = "active" | "planned";
 export type ModuleCatalogItem = {
-  id: string
-  name: string
-  availability: ModuleAvailability
-  /** Verzija packa; postoji samo kod aktivnog modula. */
-  version?: string | null
-  scope: string
-  /** Kratka napomena uz aktivan modul (npr. čime rezultat mora biti potkrepljen). */
-  hint?: string
-}
-
+  id: string;
+  name: string;
+  availability: ModuleAvailability;
+  version?: string | null;
+  scope: string;
+  hint?: string;
+};
 export type ModuleCatalogProps = {
-  title: string
-  subtitle: string
-  items: readonly ModuleCatalogItem[]
-  onStart: (moduleId: string) => void
-  /** Modul čije se pokretanje upravo obrađuje. */
-  pendingId?: string | null
-}
-
-const ACTIVE_LABEL = 'Aktivno'
-const PLANNED_LABEL = 'Planirano'
-const START_LABEL = 'Pokreni pregled'
-const UNAVAILABLE_LABEL = 'Pokretanje nije dostupno'
-const NO_RESULT_NOTE = 'Bez rezultata, ocene i procenta usaglašenosti.'
+  title: string;
+  subtitle: string;
+  items: readonly ModuleCatalogItem[];
+  onStart: (moduleId: string) => void;
+  pendingId?: string | null;
+  feedback?: ReactNode;
+};
+type Filter = "all" | ModuleAvailability;
 
 export function ModuleCatalog({
   title,
@@ -38,83 +26,233 @@ export function ModuleCatalog({
   items,
   onStart,
   pendingId,
+  feedback,
 }: ModuleCatalogProps) {
+  const [filter, setFilter] = useState<Filter>("all");
+  const [query, setQuery] = useState("");
+  const searchId = useId();
+  const normalized = query.trim().toLocaleLowerCase("sr");
+  const visible = items.filter(
+    (item) =>
+      (filter === "all" || item.availability === filter) &&
+      item.name.toLocaleLowerCase("sr").includes(normalized),
+  );
+  const active = visible.filter((item) => item.availability === "active");
+  const planned = visible.filter((item) => item.availability === "planned");
+  const counts = {
+    all: items.length,
+    active: items.filter((item) => item.availability === "active").length,
+    planned: items.filter((item) => item.availability === "planned").length,
+  };
+  const filters: { id: Filter; label: string }[] = [
+    { id: "all", label: "Svi moduli" },
+    { id: "active", label: "Aktivni" },
+    { id: "planned", label: "Planirani" },
+  ];
+
   return (
-    <section
-      aria-label={title}
-      className="flex h-fit flex-col gap-6 px-4 pt-9 pb-8 sm:px-10"
-    >
-      <div className="flex h-fit flex-col gap-2">
-        <h2 className="text-[19px] font-semibold tracking-tight">{title}</h2>
-        <p className="max-w-[760px] text-[13px] leading-relaxed text-[#555C6B]">{subtitle}</p>
+    <section className="page-content" aria-label={title}>
+      <div className="page-heading">
+        <h2>{title}</h2>
+        <p>{subtitle}</p>
       </div>
-
-      <ul className="grid h-fit grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {items.map((item) => {
-          const isActive = item.availability === 'active'
-          const isPending = pendingId === item.id
-          return (
-            <li
-              key={item.id}
-              className={`flex h-fit min-h-[228px] flex-col gap-3 rounded-lg border p-6 ${
-                isActive ? 'border-[#C9D4F2] bg-white' : 'border-[#E1E4EA] bg-[#FAFAFB]'
-              }`}
+      <div className="catalog-toolbar">
+        <div
+          className="filter-group"
+          role="group"
+          aria-label="Dostupnost modula"
+        >
+          {filters.map((option) => (
+            <button
+              key={option.id}
+              type="button"
+              aria-pressed={filter === option.id}
+              onClick={() => setFilter(option.id)}
             >
-              <div className="flex h-fit flex-row items-center gap-2">
-                <span
-                  className={`rounded-[3px] px-2 py-[3px] text-[12px] font-medium tracking-wide ${
-                    isActive
-                      ? 'bg-[#E6F2EC] text-[#0F5A3C]'
-                      : 'bg-[#EDEEF1] text-[#4B5563]'
-                  }`}
-                >
-                  {isActive ? ACTIVE_LABEL : PLANNED_LABEL}
+              {option.label}
+              <span>{counts[option.id]}</span>
+            </button>
+          ))}
+        </div>
+        <div className="search-field">
+          <Icon name="search" size={17} />
+          <label htmlFor={searchId} className="sr-only">
+            Pretraži module
+          </label>
+          <input
+            id={searchId}
+            type="search"
+            placeholder="Pretraži module…"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+          {query && (
+            <button
+              className="icon-button"
+              type="button"
+              aria-label="Obriši pretragu"
+              onClick={() => setQuery("")}
+            >
+              <Icon name="x" size={15} />
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="sr-only" aria-live="polite">
+        {visible.length} {visible.length === 1 ? "modul" : "modula"} u prikazu
+      </div>
+      <div className="catalog-content">
+        {feedback && <div className="catalog-feedback">{feedback}</div>}
+        {active.map((item) => (
+          <article className="featured-module" key={item.id}>
+            <div className="featured-copy">
+              <div className="module-status-line">
+                <span className="status-badge available">
+                  <span />
+                  Aktivno
                 </span>
-                <span className="font-mono text-[12px] text-[#6B7280]">
-                  {item.version ? `${item.id} · ${item.version}` : item.id}
-                </span>
+                {item.version && (
+                  <span className="version-label">Izdanje {item.version}</span>
+                )}
               </div>
-
-              <h3
-                className={`text-[17px] font-semibold tracking-tight ${
-                  isActive ? 'text-[#12151B]' : 'text-[#2A2F3A]'
-                }`}
-              >
-                {item.name}
-              </h3>
-              <p className="text-[13px] leading-relaxed text-[#555C6B]">{item.scope}</p>
-
-              {isActive ? (
-                <div className="mt-auto flex h-fit flex-col gap-3 pt-2 sm:flex-row sm:items-center">
-                  <button
-                    type="button"
-                    onClick={() => onStart(item.id)}
-                    disabled={isPending}
-                    className="flex h-[38px] w-fit items-center justify-center rounded-[5px] bg-[#1B4DD1] px-4 text-[13px] font-medium text-white transition-colors hover:bg-[#1740AE] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1B4DD1] disabled:bg-[#8AA0DE]"
-                  >
-                    {START_LABEL}
-                  </button>
-                  {item.hint ? (
-                    <span className="text-[12px] text-[#6B7280]">{item.hint}</span>
-                  ) : null}
+              <h3>{item.name}</h3>
+              <p className="module-scope">{item.scope}</p>
+              <div className="featured-action">
+                <button
+                  className="button button-primary"
+                  type="button"
+                  disabled={Boolean(pendingId)}
+                  onClick={() => onStart(item.id)}
+                >
+                  {pendingId === item.id
+                    ? "Slanje zahteva…"
+                    : "Pokreni pregled"}
+                  <Icon
+                    name={pendingId === item.id ? "refresh" : "arrow-up-right"}
+                    size={18}
+                    className={pendingId === item.id ? "is-spinning" : ""}
+                  />
+                </button>
+                {item.hint && (
+                  <span className="evidence-note">
+                    <Icon name="file-text" size={16} />
+                    {item.hint}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="featured-visual">
+              <img
+                src="/images/architectural-model.png"
+                alt=""
+                width="1024"
+                height="768"
+                fetchPriority="high"
+              />
+              <span className="concept-caption">Ilustrativni model</span>
+            </div>
+          </article>
+        ))}
+        <div className="catalog-lower">
+          <div className="planned-section">
+            {planned.length > 0 && (
+              <>
+                <div className="section-heading">
+                  <h3>Discipline koje dolaze</h3>
+                  <span>
+                    {planned.length} {planned.length === 1 ? "modul" : "modula"}
+                  </span>
                 </div>
-              ) : (
-                <div className="mt-auto flex h-fit flex-col gap-2 pt-2">
-                  <button
-                    type="button"
-                    disabled
-                    aria-disabled="true"
-                    className="flex h-[38px] w-fit cursor-not-allowed items-center justify-center rounded-[5px] border border-[#E1E4EA] bg-[#F0F1F4] px-4 text-[13px] text-[#8A91A0]"
-                  >
-                    {UNAVAILABLE_LABEL}
-                  </button>
-                  <span className="text-[12px] text-[#6B7280]">{NO_RESULT_NOTE}</span>
+                <ul className="planned-modules">
+                  {planned.map((item) => (
+                    <li key={item.id}>
+                      <details className="planned-module">
+                        <summary>
+                          <span className="module-symbol">
+                            <Icon name="building" size={20} />
+                          </span>
+                          <span className="planned-name">{item.name}</span>
+                          <span className="status-badge planned">
+                            Planirano
+                          </span>
+                          <Icon name="chevron-down" size={16} />
+                        </summary>
+                        <div className="planned-detail">
+                          <p>{item.scope}</p>
+                          <button type="button" disabled>
+                            <Icon name="lock" size={14} />
+                            Pokretanje nije dostupno
+                          </button>
+                          <small>Ovaj modul još ne proizvodi rezultate.</small>
+                        </div>
+                      </details>
+                    </li>
+                  ))}
+                </ul>
+                <p className="planned-footnote">
+                  <Icon name="info-circle" size={15} />
+                  Planirani moduli biće dostupni u narednim izdanjima.
+                </p>
+              </>
+            )}
+            {visible.length === 0 && (
+              <div className="search-empty">
+                <Icon name="search" size={28} />
+                <h3>Nema modula za ovu pretragu</h3>
+                <p>Promenite pojam ili prikažite sve module.</p>
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  onClick={() => {
+                    setQuery("");
+                    setFilter("all");
+                  }}
+                >
+                  Prikaži sve module
+                  <Icon name="arrow-right" size={16} />
+                </button>
+              </div>
+            )}
+          </div>
+          <aside className="review-guide" aria-label="O stručnom pregledu">
+            <Icon name="shield-check" size={27} />
+            <h3>
+              Stručni pregled. <br />
+              Proverljiv trag.
+            </h3>
+            <p>
+              Modul određuje šta se proverava. Svaki nalaz mora da vodi do
+              izvora u vašoj dokumentaciji.
+            </p>
+            <ol>
+              <li>
+                <span>1</span>
+                <div>
+                  <strong>Odaberite modul</strong>
+                  <p>Postupak koji odgovara projektu.</p>
                 </div>
-              )}
-            </li>
-          )
-        })}
-      </ul>
+              </li>
+              <li>
+                <span>2</span>
+                <div>
+                  <strong>Pregledajte dokaze</strong>
+                  <p>Nalaz, izvor i tačna strana.</p>
+                </div>
+              </li>
+              <li>
+                <span>3</span>
+                <div>
+                  <strong>Donesite odluku</strong>
+                  <p>Prihvatanje prethodi proveri izmene.</p>
+                </div>
+              </li>
+            </ol>
+            <div className="guide-note">
+              Izbor modula je dostupan. Obrada i nalazi još se povezuju.
+            </div>
+          </aside>
+        </div>
+      </div>
     </section>
-  )
+  );
 }
