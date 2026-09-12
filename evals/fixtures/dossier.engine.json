@@ -1,0 +1,257 @@
+{
+  "schema_version": "1.0.0",
+  "review_run_id": "rr_ee895706dd",
+  "summary": "Pregled ZOP pack v1 nad izvučenim slotovima R1–R6. Nepoznato nije PASS.",
+  "coverage": {
+    "checked_rules": [
+      "I-35",
+      "I-35",
+      "I-87",
+      "VII-31",
+      "II-34",
+      "I-61"
+    ],
+    "skipped_rules": [
+      "I-62",
+      "VII-75",
+      "VII-82"
+    ],
+    "unknown_slots": [
+      "emergency_lighting_photometry",
+      "gpzop_element_in_predmer"
+    ]
+  },
+  "observations": [
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_be5f1594cf",
+      "slot": "fire_resistance_mark",
+      "value": "F60",
+      "element_id": "element.unspecified",
+      "evidence_id": "ev_be5f1594cf",
+      "unit": "class",
+      "verified_by_second_pass": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_43712e08ca",
+      "slot": "fire_resistance_standard",
+      "value": "EI cited against SRPS EN 13501-1",
+      "element_id": "element.unspecified",
+      "evidence_id": "ev_43712e08ca",
+      "verified_by_second_pass": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_141217f336",
+      "slot": "facade_insulation_material",
+      "value": "A1",
+      "element_id": "facade.insulation",
+      "evidence_id": "ev_141217f336",
+      "unit": "reaction_to_fire",
+      "verified_by_second_pass": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_65108e511e",
+      "slot": "facade_insulation_material",
+      "value": "mineral_wool",
+      "element_id": "facade.insulation",
+      "evidence_id": "ev_65108e511e",
+      "unit": "material",
+      "verified_by_second_pass": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_545631ac84",
+      "slot": "gpzop_element_in_predmer",
+      "value": "protivpožarna vrata D-12",
+      "element_id": "element.gpzop",
+      "evidence_id": "ev_545631ac84",
+      "verified_by_second_pass": true
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_1244b23a7a",
+      "slot": "gpzop_element_in_predmer",
+      "value": null,
+      "evidence_id": "ev_1244b23a7a",
+      "search_scope": {
+        "documents": [
+          "doc_anon_predmer"
+        ],
+        "pages": [
+          1
+        ],
+        "queries": [
+          "predmer",
+          "predračun",
+          "protivpožarna vrata",
+          "agregat",
+          "protivpožarna vrata D-12"
+        ]
+      },
+      "confidence_note": "Nije nađeno u obuhvatu pretrage; nije izmišljen citat.",
+      "element_id": "element.gpzop"
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_9d2a9e9d43",
+      "slot": "emergency_lighting_photometry",
+      "value": null,
+      "evidence_id": "ev_9d2a9e9d43",
+      "search_scope": {
+        "documents": [
+          "doc_anon_elektro",
+          "doc_anon_gpzop"
+        ],
+        "pages": [
+          1
+        ],
+        "queries": [
+          "fotometrijski",
+          "SRPS EN 1838",
+          "sigurnosna rasveta",
+          "DEA"
+        ]
+      },
+      "confidence_note": "Nije nađeno u obuhvatu pretrage; nije izmišljen citat.",
+      "element_id": "emergency_lighting"
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_14710243d0",
+      "slot": "occupant_load_vs_area",
+      "value": "180 m2 / 90 lica",
+      "element_id": "space.unspecified",
+      "evidence_id": "ev_14710243d0",
+      "unit": "m2",
+      "verified_by_second_pass": true
+    }
+  ],
+  "findings": [
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r1",
+      "rule_id": "I-35",
+      "status": "fail",
+      "observation_ids": [
+        "obs_be5f1594cf"
+      ],
+      "severity": "high",
+      "rationale": "Navedena je povučena oznaka F30/F60/F90 umesto EI/REI prema SRPS EN 13501-2."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r2",
+      "rule_id": "I-35",
+      "status": "fail",
+      "observation_ids": [
+        "obs_43712e08ca"
+      ],
+      "severity": "high",
+      "rationale": "EI/REI je vezan za SRPS EN 13501-1 (reakcija), ne za otpornost 13501-2."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r3",
+      "rule_id": "I-87",
+      "status": "conflict",
+      "observation_ids": [
+        "obs_141217f336",
+        "obs_65108e511e"
+      ],
+      "severity": "high",
+      "rationale": "Dva suprotna opažanja materijala fasade. Nije PASS ni FAIL."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r4",
+      "rule_id": "VII-31",
+      "status": "fail",
+      "observation_ids": [
+        "obs_545631ac84",
+        "obs_1244b23a7a"
+      ],
+      "severity": "high",
+      "rationale": "Element iz GPZOP nije nađen u predmeru (dokumentovan obuhvat)."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r5",
+      "rule_id": "II-34",
+      "status": "unknown",
+      "observation_ids": [
+        "obs_9d2a9e9d43"
+      ],
+      "severity": "medium",
+      "rationale": "Fotometrijski proračun nije nađen; nije FAIL iz odsustva citata."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r6",
+      "rule_id": "I-61",
+      "status": "unknown",
+      "observation_ids": [
+        "obs_14710243d0"
+      ],
+      "severity": "high",
+      "rationale": "Površina i broj lica su izvučeni; odnos nije automatski PASS ni FAIL."
+    }
+  ],
+  "questions": [
+    {
+      "schema_version": "1.0.0",
+      "id": "q_find_r3",
+      "prompt": "Koje opažanje važi za konflikt I-87?",
+      "finding_ids": [
+        "find_r3"
+      ],
+      "blocking": true
+    }
+  ],
+  "next_actions": [
+    {
+      "kind": "propose_patch",
+      "change_set_id": "cs_find_r1"
+    },
+    {
+      "kind": "propose_patch",
+      "change_set_id": "cs_find_r2"
+    },
+    {
+      "kind": "ask",
+      "question_id": "q_find_r3"
+    },
+    {
+      "kind": "propose_patch",
+      "change_set_id": "cs_find_r4"
+    },
+    {
+      "kind": "design_task",
+      "description": "Ručno proveriti preduslov za II-34",
+      "reason": "physical_change"
+    },
+    {
+      "kind": "design_task",
+      "description": "Ručno proveriti preduslov za I-61",
+      "reason": "physical_change"
+    },
+    {
+      "kind": "verify_revision",
+      "revision_id": "rev_extract"
+    }
+  ],
+  "integrity_report": {
+    "ok": true,
+    "broken_links": [],
+    "unknown_without_scope": [],
+    "positive_without_evidence": [],
+    "conflicts_with_single_source": []
+  },
+  "change_set_ids": [
+    "cs_find_r1",
+    "cs_find_r2",
+    "cs_find_r4"
+  ]
+}
