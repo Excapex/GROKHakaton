@@ -1,0 +1,44 @@
+{
+  "R1": {
+    "rule_ids": ["I-35", "VII-75"],
+    "slots": ["fire_resistance_mark"],
+    "queries": ["F30", "F60", "F90", "EI", "REI", "SRPS EN 13501-2"],
+    "error_severity": "high",
+    "criterion": "Na datoj strani nađi oznaku otpornosti F30, F60, F90 ili EI/REI. Vrati samo oznaku. Ne izmišljaj."
+  },
+  "R2": {
+    "rule_ids": ["I-35"],
+    "slots": ["fire_resistance_standard"],
+    "queries": ["EI60", "EI 60", "SRPS EN 13501-1", "13501-1", "13501-2"],
+    "error_severity": "high",
+    "criterion": "Da li strana vezuje EI/REI klasu za SRPS EN 13501-1? Odgovor da/ne i koja klasa. Bez proseka."
+  },
+  "R3": {
+    "rule_ids": ["I-87"],
+    "slots": ["facade_insulation_material"],
+    "queries": ["fasada", "izolacija", "mineralna vuna", "A1", "A2", "obloga"],
+    "error_severity": "high",
+    "criterion": "Koji materijal ili klasu reakcije na požar strana navodi za fasadnu izolaciju (A1, mineralna vuna, dekorativni malter)?"
+  },
+  "R4": {
+    "rule_ids": ["VII-31", "VII-82"],
+    "slots": ["gpzop_element_in_predmer"],
+    "queries": ["predmer", "predračun", "protivpožarna vrata", "agregat"],
+    "error_severity": "high",
+    "criterion": "Da li strana imenuje protivpožarna vrata ili D-oznaku? Ako je obuhvat predmera, da li se isti element pojavljuje?"
+  },
+  "R5": {
+    "rule_ids": ["II-34"],
+    "slots": ["emergency_lighting_photometry"],
+    "queries": ["fotometrijski", "SRPS EN 1838", "sigurnosna rasveta", "DEA"],
+    "error_severity": "medium",
+    "criterion": "Da li strana sadrži fotometrijski proračun (reč fotometrijsk), ne samo spomen EN 1838?"
+  },
+  "R6": {
+    "rule_ids": ["I-61", "I-62"],
+    "slots": ["occupant_load_vs_area"],
+    "queries": ["m2", "m²", "broj lica", "evakuacija", "sala"],
+    "error_severity": "high",
+    "criterion": "Pročitaj površinu (m2) i broj lica sa date strane. Vrati tačne brojeve, ne zaokružuj i ne proseči."
+  }
+}

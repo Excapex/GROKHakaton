@@ -30,6 +30,14 @@ PAIRS = (
         ROOT / "evals/fixtures/ingest/anon-two-page/manifest.json",
         ROOT / "contracts/jsonschema/document-manifest.schema.json",
     ),
+    (
+        ROOT / "evals/fixtures/extract/gpzop/manifest.json",
+        ROOT / "contracts/jsonschema/document-manifest.schema.json",
+    ),
+    (
+        ROOT / "evals/fixtures/extract/arh/manifest.json",
+        ROOT / "contracts/jsonschema/document-manifest.schema.json",
+    ),
 )
 
 
