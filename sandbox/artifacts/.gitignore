@@ -1,0 +1,4 @@
+# Apply output are DOCX/XLSX copies, i.e. zips. Generated locally, never committed.
+*
+!.gitignore
+!.gitkeep

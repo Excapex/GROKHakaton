@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
+import { downloadChangeSet } from "./changeSetExport.ts";
 import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
 
 const ACTOR = "M. Jovanović";
@@ -347,14 +348,30 @@ export function TasksPage({
                         : ""}
                     </p>
                   )}
-                  <button
-                    className="button button-primary"
-                    type="button"
-                    disabled={busy}
-                    onClick={() => void acceptSet(row._id)}
-                  >
-                    Prihvati odluku
-                  </button>
+                  <div className="task-actions">
+                    <button
+                      className="button button-primary"
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void acceptSet(row._id)}
+                    >
+                      Prihvati odluku
+                    </button>
+                    <button
+                      className="button button-secondary"
+                      type="button"
+                      disabled={row.approvalState !== "accepted"}
+                      onClick={() => downloadChangeSet(row, documents)}
+                    >
+                      Preuzmi paket izmena
+                    </button>
+                  </div>
+                  {row.approvalState !== "accepted" && (
+                    <p className="dossier-hint">
+                      Preuzimanje se otvara tek posle prihvatanja. Predlog nije
+                      paket za primenu.
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>
