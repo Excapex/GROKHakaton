@@ -14,6 +14,7 @@ import { useDemoWorkspace } from "./features/documents/useDemoWorkspace.ts";
 import { ModulesPage } from "./features/modules/ModulesPage.tsx";
 import { ModulesUnavailable } from "./features/modules/ModulesUnavailable.tsx";
 import { PlannedScreen } from "./features/shell/PlannedScreen.tsx";
+import { TasksPage } from "./features/tasks/TasksPage.tsx";
 import {
   DEMO_ACTIVE_REVISION_LABEL,
   DEMO_PROJECT,
@@ -172,6 +173,11 @@ function LiveApp({
         <DocumentsPage
           projectId={workspace.project._id as Id<"projects">}
           revisionId={workspace.project.activeRevisionId}
+          documents={mapped.activeDocuments}
+        />
+      ) : activeNavId === "zadaci" ? (
+        <TasksPage
+          projectId={workspace.project._id as Id<"projects">}
           documents={mapped.activeDocuments}
         />
       ) : activeNavId === "revizije" ? (
