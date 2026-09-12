@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { anonExtractRoles } from "./anonFixture.ts";
+import { assembleFromRoles } from "./assemble.ts";
 import { hashesDiffer, normalizeHash } from "./hashes.ts";
 import { findingClosedOnReread, measureVerifiedGate } from "./rereadMeasure.ts";
 
@@ -47,5 +49,38 @@ describe("measureVerifiedGate", () => {
       findings: [],
     });
     expect(gate.ok).toBe(false);
+  });
+
+  it("F60 → EI 60 na novom ingestu zatvara find_r1 i bez PASS", () => {
+    const first = assembleFromRoles(anonExtractRoles("rev1"), {
+      projectId: "p",
+      revisionId: "rev1",
+    });
+    expect(first.pipelineReady).toBe(true);
+    const firstFindings = first.pipelineReady ? first.dossier.findings : [];
+    expect(firstFindings.find((row) => row.id === "find_r1")?.status).toBe("fail");
+
+    const nextRoles = anonExtractRoles("rev2");
+    const gpzop = nextRoles.gpzop;
+    if (!gpzop?.pages[0]) throw new Error("fixture");
+    gpzop.pages[0].text = gpzop.pages[0].text.replace("F60", "EI 60");
+    gpzop.input_hash = "sha256:anon-extract-gpzop-rev2";
+    const second = assembleFromRoles(nextRoles, {
+      projectId: "p",
+      revisionId: "rev2",
+    });
+    expect(second.pipelineReady).toBe(true);
+    const secondFindings = second.pipelineReady ? second.dossier.findings : [];
+    expect(secondFindings.find((row) => row.id === "find_r1")?.status).not.toBe("fail");
+    expect(secondFindings.some((row) => row.status === "pass")).toBe(false);
+    expect(findingClosedOnReread("find_r1", secondFindings)).toBe(true);
+    expect(
+      measureVerifiedGate({
+        hasIngestText: true,
+        inputHashChanged: true,
+        findingId: "find_r1",
+        findings: secondFindings,
+      }).ok,
+    ).toBe(true);
   });
 });
