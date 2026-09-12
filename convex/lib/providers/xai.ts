@@ -2,17 +2,22 @@
 
 const XAI_URL = "https://api.x.ai/v1/chat/completions";
 
+function readEnv(name: string): string | undefined {
+  const runtime = globalThis as { process?: { env?: Record<string, string | undefined> } };
+  return runtime.process?.env?.[name];
+}
+
 export async function grokJson(args: {
   system: string;
   user: string;
   schemaName: string;
   schema: Record<string, unknown>;
 }): Promise<unknown> {
-  const key = process.env.XAI_API_KEY;
+  const key = readEnv("XAI_API_KEY");
   if (!key) {
     throw new Error("XAI_API_KEY nije postavljen na Convex/server env");
   }
-  const model = process.env.XAI_MODEL ?? "grok-4.6";
+  const model = readEnv("XAI_MODEL") ?? "grok-4.6";
   const response = await fetch(XAI_URL, {
     method: "POST",
     headers: {
