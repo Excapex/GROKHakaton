@@ -1,9 +1,20 @@
 # Handoff — Builder A
 
-ISSUE: #38 S12a apply
-PR: https://github.com/Excapex/GROKHakaton/pull/39
-DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
-CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
-VALIDATION: test_apply_patch; changeset vitest; perception vitest
-DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
-NEXT: push restack #39; B review HEAD.
+ISSUE: #48 tracking; S18–S25 (#49–#56)
+BRANCH: `feat/A/49-ingest-action`
+
+DONE (lokalno, mereno):
+- Upload PDF/DOCX/XLSX → Daytona ingest (`workflows/ingest.fromStorage`) → `pageTexts.replaceForDocument`
+- CAD ostaje `store_only` / design_task
+- `requestReviewRun.pipeline_ready` samo uz ingestovani tekst
+- ChangeSet `patches` iz `planFromUploadedDocs`; export JSON nosi patches
+- `markApplied` / `markVerified({ changeSetId, revisionId })` — server meri hash + novo čitanje; klijentski boolean se ne prima
+- Hash poređenje prihvata sirovi hex i `sha256:`
+
+CONTRACT: unknown ostaje unknown. Original se ne prepisuje. UI klikovi (`TasksPage` / `RevisionsPage`) su Agent 2 — ne dirati ovu granu.
+
+VALIDATION: Vitest `rereadMeasure` + `hashes`; `evals/test_office_ingest.py`; `evals/test_reread.py`
+
+NEEDS: B Approve #66 na novi HEAD. Agent 2: `markVerified` args su `revisionId`, ne boolean (već tako zovete). Ne zahtevati `status === pass` u UI — engine retko emituje PASS; zatvaranje je „nije više fail/conflict“.
+
+NEXT: squash posle B Approve `--match-head-commit`.

@@ -20,6 +20,17 @@ def file_hash(path: Path) -> str:
     return "sha256:" + h.hexdigest()
 
 
+def normalize_hash(value: str) -> str:
+    """Browser stores raw hex; engine/CLI uses sha256:<hex>."""
+    text = value.strip()
+    if text.startswith("sha256:"):
+        return text
+    hex_part = text.lower()
+    if len(hex_part) == 64 and all(c in "0123456789abcdef" for c in hex_part):
+        return "sha256:" + hex_part
+    return text
+
+
 def apply_changeset(
     change_set: dict,
     sources: dict[str, Path],
@@ -29,7 +40,7 @@ def apply_changeset(
     current = {doc_id: file_hash(path) for doc_id, path in sources.items()}
     for doc_id, expected in change_set["base_hashes"].items():
         got = current.get(doc_id)
-        if got != expected:
+        if got is None or normalize_hash(got) != normalize_hash(str(expected)):
             raise StaleSourceError(f"{doc_id}: base {expected} != current {got}")
 
     out_dir.mkdir(parents=True, exist_ok=True)
