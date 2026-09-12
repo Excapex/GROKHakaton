@@ -5,11 +5,15 @@
 set -uo pipefail
 export LC_ALL=${LC_ALL:-en_US.UTF-8}   # multibajtni znakovi u regexu
 
-# Fajlovi koji SMEJU da imenuju predmete — oni definišu samu politiku.
-POLICY_FILES='^(docs/LOCAL-DATA\.md|scripts/setup/check-no-private-data\.sh)$'
-
-# Nazivi stvarnih predmeta. Bez [cć] klasa — eksplicitne alternative.
-CASES='kordun|zlataricheva|zlataricева|zlatariceva|zlatarićeva|radoja[ _-]?domanovi|cerevicka|čerevićka|cerevićka|čerevicka|oaza[ _-]?glozan|oaza[ _-]?gložan|prezident'
+# Nazivi stvarnih predmeta se NE drže u repou — lista je lokalna.
+CASE_FILE="$(dirname "$0")/cases.local.txt"
+if [ -f "$CASE_FILE" ]; then
+  CASES=$(grep -vE '^[[:space:]]*(#|$)' "$CASE_FILE" | paste -sd'|' -)
+else
+  CASES=''
+  echo "check-no-private-data: NAPOMENA — nema $CASE_FILE, provera naziva predmeta je preskocena."
+  echo "  cp scripts/setup/cases.example.txt scripts/setup/cases.local.txt"
+fi
 
 staged=$(git diff --cached --name-only)
 [ -z "$staged" ] && { echo "check-no-private-data: nema staged fajlova."; exit 0; }
@@ -26,18 +30,15 @@ while IFS= read -r f; do
   if printf '%s' "/$f" | grep -qE '/(private-data|local-corpus|standardi|propisi|za sergeja|neki bitni standardi|izgradnja zakoni i pravlinici)/'; then
     flag "$f" "privatni korpus ili licenciran standard"
   fi
-  # Naziv predmeta u imenu fajla — osim u fajlovima koji definišu politiku.
-  if ! printf '%s' "$f" | grep -qE "$POLICY_FILES"; then
-    if printf '%s' "$f" | grep -qiE "$CASES"; then
-      flag "$f" "naziv stvarnog predmeta u imenu fajla (anonimizuj)"
-    fi
+  # Naziv predmeta u imenu fajla.
+  if [ -n "$CASES" ] && printf '%s' "$f" | grep -qiE "$CASES"; then
+    flag "$f" "naziv stvarnog predmeta u imenu fajla (anonimizuj)"
   fi
 done <<< "$staged"
 
-# Sadržaj: naziv predmeta u dodatim linijama, osim u policy fajlovima.
-scan=$(printf '%s\n' "$staged" | grep -vE "$POLICY_FILES" \
-        | grep -E '\.(md|json|ts|tsx|js|mjs|py|txt|html)$' || true)
-if [ -n "$scan" ]; then
+# Sadržaj: naziv predmeta u dodatim linijama.
+scan=$(printf '%s\n' "$staged" | grep -E '\.(md|json|ts|tsx|js|mjs|py|txt|html)$' || true)
+if [ -n "$CASES" ] && [ -n "$scan" ]; then
   hits=$(git diff --cached -- $(printf '%s ' $scan) 2>/dev/null \
           | grep -nEi "^\+.*($CASES)" | head -5 || true)
   if [ -n "$hits" ]; then

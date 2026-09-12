@@ -4,15 +4,15 @@ Repo je **javan** (uslov hakatona). Stručni korpus je privatan i licenciran.
 
 ## 1. Ostaje lokalno, izvan repoa
 
-Živi u `~/Hakaton/`, pored repoa — **nikad unutar njega**:
+Živi pored repoa, **nikad unutar njega**. Oba člana imaju isti korpus lokalno:
 
 | Folder | Sadržaj | Zašto ne u Git |
 |---|---|---|
-| `../za sergeja/porojekti sa nedostatacima/` | 4 stvarna predmeta: PZI sveske, GPZOP, DWG/DWFX | Podaci klijenata: nazivi firmi, adrese, brojevi projekata |
-| `../za sergeja/primedbe na dokumentaciju/sirove/` | 3.284 linije stvarnih službenih primedbi | Imena firmi i brojevi predmeta |
-| `../za sergeja/popisi koji su bitni/` | 107 propisa | Delom licencirano |
-| `../izgradnja zakoni i pravlinici/` | 182 fajla, zakoni i pravilnici | Delom licencirano |
-| `../neki bitni standardi/` | SRPS EN 12845, CEN/TS 12101-11, prCEN/TR 12101-5, Em Lighting Guide | **Autorski zaštićeni standardi** — ne redistribuiraju se |
+| projekti sa nedostacima | 4 stvarna predmeta: PZI sveske, GPZOP, DWG/DWFX | Podaci klijenata: nazivi firmi, adrese, brojevi projekata |
+| sirove primedbe | ~3.300 linija stvarnih službenih primedbi | Imena firmi i brojevi predmeta |
+| popisi propisa | 107 fajlova | Delom licencirano |
+| zakoni i pravilnici | 182 fajla | Delom licencirano |
+| standardi | 4 SRPS/EN/CEN dokumenta (sprinkler, kontrola dima, evakuaciona rasveta) | **Autorski zaštićeni standardi** — ne redistribuiraju se |
 
 Oba člana ih imaju lokalno. **Ne dele se kroz repo, PR, issue ni chat.**
 
@@ -29,7 +29,7 @@ nikad prepisan tekst standarda.
 
 ## 3. Anonimizacija demo fixture-a (obavezno pre javnog URL-a)
 
-Demo koristi **Prezident** set. Pre nego što bilo šta ode u repo ili na javni URL:
+Demo koristi jedan odabran stvaran set. Pre nego što bilo šta ode u repo ili na javni URL:
 
 - naziv objekta → `Objekat A, Lamela 3`
 - adresa → izbrisati
@@ -43,9 +43,8 @@ Originali ostaju lokalno.
 
 ## 4. Zaštita u repou
 
-`.gitignore` blokira: `local-corpus/ private-data/ standardi/ propisi/`,
-`**/za sergeja/`, `**/neki bitni standardi/`, `**/izgradnja zakoni i pravlinici/`,
-`*.dwg`, `*.dwfx`, `*.DWG`.
+`.gitignore` blokira `local-corpus/`, `private-data/`, `standardi/`, `propisi/`,
+foldere lokalnog korpusa i `*.dwg` / `*.dwfx` / `*.DWG`.
 
 Guard pre svakog commita:
 
@@ -53,9 +52,18 @@ Guard pre svakog commita:
 bash scripts/setup/check-no-private-data.sh
 ```
 
-Blokira: CAD fajlove, putanje privatnog korpusa, licencirane standarde, i
-nazive stvarnih predmeta (Prezident, Čerevićka, Kordun, Zlatarićeva, Gložan,
-Petrovac) — i u **imenu fajla** i u **sadržaju diff-a**.
+Blokira: CAD fajlove, putanje privatnog korpusa, licencirane standarde, API
+ključeve, i nazive stvarnih predmeta — i u **imenu fajla** i u **sadržaju diff-a**.
+
+Lista naziva predmeta je **lokalna** (`scripts/setup/cases.local.txt`,
+gitignore-ovana) da se roster klijenata ne objavi kroz javni repo:
+
+```bash
+cp scripts/setup/cases.example.txt scripts/setup/cases.local.txt
+# upiši stvarne nazive, jedan ERE izraz po liniji
+```
+
+Bez tog fajla guard radi, ali **preskače** proveru naziva i to jasno prijavi.
 
 ## 5. Ako podatak procuri
 

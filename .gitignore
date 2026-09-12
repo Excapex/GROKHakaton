@@ -50,3 +50,6 @@ private-data/
 # Standardi i propisi su licencirani — ne redistribuiraju se kroz repo.
 standardi/
 propisi/
+
+# Lista stvarnih predmeta ostaje lokalno (ne objavljivati klijente).
+scripts/setup/cases.local.txt

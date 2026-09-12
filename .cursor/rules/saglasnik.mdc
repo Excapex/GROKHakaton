@@ -15,9 +15,9 @@ Puna pravila su tamo — ovaj fajl je samo prečica.
   ownership mapi iz `docs/GIT-PROTOCOL.md`.
 - Nikad `push --force`, `reset --hard`, `git clean`.
 - Pre commita pokreni `bash scripts/setup/check-no-private-data.sh`.
-- **Nikad ne dodaj u Git:** `*.dwg`, `*.dwfx`, bilo šta iz `../za sergeja`,
-  `../neki bitni standardi`, `../izgradnja zakoni i pravlinici`, ni naziv
-  stvarnog predmeta (Prezident, Čerevićka, Kordun, Gložan).
+- **Nikad ne dodaj u Git:** `*.dwg`, `*.dwfx`, bilo šta iz lokalnog stručnog
+  korpusa (živi izvan repoa), ni naziv stvarnog predmeta ili investitora.
+  Lista naziva je lokalna: `scripts/setup/cases.local.txt`.
 - Tajne nikad u `src/`. Nikad `VITE_` prefiks na serverskom ključu.
 - Nepoznat podatak → `unknown`. Ne pretvaraj ga u `PASS` ni `FAIL`.
 - Planirani moduli (sve osim ZOP) ne smeju prikazati nikakav rezultat.
