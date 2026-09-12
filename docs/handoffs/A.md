@@ -1,10 +1,10 @@
 # Handoff — Builder A
 
-ISSUE: #16 S15 eval
-PR: https://github.com/Excapex/GROKHakaton/pull/31 (`feat/A/16-eval`)
-DONE: `evals/MODEL-EVAL.md` — izmerena tabela R1–R6 (anon fixture + lokalni ingest, bez klijentskih naziva). S13 je u `main` (`aca56f9`, #30).
-CONTRACT: unknown≠PASS; uredan isti-A1 nije conflict; nema klijentskih imena u Gitu.
-VALIDATION: `python3 evals/test_reread.py`; `python3 evals/test_judge.py`
-DEPENDENCIES: #30 **merged**. #13 S12 ostaje B.
-BLOCKERS: #31 čeka B re-review na HEAD posle `merge origin/main`.
-NEXT: retarget #31 na `main`; ne squash-merge dok B ne Approve novi SHA.
+ISSUE: perception + S12a apply
+PR: https://github.com/Excapex/GROKHakaton/pull/36 (restack posle #37)
+DONE: S10 je u `main` (`90dbcdb`). Perception `fromPages` čeka B Approve na novi HEAD posle merge main.
+CONTRACT: unknown≠PASS; A ne dira `dossiers.ts` / `schema.ts` / `src/`.
+VALIDATION: vitest perception; test_pipeline; test_apply_patch
+DEPENDENCIES: B Approve #36; ACK S12 na #13 (A kreće S12a jer je B pokrenuo prompt).
+BLOCKERS: #36 bez Approve na novom SHA posle restack-a.
+NEXT: push restack #36; S12a CLI + provenance na kopijama.

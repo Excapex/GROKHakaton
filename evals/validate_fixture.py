@@ -23,6 +23,10 @@ PAIRS = (
         ROOT / "contracts/jsonschema/dossier.schema.json",
     ),
     (
+        ROOT / "evals/fixtures/dossier.engine.json",
+        ROOT / "contracts/jsonschema/dossier.schema.json",
+    ),
+    (
         ROOT / "evals/fixtures/changeset.valid.json",
         ROOT / "contracts/jsonschema/changeset.schema.json",
     ),

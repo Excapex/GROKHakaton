@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 
+from engine.changeset.plan import plan_r1
 from engine.extract.pipeline import SLOT_MAP, load_roles, run_extract
 from engine.judge.gate import gate
 from engine.judge.rules import judge, load_pack
@@ -105,4 +106,17 @@ def assemble(extract_result: dict, docs_by_role: dict[str, dict], *, project_id:
 def run_dirs(role_dirs: dict[str, Path], *, project_id: str = "proj_anon", revision_id: str = "rev_extract") -> dict:
     docs = load_roles(role_dirs)
     extracted = run_extract(docs)
-    return assemble(extracted, docs, project_id=project_id, revision_id=revision_id)
+    result = assemble(extracted, docs, project_id=project_id, revision_id=revision_id)
+    gpzop = docs.get("gpzop")
+    predmer = docs.get("predmer")
+    r1_fail = any(f["id"] == "find_r1" and f["status"] == "fail" for f in result["dossier"]["findings"])
+    if gpzop and predmer and r1_fail:
+        result["change_set"] = plan_r1(
+            gpzop_id=gpzop["document_id"],
+            gpzop_hash=gpzop["input_hash"],
+            predmer_id=predmer["document_id"],
+            predmer_hash=predmer["input_hash"],
+            dwg_id=None,
+            from_mark="F60",
+        )
+    return result
