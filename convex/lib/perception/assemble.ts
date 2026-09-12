@@ -102,7 +102,7 @@ export function assembleFromRoles(
         observation_ids: [extracted.observations[0].id],
         severity: "low",
         rationale: "Nema izvršivog nalaza u dokumentaciji. To nije potvrda usaglašenosti.",
-      },
+      } satisfies Finding,
     ].map(withPackPrimedba);
   }
   const report = gate(extracted.observations, extracted.evidence, findings);

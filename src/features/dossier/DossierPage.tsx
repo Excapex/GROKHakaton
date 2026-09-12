@@ -12,6 +12,9 @@ import {
   isConflictFinding,
   observationsForFinding,
 } from "./dossierView.ts";
+import { isCadKind } from "../../lib/fileKind.ts";
+import { ChangeSetLifecycleActions } from "../tasks/ChangeSetLifecycleActions.tsx";
+import { mappedRuleCopy } from "../../../convex/lib/perception/mappedRuleCopy.ts";
 
 type SourceDoc = {
   filename: string;
@@ -106,7 +109,13 @@ export function DossierPage({
           zoom={zoom}
           onZoom={setZoom}
         />
-        <ActionsColumn dossier={dossier} finding={selected} />
+        <ActionsColumn
+          projectId={projectId}
+          dossier={dossier}
+          finding={selected}
+          documents={documents}
+          review={payload}
+        />
       </div>
     </section>
   );
@@ -140,7 +149,9 @@ function FindingsColumn({
                 <span className={`kind-chip status-${finding.status}`}>
                   {FINDING_STATUS_LABELS[finding.status]}
                 </span>
-                <strong>{finding.rule_id}</strong>
+                <strong>
+                  {mappedRuleCopy(finding.rule_id)?.section ?? "Pravilo iz packa"}
+                </strong>
                 <span>{finding.rationale}</span>
               </button>
             </li>
@@ -238,25 +249,83 @@ function EvidenceColumn({
 }
 
 function ActionsColumn({
+  projectId,
   dossier,
   finding,
+  documents,
+  review,
 }: {
+  projectId: Id<"projects">;
   dossier: Dossier | null;
   finding: Finding | null;
+  documents: SourceDoc[];
+  review: {
+    pipelineReady?: boolean;
+    source?: string | null;
+    dossier?: Dossier | null;
+    review_run?: { revision_id?: string };
+  } | null;
 }) {
+  const changeSets = useQuery(api.changeSets.listForProject, { projectId });
+  const threads = useQuery(api.questions.listForProject, { projectId });
+  const workspace = useQuery(api.projects.getWorkspace);
+  const relatedIds = new Set(
+    (threads ?? [])
+      .filter(({ question }) => question.findingId === finding?.id)
+      .map(({ question }) => String(question._id)),
+  );
+  const related = (changeSets ?? []).filter((row) =>
+    relatedIds.has(String(row.questionId)),
+  );
+  const currentLifecycle = related[0]?.lifecycle;
+  const cadEvidence = documents.some((doc) => isCadKind(doc.kind));
+
   return (
     <aside className="dossier-col" aria-label="Akcije">
       <h3>Akcije</h3>
       <p className="dossier-hint">
-        Prihvaćeno nije provereno. Četiri stanja ostaju odvojena.
+        Prihvaćeno nije primenjeno i nije provereno. Četiri stanja ostaju
+        odvojena. Prihvati nikad ne upisuje verified.
       </p>
       <ol className="lifecycle-rail" aria-label="Životni ciklus izmene">
         {LIFECYCLE_ORDER.map((state) => (
           <li key={state}>
-            <span className="kind-chip">{LIFECYCLE_LABELS[state]}</span>
+            <span
+              className="kind-chip"
+              aria-current={state === currentLifecycle ? "step" : undefined}
+            >
+              {LIFECYCLE_LABELS[state]}
+            </span>
           </li>
         ))}
       </ol>
+      <p>
+        <a href="#zadaci">Otvori Zadatke</a> za Prihvati, Označi primenjeno i
+        Proveri novu reviziju. Ovde se ne izmišlja finding ID, page_no ni patch.
+      </p>
+      {cadEvidence && (
+        <p className="dossier-hint">
+          CAD original nema patch akciju. DWG/DWFX ostaje zadatak projektanta.
+        </p>
+      )}
+      {related.map((row) => (
+        <div key={row._id}>
+          <p className="dossier-hint">
+            ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
+            {row.approvalState}. Prihvati je na Zadacima; ovde se meri primena i
+            provera, bez izmišljenog ID-a nalaza.
+          </p>
+          {workspace && (
+            <ChangeSetLifecycleActions
+              changeSet={row}
+              documents={workspace.documents}
+              revisions={workspace.revisions}
+              findingId={finding?.id ?? null}
+              review={review}
+            />
+          )}
+        </div>
+      ))}
       {dossier ? (
         <dl className="coverage-list">
           <div>
@@ -273,13 +342,16 @@ function ActionsColumn({
           </div>
           <div>
             <dt>Integritet</dt>
-            <dd>{dossier.integrity_report.ok ? "ok" : "nije ok"}</dd>
+            <dd>
+              {dossier.integrity_report.ok ? "struktura ok" : "struktura nije ok"}
+              {" — nije semantika ni verified"}
+            </dd>
           </div>
         </dl>
       ) : (
         <p className="dossier-empty">
           Nema otvorenog pitanja ni zadatka dok nema nalaza
-          {finding ? ` za ${finding.rule_id}` : ""}.
+          {finding ? " za izabrano pravilo" : ""}.
         </p>
       )}
     </aside>

@@ -4,8 +4,14 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
+import { ChangeSetLifecycleActions } from "./ChangeSetLifecycleActions.tsx";
 import { downloadChangeSet } from "./changeSetExport.ts";
-import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
+import { LIFECYCLE_LABELS, LIFECYCLE_ORDER, FINDING_STATUS_LABELS } from "../dossier/dossierView.ts";
+import { mappedRuleCopy } from "../../../convex/lib/perception/mappedRuleCopy.ts";
+import {
+  patchButtonVisible,
+  type FindingSnapshot,
+} from "./changeSetLifecycle.ts";
 
 const ACTOR = "M. Jovanović";
 
@@ -17,6 +23,7 @@ const APPROVAL_LABELS = {
 
 type WorkspaceDocument = {
   _id: Id<"documents">;
+  revisionId?: Id<"revisions">;
   filename: string;
   kind: string;
   sha256: string;
@@ -32,6 +39,7 @@ export function TasksPage({
   const threads = useQuery(api.questions.listForProject, { projectId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const review = useQuery(api.dossiers.getActive, { projectId });
+  const workspace = useQuery(api.projects.getWorkspace);
   const ask = useMutation(api.questions.ask);
   const answer = useMutation(api.questions.answer);
   const propose = useMutation(api.changeSets.proposeFromQuestion);
@@ -128,7 +136,7 @@ export function TasksPage({
         tone: "ok",
         text: result.duplicated
           ? "Ponovljeni klik nije duplirao odobrenje. Prihvatanje i dalje nije saglasnost niti provera."
-          : "Prihvaćena je projektantska odluka. To nije saglasnost i nije provereno.",
+          : "Prihvaćena je projektantska odluka. To nije saglasnost, nije primenjeno i nije provereno.",
       });
     } catch (error) {
       setNotice({
@@ -140,7 +148,27 @@ export function TasksPage({
     }
   }
 
-  if (threads === undefined || changeSets === undefined || review === undefined) {
+  const allDocuments = workspace?.documents ?? documents;
+  const revisions = workspace?.revisions ?? [];
+  const findingByQuestion = new Map(
+    (threads ?? []).map(({ question }) => [String(question._id), question.findingId]),
+  );
+  const reviewRecord = review as
+    | {
+        pipelineReady?: boolean;
+        source?: string;
+        dossier?: { findings?: FindingSnapshot[] } | null;
+        review_run?: { revision_id?: string };
+      }
+    | null
+    | undefined;
+
+  if (
+    threads === undefined ||
+    changeSets === undefined ||
+    review === undefined ||
+    workspace === undefined
+  ) {
     return (
       <div className="state-wrap state-page">
         <StatePanel
@@ -203,7 +231,9 @@ export function TasksPage({
               ) : (
                 findings.map((finding) => (
                   <option key={finding.id} value={finding.id}>
-                    {finding.id} · {finding.rule_id} · {finding.status}
+                    {mappedRuleCopy(finding.rule_id)?.section ?? "Nalaz sa Pregleda"}
+                    {" · "}
+                    {FINDING_STATUS_LABELS[finding.status]}
                   </option>
                 ))
               )}
@@ -318,7 +348,7 @@ export function TasksPage({
           <h3>ChangeSet</h3>
           <p className="dossier-hint">
             Prihvaćeno nije primenjeno i nije provereno. Ponovljeni klik ne
-            dodaje drugo odobrenje.
+            dodaje drugo odobrenje. CAD nema patch — samo zadatak projektanta.
           </p>
           {changeSets.length === 0 ? (
             <p className="dossier-empty">Još nema predloženog paketa izmena.</p>
@@ -357,16 +387,33 @@ export function TasksPage({
                     >
                       Prihvati odluku
                     </button>
-                    <button
-                      className="button button-secondary"
-                      type="button"
-                      disabled={row.approvalState !== "accepted"}
-                      onClick={() => downloadChangeSet(row, documents)}
-                    >
-                      Preuzmi paket izmena
-                    </button>
+                    {patchButtonVisible(row, allDocuments) && (
+                      <button
+                        className="button button-secondary"
+                        type="button"
+                        disabled={row.approvalState !== "accepted"}
+                        onClick={() => downloadChangeSet(row, allDocuments)}
+                      >
+                        Preuzmi paket izmena
+                      </button>
+                    )}
                   </div>
-                  {row.approvalState !== "accepted" && (
+                  <ChangeSetLifecycleActions
+                    changeSet={row}
+                    documents={allDocuments}
+                    revisions={revisions}
+                    findingId={findingByQuestion.get(String(row.questionId)) ?? null}
+                    review={reviewRecord}
+                    busy={busy}
+                  />
+                  {!patchButtonVisible(row, allDocuments) && (
+                    <p className="dossier-hint">
+                      CAD nema patch. DWG/DWFX ostaje zadatak projektanta, bez
+                      lažnog dugmeta za izmenu crteža.
+                    </p>
+                  )}
+                  {row.approvalState !== "accepted" &&
+                    patchButtonVisible(row, allDocuments) && (
                     <p className="dossier-hint">
                       Preuzimanje se otvara tek posle prihvatanja. Predlog nije
                       paket za primenu.
