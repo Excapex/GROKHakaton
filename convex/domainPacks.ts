@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import type { Id } from "./_generated/dataModel";
 import {
   MODULE_CATALOG,
   buildReviewRequest,
@@ -24,6 +25,18 @@ export const requestReviewRun = mutation({
     revision_id: v.string(),
     domain_pack_id: v.string(),
   },
-  handler: async (_ctx, args): Promise<ReviewRequestAccepted> =>
-    buildReviewRequest(args),
+  handler: async (ctx, args): Promise<ReviewRequestAccepted> => {
+    let hasIngestText = false;
+    const revisionId = args.revision_id.trim();
+    if (revisionId.length > 0) {
+      const rows = await ctx.db
+        .query("pageTexts")
+        .withIndex("by_revision", (q) =>
+          q.eq("revisionId", revisionId as Id<"revisions">),
+        )
+        .take(40);
+      hasIngestText = rows.some((row) => row.text.trim().length > 0);
+    }
+    return buildReviewRequest(args, { hasIngestText });
+  },
 });

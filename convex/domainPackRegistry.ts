@@ -86,10 +86,10 @@ export type ReviewRequestAccepted = {
   domain_pack_id: SupportedDomainPackId;
   pack_version: string;
   /**
-   * Percepcija (#5) i ekstrakcija (#7) još nisu povezane, pa zahtev jeste
-   * prihvaćen ali pregled ne proizvodi nalaze. Nikad ne vraćamo lažan rezultat.
+   * True only when this revision already has ingestovani tekst strana.
+   * False nije prolaz — nalazi se ne izmišljaju.
    */
-  pipeline_ready: false;
+  pipeline_ready: boolean;
   message: string;
 };
 
@@ -117,7 +117,10 @@ function rejectUnsupported(raw: string): never {
  * aktivan modul — uključujući vrednosti koje liče na `project.discipline`
  * (`architecture`, `structural`, …). Skriveno dugme u UI-ju nije zaštita.
  */
-export function buildReviewRequest(args: ReviewRequestArgs): ReviewRequestAccepted {
+export function buildReviewRequest(
+  args: ReviewRequestArgs,
+  opts?: { hasIngestText?: boolean },
+): ReviewRequestAccepted {
   const projectId = (args.project_id ?? "").trim();
   const revisionId = (args.revision_id ?? "").trim();
   const rawPackId = args.domain_pack_id ?? "";
@@ -139,14 +142,16 @@ export function buildReviewRequest(args: ReviewRequestArgs): ReviewRequestAccept
     rejectUnsupported(rawPackId);
   }
 
+  const ready = opts?.hasIngestText === true;
   return {
     accepted: true,
     project_id: projectId,
     revision_id: revisionId,
     domain_pack_id: packId,
     pack_version: entry.pack_version,
-    pipeline_ready: false,
-    message:
-      "Zahtev je prihvaćen, ali pregled još ne proizvodi nalaze — ingest (#5) i ekstrakcija (#7) nisu povezani.",
+    pipeline_ready: ready,
+    message: ready
+      ? "Zahtev je prihvaćen. Nalazi dolaze iz ingestovanog teksta strana."
+      : "Zahtev je prihvaćen, ali nema ingestovanog teksta strana — nalazi se ne izmišljaju.",
   };
 }

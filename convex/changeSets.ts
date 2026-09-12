@@ -1,7 +1,9 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { applyAcceptance } from "./approval";
+import type { Id } from "./_generated/dataModel";
+import { applyAcceptance, applyApplied, applyVerified } from "./approval";
 import { designTaskForDocument } from "./changeSetPolicy";
+import { planFromUploadedDocs } from "./lib/perception/planFromDocuments";
 
 export const listForProject = query({
   args: { projectId: v.id("projects") },
@@ -34,14 +36,29 @@ export const proposeFromQuestion = mutation({
     if (existing) return existing._id;
     const document = await ctx.db.get(question.documentId);
     if (!document) throw new Error("Dokaz više nije dostupan.");
-    const designTask = designTaskForDocument(document.kind, document.filename);
+    const siblings = await ctx.db
+      .query("documents")
+      .withIndex("by_revision", (q) => q.eq("revisionId", document.revisionId))
+      .collect();
+    const plan = planFromUploadedDocs(
+      siblings.map((row) => ({
+        id: String(row._id),
+        filename: row.filename,
+        kind: row.kind,
+        sha256: row.sha256,
+      })),
+    );
+    const designTask =
+      plan?.design_tasks[0]?.description ??
+      designTaskForDocument(document.kind, document.filename);
     const changeSetId = await ctx.db.insert("changeSets", {
       projectId: question.projectId,
       questionId,
       documentId: question.documentId,
       lifecycle: "proposed",
       approvalState: "proposed",
-      baseHashes: { [document._id]: document.sha256 },
+      baseHashes: plan?.base_hashes ?? { [document._id]: document.sha256 },
+      patches: plan?.patches ?? [],
       ...(designTask ? { designTask } : {}),
       createdAt: Date.now(),
     });
@@ -91,5 +108,92 @@ export const accept = mutation({
       createdAt: Date.now(),
     });
     return { changeSetId, duplicated: false as const };
+  },
+});
+
+export const markApplied = mutation({
+  args: {
+    changeSetId: v.id("changeSets"),
+    revisionId: v.id("revisions"),
+  },
+  handler: async (ctx, { changeSetId, revisionId }) => {
+    const changeSet = await ctx.db.get(changeSetId);
+    if (!changeSet) throw new Error("ChangeSet ne postoji.");
+    const revision = await ctx.db.get(revisionId);
+    if (!revision || revision.projectId !== changeSet.projectId) {
+      throw new Error("Revizija ne pripada ovom predmetu.");
+    }
+    const currentDocs = await ctx.db
+      .query("documents")
+      .withIndex("by_revision", (q) => q.eq("revisionId", revisionId))
+      .collect();
+    let replaced = false;
+    for (const [documentId, hash] of Object.entries(changeSet.baseHashes)) {
+      const original = await ctx.db.get(documentId as Id<"documents">);
+      if (!original) continue;
+      const next = currentDocs.find((row) => row.filename === original.filename);
+      if (next && next.sha256 !== hash) replaced = true;
+    }
+    if (!replaced) {
+      throw new Error(
+        "Nema zamenjenog originala na ovoj reviziji. Isti hash nije primena.",
+      );
+    }
+    const result = applyApplied({
+      approvalState: changeSet.approvalState,
+      lifecycle: changeSet.lifecycle,
+      approvedBy: changeSet.approvedBy,
+      approvedAt: changeSet.approvedAt,
+    });
+    if (result.error) throw new Error(result.error);
+    if (result.duplicated) return { changeSetId, duplicated: true as const };
+    await ctx.db.patch(changeSetId, { lifecycle: result.snapshot.lifecycle });
+    await ctx.db.patch(revisionId, { derivedFromChangeSetId: changeSetId });
+    await ctx.db.insert("events", {
+      projectId: changeSet.projectId,
+      type: "changeset_applied",
+      message: "Kopije su na novoj reviziji. To još nije provereno.",
+      documentId: changeSet.documentId,
+      revisionId,
+      createdAt: Date.now(),
+    });
+    return { changeSetId, duplicated: false as const };
+  },
+});
+
+export const markVerified = mutation({
+  args: {
+    changeSetId: v.id("changeSets"),
+    inputHashChanged: v.boolean(),
+    findingClosedOnReread: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const changeSet = await ctx.db.get(args.changeSetId);
+    if (!changeSet) throw new Error("ChangeSet ne postoji.");
+    const result = applyVerified(
+      {
+        approvalState: changeSet.approvalState,
+        lifecycle: changeSet.lifecycle,
+        approvedBy: changeSet.approvedBy,
+        approvedAt: changeSet.approvedAt,
+      },
+      {
+        inputHashChanged: args.inputHashChanged,
+        findingClosedOnReread: args.findingClosedOnReread,
+      },
+    );
+    if (result.error) throw new Error(result.error);
+    if (result.duplicated) {
+      return { changeSetId: args.changeSetId, duplicated: true as const };
+    }
+    await ctx.db.patch(args.changeSetId, { lifecycle: "verified" });
+    await ctx.db.insert("events", {
+      projectId: changeSet.projectId,
+      type: "changeset_verified",
+      message: "Novo čitanje je zatvorilo nalaz. To nije saglasnost.",
+      documentId: changeSet.documentId,
+      createdAt: Date.now(),
+    });
+    return { changeSetId: args.changeSetId, duplicated: false as const };
   },
 });

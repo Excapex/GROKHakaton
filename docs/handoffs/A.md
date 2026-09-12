@@ -1,9 +1,19 @@
 # Handoff — Builder A
 
-ISSUE: #38 S12a apply
-PR: https://github.com/Excapex/GROKHakaton/pull/39
-DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
-CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
-VALIDATION: test_apply_patch; changeset vitest; perception vitest
-DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
-NEXT: push restack #39; B review HEAD.
+ISSUE: #48 tracking; S18–S25 (#49–#56)
+BRANCH: `feat/A/49-ingest-action`
+
+DONE (lokalno, mereno):
+- Upload PDF/DOCX/XLSX → Daytona ingest (`workflows/ingest.fromStorage`) → `pageTexts.replaceForDocument`
+- CAD ostaje `store_only` / design_task
+- `requestReviewRun.pipeline_ready` samo uz ingestovani tekst
+- ChangeSet `patches` iz `planFromUploadedDocs`; export JSON nosi patches
+- `markApplied` / `markVerified` (isti hash ≠ applied; verified samo posle novog čitanja)
+
+CONTRACT: unknown ostaje unknown. Original se ne prepisuje. UI klikovi (`TasksPage` / `RevisionsPage`) su Agent 2 — ne dirati ovu granu.
+
+VALIDATION: Vitest 55; `evals/test_office_ingest.py`; `evals/test_reread.py`; `tsc -b`
+
+NEEDS: B/Agent 2 wire `markApplied`/`markVerified` u `src/` (ne `changeSetExport.ts`). Convex env: `DAYTONA_API_KEY` na deploymentu.
+
+NEXT: squash PR → main; Agent 2 `git merge origin/main` u wt2.
