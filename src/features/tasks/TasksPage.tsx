@@ -1,11 +1,19 @@
 import { useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useConvex, useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { Icon } from "../../components/generated/Icon.tsx";
 import { StatePanel } from "../../components/generated/StatePanel.tsx";
 import { downloadChangeSet } from "./changeSetExport.ts";
 import { LIFECYCLE_LABELS, LIFECYCLE_ORDER } from "../dossier/dossierView.ts";
+import {
+  evaluateMarkApplied,
+  evaluateMarkVerified,
+  patchButtonVisible,
+  readChangeSetLifecycleApi,
+  type FindingSnapshot,
+  type LifecycleChangeSet,
+} from "./changeSetLifecycle.ts";
 
 const ACTOR = "M. Jovanović";
 
@@ -17,6 +25,7 @@ const APPROVAL_LABELS = {
 
 type WorkspaceDocument = {
   _id: Id<"documents">;
+  revisionId?: Id<"revisions">;
   filename: string;
   kind: string;
   sha256: string;
@@ -32,6 +41,9 @@ export function TasksPage({
   const threads = useQuery(api.questions.listForProject, { projectId });
   const changeSets = useQuery(api.changeSets.listForProject, { projectId });
   const review = useQuery(api.dossiers.getActive, { projectId });
+  const workspace = useQuery(api.projects.getWorkspace);
+  const convex = useConvex();
+  const lifecycleApi = readChangeSetLifecycleApi(api.changeSets);
   const ask = useMutation(api.questions.ask);
   const answer = useMutation(api.questions.answer);
   const propose = useMutation(api.changeSets.proposeFromQuestion);
@@ -128,7 +140,7 @@ export function TasksPage({
         tone: "ok",
         text: result.duplicated
           ? "Ponovljeni klik nije duplirao odobrenje. Prihvatanje i dalje nije saglasnost niti provera."
-          : "Prihvaćena je projektantska odluka. To nije saglasnost i nije provereno.",
+          : "Prihvaćena je projektantska odluka. To nije saglasnost, nije primenjeno i nije provereno.",
       });
     } catch (error) {
       setNotice({
@@ -140,7 +152,120 @@ export function TasksPage({
     }
   }
 
-  if (threads === undefined || changeSets === undefined || review === undefined) {
+  const allDocuments = workspace?.documents ?? documents;
+  const revisions = workspace?.revisions ?? [];
+  const findingByQuestion = new Map(
+    (threads ?? []).map(({ question }) => [String(question._id), question.findingId]),
+  );
+  const reviewRecord = review as
+    | {
+        pipelineReady?: boolean;
+        source?: string;
+        dossier?: { findings?: FindingSnapshot[] } | null;
+        review_run?: { revision_id?: string };
+      }
+    | null
+    | undefined;
+
+  function applyGateFor(row: LifecycleChangeSet & { questionId?: string }) {
+    return evaluateMarkApplied({
+      hasApi: lifecycleApi.hasMarkApplied,
+      changeSet: row,
+      documents: allDocuments,
+      revisions,
+    });
+  }
+
+  function verifyGateFor(row: LifecycleChangeSet & { questionId?: string }) {
+    return evaluateMarkVerified({
+      hasApi: lifecycleApi.hasMarkVerified,
+      changeSet: row,
+      documents: allDocuments,
+      revisions,
+      findingId: findingByQuestion.get(String(row.questionId ?? "")) || null,
+      pipelineReady: reviewRecord?.pipelineReady === true,
+      dossierSource: reviewRecord?.source ?? "none",
+      findings: reviewRecord?.dossier?.findings ?? [],
+      reviewRevisionId: reviewRecord?.review_run?.revision_id ?? null,
+    });
+  }
+
+  async function markAppliedSet(
+    changeSetId: Id<"changeSets">,
+    row: LifecycleChangeSet & { questionId?: string },
+  ) {
+    const gate = applyGateFor(row);
+    if (!gate.ok || !lifecycleApi.markApplied) {
+      setNotice({
+        tone: "error",
+        text: gate.ok
+          ? "api.changeSets.markApplied još nije na main."
+          : gate.reason,
+      });
+      return;
+    }
+    setBusy(true);
+    setNotice(null);
+    try {
+      await convex.mutation(lifecycleApi.markApplied, {
+        changeSetId,
+        revisionId: gate.revisionId as Id<"revisions">,
+      });
+      setNotice({
+        tone: "ok",
+        text: "Označeno primenjeno na kopijama nove revizije. To još nije provera nalaza.",
+      });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Primena nije upisana.",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function markVerifiedSet(
+    changeSetId: Id<"changeSets">,
+    row: LifecycleChangeSet & { questionId?: string },
+  ) {
+    const gate = verifyGateFor(row);
+    if (!gate.ok || !lifecycleApi.markVerified) {
+      setNotice({
+        tone: "error",
+        text: gate.ok
+          ? "api.changeSets.markVerified još nije na main."
+          : gate.reason,
+      });
+      return;
+    }
+    setBusy(true);
+    setNotice(null);
+    try {
+      await convex.mutation(lifecycleApi.markVerified, {
+        changeSetId,
+        revisionId: gate.revisionId as Id<"revisions">,
+      });
+      setNotice({
+        tone: "ok",
+        text: "Provera upisana jer je hash promenjen i nalaz zatvoren na novom čitanju.",
+      });
+    } catch (error) {
+      setNotice({
+        tone: "error",
+        text: error instanceof Error ? error.message : "Provera nije upisana.",
+      });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (
+    threads === undefined ||
+    changeSets === undefined ||
+    review === undefined ||
+    workspace === undefined
+  ) {
     return (
       <div className="state-wrap state-page">
         <StatePanel
@@ -318,7 +443,7 @@ export function TasksPage({
           <h3>ChangeSet</h3>
           <p className="dossier-hint">
             Prihvaćeno nije primenjeno i nije provereno. Ponovljeni klik ne
-            dodaje drugo odobrenje.
+            dodaje drugo odobrenje. CAD nema patch — samo zadatak projektanta.
           </p>
           {changeSets.length === 0 ? (
             <p className="dossier-empty">Još nema predloženog paketa izmena.</p>
@@ -357,21 +482,60 @@ export function TasksPage({
                     >
                       Prihvati odluku
                     </button>
+                    {patchButtonVisible(row, allDocuments) && (
+                      <button
+                        className="button button-secondary"
+                        type="button"
+                        disabled={row.approvalState !== "accepted"}
+                        onClick={() => downloadChangeSet(row, allDocuments)}
+                      >
+                        Preuzmi paket izmena
+                      </button>
+                    )}
                     <button
                       className="button button-secondary"
                       type="button"
-                      disabled={row.approvalState !== "accepted"}
-                      onClick={() => downloadChangeSet(row, documents)}
+                      disabled={busy || !applyGateFor(row).ok}
+                      onClick={() => void markAppliedSet(row._id, row)}
                     >
-                      Preuzmi paket izmena
+                      Označi primenjeno
+                    </button>
+                    <button
+                      className="button button-secondary"
+                      type="button"
+                      disabled={busy || !verifyGateFor(row).ok}
+                      onClick={() => void markVerifiedSet(row._id, row)}
+                    >
+                      Proveri novu reviziju
                     </button>
                   </div>
-                  {row.approvalState !== "accepted" && (
+                  {!patchButtonVisible(row, allDocuments) && (
+                    <p className="dossier-hint">
+                      CAD nema patch. DWG/DWFX ostaje zadatak projektanta, bez
+                      lažnog dugmeta za izmenu crteža.
+                    </p>
+                  )}
+                  {row.approvalState !== "accepted" &&
+                    patchButtonVisible(row, allDocuments) && (
                     <p className="dossier-hint">
                       Preuzimanje se otvara tek posle prihvatanja. Predlog nije
                       paket za primenu.
                     </p>
                   )}
+                  {(() => {
+                    const applyGate = applyGateFor(row);
+                    const verifyGate = verifyGateFor(row);
+                    return (
+                      <>
+                        {!applyGate.ok && (
+                          <p className="dossier-hint">{applyGate.reason}</p>
+                        )}
+                        {!verifyGate.ok && (
+                          <p className="dossier-hint">{verifyGate.reason}</p>
+                        )}
+                      </>
+                    );
+                  })()}
                 </li>
               ))}
             </ul>

@@ -12,6 +12,7 @@ import {
   isConflictFinding,
   observationsForFinding,
 } from "./dossierView.ts";
+import { isCadKind } from "../../lib/fileKind.ts";
 
 type SourceDoc = {
   filename: string;
@@ -106,7 +107,12 @@ export function DossierPage({
           zoom={zoom}
           onZoom={setZoom}
         />
-        <ActionsColumn dossier={dossier} finding={selected} />
+        <ActionsColumn
+          projectId={projectId}
+          dossier={dossier}
+          finding={selected}
+          documents={documents}
+        />
       </div>
     </section>
   );
@@ -238,25 +244,64 @@ function EvidenceColumn({
 }
 
 function ActionsColumn({
+  projectId,
   dossier,
   finding,
+  documents,
 }: {
+  projectId: Id<"projects">;
   dossier: Dossier | null;
   finding: Finding | null;
+  documents: SourceDoc[];
 }) {
+  const changeSets = useQuery(api.changeSets.listForProject, { projectId });
+  const threads = useQuery(api.questions.listForProject, { projectId });
+  const relatedIds = new Set(
+    (threads ?? [])
+      .filter(({ question }) => question.findingId === finding?.id)
+      .map(({ question }) => String(question._id)),
+  );
+  const related = (changeSets ?? []).filter((row) =>
+    relatedIds.has(String(row.questionId)),
+  );
+  const currentLifecycle = related[0]?.lifecycle;
+  const cadEvidence = documents.some((doc) => isCadKind(doc.kind));
+
   return (
     <aside className="dossier-col" aria-label="Akcije">
       <h3>Akcije</h3>
       <p className="dossier-hint">
-        Prihvaćeno nije provereno. Četiri stanja ostaju odvojena.
+        Prihvaćeno nije primenjeno i nije provereno. Četiri stanja ostaju
+        odvojena. Prihvati nikad ne upisuje verified.
       </p>
       <ol className="lifecycle-rail" aria-label="Životni ciklus izmene">
         {LIFECYCLE_ORDER.map((state) => (
           <li key={state}>
-            <span className="kind-chip">{LIFECYCLE_LABELS[state]}</span>
+            <span
+              className="kind-chip"
+              aria-current={state === currentLifecycle ? "step" : undefined}
+            >
+              {LIFECYCLE_LABELS[state]}
+            </span>
           </li>
         ))}
       </ol>
+      <p>
+        <a href="#zadaci">Otvori Zadatke</a> za Prihvati, Označi primenjeno i
+        Proveri novu reviziju. Ovde se ne izmišlja finding ID, page_no ni patch.
+      </p>
+      {cadEvidence && (
+        <p className="dossier-hint">
+          CAD original nema patch akciju. DWG/DWFX ostaje zadatak projektanta.
+        </p>
+      )}
+      {related.map((row) => (
+        <p key={row._id} className="dossier-hint">
+          ChangeSet {LIFECYCLE_LABELS[row.lifecycle] ?? row.lifecycle} · odobrenje{" "}
+          {row.approvalState}. Primena i provera su na Zadacima, posle kopija i
+          merenja.
+        </p>
+      ))}
       {dossier ? (
         <dl className="coverage-list">
           <div>

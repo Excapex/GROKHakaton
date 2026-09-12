@@ -1,9 +1,9 @@
-# Handoff — Builder A
+# Handoff — Builder A (Agent 2 / wt2)
 
-ISSUE: #38 S12a apply
-PR: https://github.com/Excapex/GROKHakaton/pull/39
-DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
-CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
-VALIDATION: test_apply_patch; changeset vitest; perception vitest
-DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
-NEXT: push restack #39; B review HEAD.
+ISSUE: #56 S25 UI + pozivi (ne engine)
+BRANCH: `feat/A/56-ui-reread-wire` u `/home/mihajlo/GROKHakaton-wt2`
+DONE: Zadaci/Revizije/Pregled — četiri čipa odvojena; `Označi primenjeno` / `Proveri novu reviziju` disabled + hint dok `markApplied`/`markVerified` nisu na `api.changeSets`. Gate: apply tek posle kopija na novoj reviziji; verify samo hash≠base AND nalaz `pass` na ingest čitanju te revizije. CAD bez patch dugmeta. Prihvati ne skače na verified.
+CONTRACT: UI ne izmišlja finding ID / page_no / patch from-to. Nepoznato ostaje unknown.
+VALIDATION: `npm test` + `npx tsc -b` u wt2 (12 fajlova, uključujući `changeSetLifecycle.test.ts`).
+NEEDS: Agent 1 merge ingest (`markApplied`/`markVerified` na main) → `git merge origin/main` u wt2, po potrebi `npx convex codegen` u wt2.
+NEXT: B review UI PR; ne merge-ujem B PR-ove.
