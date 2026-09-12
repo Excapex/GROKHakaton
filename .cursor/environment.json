@@ -1,0 +1,17 @@
+{
+  "name": "Saglasnik",
+  "install": "bash .cursor/install.sh",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev",
+      "description": "Vite dev server on http://localhost:5173. Runs the frontend in demo/fixture mode; set VITE_CONVEX_URL in .env.local to connect a live Convex backend."
+    }
+  ],
+  "ports": [
+    {
+      "name": "vite",
+      "port": 5173
+    }
+  ]
+}
