@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0.0",
+  "review_run_id": "rr_fixture_001",
+  "summary": "Fixture dosijea: klasa otpornosti na požar navedena kao F60 umesto EI, kontradikcija GPZOP ↔ arhitektura, jedan slot unknown sa obuhvatom pretrage, DWG kao design_task.",
+  "coverage": {
+    "checked_rules": ["I-23", "III-8"],
+    "skipped_rules": ["VIII-92"],
+    "unknown_slots": ["dea_power_kw"]
+  },
+  "observations": [
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_door_gpzop",
+      "slot": "fire_door_class",
+      "value": "F60",
+      "unit": "class",
+      "element_id": "door.stair_A.D-12",
+      "evidence_id": "ev_gpzop_p14",
+      "confidence_note": "Tekst iz GPZOP, fizička strana 14."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_facade_gpzop",
+      "slot": "facade_insulation_material",
+      "value": "A1",
+      "unit": "reaction_to_fire",
+      "element_id": "facade.west.insulation",
+      "evidence_id": "ev_gpzop_p22"
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_facade_arh",
+      "slot": "facade_insulation_material",
+      "value": "mineral_wool",
+      "unit": "material",
+      "element_id": "facade.west.insulation",
+      "evidence_id": "ev_arh_p61"
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "obs_dea_missing",
+      "slot": "dea_power_kw",
+      "value": null,
+      "unit": "kW",
+      "element_id": "dea.main",
+      "evidence_id": "ev_elektro_scope",
+      "search_scope": {
+        "documents": ["doc_elektro_ss"],
+        "pages": [1, 2, 3, 4, 5, 12, 18],
+        "queries": ["agregat", "DEA", "snaga kW", "rezervno napajanje"]
+      }
+    }
+  ],
+  "findings": [
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r1_f_class",
+      "rule_id": "I-23",
+      "status": "fail",
+      "observation_ids": ["obs_door_gpzop"],
+      "severity": "high",
+      "rationale": "Navedena je klasa F60 umesto EI/REI prema SRPS EN 13501-2."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_r3_facade",
+      "rule_id": "III-8",
+      "status": "conflict",
+      "observation_ids": ["obs_facade_gpzop", "obs_facade_arh"],
+      "severity": "high",
+      "rationale": "GPZOP zahteva klasu A1, arhitektura navodi mineralnu vunu. Dva izvora, nije PASS ni FAIL."
+    },
+    {
+      "schema_version": "1.0.0",
+      "id": "find_dea_unknown",
+      "rule_id": "VI-4",
+      "status": "unknown",
+      "observation_ids": ["obs_dea_missing"],
+      "severity": "medium",
+      "rationale": "Snaga DEA nije nađena u obuhvatu pretrage; preduslov ostaje unknown."
+    }
+  ],
+  "questions": [
+    {
+      "schema_version": "1.0.0",
+      "id": "q_facade_class",
+      "prompt": "Da li fasadna obloga ostaje A1 (GPZOP) ili se menja tehničko rešenje prema arhitekturi?",
+      "finding_ids": ["find_r3_facade"],
+      "blocking": true
+    }
+  ],
+  "next_actions": [
+    { "kind": "ask", "question_id": "q_facade_class" },
+    { "kind": "propose_patch", "change_set_id": "cs_door_class_001" },
+    {
+      "kind": "design_task",
+      "description": "Uskladiti fasadu na DWG; parser ne menja CAD.",
+      "reason": "unsupported_format"
+    },
+    { "kind": "verify_revision", "revision_id": "rev_2" }
+  ],
+  "integrity_report": {
+    "ok": true,
+    "broken_links": [],
+    "unknown_without_scope": [],
+    "positive_without_evidence": [],
+    "conflicts_with_single_source": []
+  },
+  "change_set_ids": ["cs_door_class_001"]
+}
