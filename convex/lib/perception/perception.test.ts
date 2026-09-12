@@ -95,6 +95,17 @@ describe("perception R1–R6", () => {
     if (ready.pipelineReady) {
       expect(ready.dossier.findings.some((f) => f.id === "find_r3")).toBe(true);
       expect(ready.dossier.questions.length).toBeGreaterThan(0);
+      const userText = [
+        ready.dossier.summary,
+        ...ready.dossier.questions.map((q) => q.prompt),
+        ...ready.dossier.next_actions.map((a) =>
+          a.kind === "design_task" ? a.description : "",
+        ),
+        ...ready.dossier.findings.map((f) => f.rationale),
+      ].join("\n");
+      expect(userText).not.toMatch(/PASS/);
+      expect(userText).not.toMatch(/opažanje/i);
+      expect(userText).not.toMatch(/preduslov/i);
     }
   });
 
