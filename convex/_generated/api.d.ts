@@ -23,6 +23,7 @@ import type * as questions from "../questions.js";
 import type * as revisions from "../revisions.js";
 import type * as workflows_extract from "../workflows/extract.js";
 import type * as workflows_apply from "../workflows/apply.js";
+import type * as workflows_review from "../workflows/review.js";
 
 import type {
   ApiFromModules,
@@ -46,6 +47,7 @@ declare const fullApi: ApiFromModules<{
   revisions: typeof revisions;
   "workflows/extract": typeof workflows_extract;
   "workflows/apply": typeof workflows_apply;
+  "workflows/review": typeof workflows_review;
 }>;
 
 /**

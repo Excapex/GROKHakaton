@@ -1,10 +1,9 @@
 # Handoff — Builder A
 
-ISSUE: #38 S12a apply copies
-PR: (otvara se) `feat/A/38-apply-copies`
-DONE: CLI `sandbox/compute/cli.py apply` na kopijama + `provenance.json`; `workflows/apply.planR1Copies`; stale hash i dalje odbija; CAD=`design_task`.
-CONTRACT: original se ne prepisuje; nije saglasnost; B radi download (#13).
-VALIDATION: `.venv/bin/python evals/test_apply_patch.py`; `npx vitest run convex/lib/perception/changeset.test.ts`
-DEPENDENCIES: #37 u main. #36 perception čeka B re-review posle restack (`dd5e3fe`).
-BLOCKERS: B Approve #36 na novi SHA; B S12b UI.
-NEXT: PR #38 → B review.
+ISSUE: #38 S12a apply
+PR: https://github.com/Excapex/GROKHakaton/pull/39
+DONE: #36 perception u `main` (`67c8051`). Apply CLI + provenance + `planR1Copies` na ovoj grani, restack posle #36.
+CONTRACT: original se ne prepisuje; A ne dira `dossiers.ts`. B lepi `assembleFromRoles`.
+VALIDATION: test_apply_patch; changeset vitest; perception vitest
+DEPENDENCIES: B Approve #39; B `getActive` snippet (komentar na #10).
+NEXT: push restack #39; B review HEAD.
