@@ -12,11 +12,15 @@ EI_ON_13501_1 = re.compile(
     r"\b(?:EI|REI)\s*[-/]?\s*\d{2,3}\b.{0,80}13501-1",
     re.I | re.S,
 )
-FACADE_A1 = re.compile(r"\bA1\b.{0,40}(fasad|oblog|izolac)|(fasad|oblog|izolac).{0,40}\bA1\b", re.I | re.S)
+FACADE_A1 = re.compile(
+    r"(A1S1D0|\bA1\b).{0,90}(fasad|oblog|izolac|multipor|demit)"
+    r"|(fasad|oblog|izolac|multipor|demit).{0,90}(A1S1D0|\bA1\b)",
+    re.I | re.S,
+)
 FACADE_WOOL = re.compile(r"mineraln\w*\s+vun", re.I)
+FACADE_FINISH = re.compile(r"dekorativn\w*\s+malter|bavalit|kulir\s+fasad", re.I)
 PHOTO = re.compile(r"fotometrijsk", re.I)
-EN1838 = re.compile(r"\b(?:SRPS\s+)?EN\s*1838\b|\b1838\b", re.I)
-AREA_M2 = re.compile(r"(\d{2,4})\s*(?:m2|m²)", re.I)
+AREA_M2 = re.compile(r"([1-9]\d{1,3})\s*(?:m2|m²)", re.I)
 PEOPLE = re.compile(r"(\d{2,4})\s*(?:ljudi|lica|osoba)", re.I)
 GPZOP_ELEMENT = re.compile(
     r"protivpožarn\w*\s+vrat\w*(?:\s+[A-Za-z]-?\d+)?|\bD-\d+\b",
@@ -157,6 +161,18 @@ def extract_r3(docs: list[dict]) -> list[tuple[dict, dict]]:
                     excerpt=wool.group(0),
                 )
                 break
+            finish = FACADE_FINISH.search(page["text"])
+            if finish:
+                found = _obs(
+                    slot="facade_insulation_material",
+                    value="decorative_render",
+                    unit="material",
+                    element_id="facade.insulation",
+                    doc=doc,
+                    page=page,
+                    excerpt=finish.group(0),
+                )
+                break
         if found:
             out.append(found)
     return out
@@ -210,7 +226,7 @@ def extract_r5(docs: list[dict]) -> list[tuple[dict, dict]]:
     out: list[tuple[dict, dict]] = []
     for doc in docs:
         for page in doc["pages"]:
-            if PHOTO.search(page["text"]) or EN1838.search(page["text"]):
+            if PHOTO.search(page["text"]):
                 out.append(
                     _obs(
                         slot="emergency_lighting_photometry",
