@@ -1,10 +1,11 @@
 # Handoff — Builder A
 
-ISSUE: #12 S11 changeset
-PR: https://github.com/Excapex/GROKHakaton/pull/29 (`feat/A/12-changeset`)
-DONE: plan R1 (docx+xlsx, stale hash, DWG=`design_task`); `sandbox/compute/apply.py` na kopijama; `engine/pipeline.py`.
-CONTRACT: original se ne prepisuje; CAD nije patch.
-VALIDATION: `python3 evals/test_changeset_plan.py`; `.venv/bin/python evals/test_apply_patch.py`
-DEPENDENCIES: #28 S08 **merged** (`996808d`). #27 S07 **merged**.
-BLOCKERS: #29 čeka B re-review na HEAD posle `merge origin/main` (stari review je na `df78393`). #30/#31 čekaju #29. B merdžuje #33/#34 (A Approve).
-NEXT: push usklađene #29 na `main`; ne squash-merge dok B ne Approve novi SHA.
+ISSUE: #12 S11 changeset (next: #14 S13)
+PR: https://github.com/Excapex/GROKHakaton/pull/29 — current work
+STACK: #30 https://github.com/Excapex/GROKHakaton/pull/30 · #31 https://github.com/Excapex/GROKHakaton/pull/31
+DONE: S07+S08 u `main`. S11 plan+local apply na `feat/A/12-changeset` (`6a73429`).
+CONTRACT: unknown≠PASS; stale hash odbija; CAD=design_task.
+VALIDATION: test_changeset_plan OK; test_judge OK; test_verify OK
+DEPENDENCIES: #27 i #28 **merged**. #29 base=`main`, čeka B Approve na `6a73429`.
+BLOCKERS: ne squash-merge #29 dok B ne pregleda novi SHA. #33/#34 Approve A, merge B.
+NEXT: B re-review #29; posle merge restack #30/#31.
