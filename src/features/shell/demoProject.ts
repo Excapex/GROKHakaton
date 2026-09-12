@@ -4,7 +4,7 @@ import type { Project } from '../../../contracts/types.ts'
 /**
  * RAZVOJNI FIXTURE — nije stvaran predmet i nije rezultat ijednog pregleda.
  * Anonimizovan prema docs/LOCAL-DATA.md §3. Zamenjuje se stvarnim predmetom iz
- * Convex-a kada #4 (S03) uvede tabele `projects` i `revisions`.
+ * Convex-a. Ostaje samo kao fallback kada `VITE_CONVEX_URL` nije podešen.
  */
 export const DEMO_PROJECT: Project = {
   schema_version: SCHEMA_VERSION,
