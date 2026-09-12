@@ -8,13 +8,19 @@
  * @module
  */
 
+import type * as domainPackRegistry from "../domainPackRegistry.js";
+import type * as domainPacks from "../domainPacks.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  domainPackRegistry: typeof domainPackRegistry;
+  domainPacks: typeof domainPacks;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
