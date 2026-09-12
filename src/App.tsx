@@ -1,37 +1,89 @@
-const NAV = ['Pregled', 'Dokumenti', 'Zadaci', 'Revizije', 'Moduli'] as const
+import { useEffect, useState } from "react";
+import { AppShell } from "./components/generated/AppShell.tsx";
+import { ModulesPage } from "./features/modules/ModulesPage.tsx";
+import { ModulesUnavailable } from "./features/modules/ModulesUnavailable.tsx";
+import { PlannedScreen } from "./features/shell/PlannedScreen.tsx";
+import {
+  DEMO_ACTIVE_REVISION_LABEL,
+  DEMO_PROJECT,
+  DEMO_PROJECT_CODE,
+  FIXTURE_LABEL,
+} from "./features/shell/demoProject.ts";
+import {
+  DEFAULT_NAV_ID,
+  NAV_ITEMS,
+  type NavId,
+  isNavId,
+} from "./features/shell/navigation.ts";
+import {
+  FIELDS_SEPARATION_NOTE,
+  buildProjectFacts,
+  type SelectedReviewModule,
+} from "./features/shell/projectFacts.ts";
 
-export default function App() {
+export type AppProps = {
+  /** Da li postoji Convex deployment; bez njega nema serverskog kataloga. */
+  backendConfigured: boolean;
+};
+
+export default function App({ backendConfigured }: AppProps) {
+  const [activeNavId, setActiveNavId] = useState<NavId>(() => {
+    const hash = window.location.hash.slice(1);
+    return isNavId(hash) ? hash : DEFAULT_NAV_ID;
+  });
+  const [selectedModule, setSelectedModule] =
+    useState<SelectedReviewModule | null>(null);
+
+  useEffect(() => {
+    const syncNavigation = () => {
+      const hash = window.location.hash.slice(1);
+      setActiveNavId(isNavId(hash) ? hash : DEFAULT_NAV_ID);
+    };
+    window.addEventListener("hashchange", syncNavigation);
+    return () => window.removeEventListener("hashchange", syncNavigation);
+  }, []);
+
+  function navigate(navId: NavId) {
+    setActiveNavId(navId);
+    window.location.hash = navId;
+  }
+
+  const project = DEMO_PROJECT;
+  const facts = buildProjectFacts(
+    project,
+    DEMO_ACTIVE_REVISION_LABEL,
+    selectedModule,
+  );
+
   return (
-    <div className="min-h-screen bg-neutral-50 text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
-      <header className="border-b border-neutral-200 dark:border-neutral-800">
-        <div className="mx-auto flex max-w-6xl items-baseline gap-4 px-6 py-4">
-          <h1 className="text-lg font-semibold tracking-tight">Saglasnik</h1>
-          <p className="text-sm text-neutral-500">Kopilot za tehničke projekte</p>
-        </div>
-        <nav className="mx-auto max-w-6xl px-6">
-          <ul className="flex gap-6 text-sm">
-            {NAV.map((item) => (
-              <li key={item} className="border-b-2 border-transparent pb-3 text-neutral-500">
-                {item}
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-6 py-16">
-        <section className="rounded-lg border border-dashed border-neutral-300 p-10 dark:border-neutral-700">
-          <h2 className="text-base font-medium">Nema otvorenih projekata</h2>
-          <p className="mt-2 max-w-prose text-sm text-neutral-500">
-            Radni prostor je postavljen, ali pregled dokumentacije još nije implementiran.
-            Nijedan stručni rezultat nije izračunat i ništa na ovoj strani nije demonstracioni
-            podatak.
-          </p>
-          <p className="mt-6 text-xs text-neutral-400">
-            Aktivan stručni modul: Zaštita od požara (u izradi). Ostale discipline: planirano.
-          </p>
-        </section>
-      </main>
-    </div>
-  )
+    <AppShell
+      appName="Saglasnik"
+      tagline="Kopilot za tehničke projekte"
+      navItems={NAV_ITEMS}
+      activeNavId={activeNavId}
+      onNavigate={(navId) => {
+        if (isNavId(navId)) navigate(navId);
+      }}
+      projectTitle={project.name}
+      projectCode={DEMO_PROJECT_CODE}
+      facts={facts}
+      factsNote={FIELDS_SEPARATION_NOTE}
+      fixtureLabel={FIXTURE_LABEL}
+      account={{ initials: "MJ", name: "M. Jovanović" }}
+    >
+      {activeNavId === "moduli" ? (
+        backendConfigured ? (
+          <ModulesPage
+            projectId={project.id}
+            revisionId={project.active_revision_id}
+            onReviewAccepted={setSelectedModule}
+          />
+        ) : (
+          <ModulesUnavailable />
+        )
+      ) : (
+        <PlannedScreen navId={activeNavId} onNavigate={navigate} />
+      )}
+    </AppShell>
+  );
 }

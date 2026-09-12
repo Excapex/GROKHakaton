@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
 ISSUE: #9 S08 gate
-DONE: `engine/judge` — R1–R6 nalazi, integrity gate, `ReviewRun` (pack/model/prompt/input_hashes), dosije vezan za `revision_id`. Negativan test: skinut dokaz → `unknown`.
-CONTRACT: Finding conflict ≥2 opažanja; null value ⇒ search_scope; gate.ok false ako fali dokaz.
+DONE: `engine/judge` R1–R6 + integrity gate + ReviewRun. Usklađeno sa `main` preko #27.
+CONTRACT: conflict ≥2 opažanja; unknown ≠ PASS; gate.ok false bez dokaza.
 VALIDATION: `python3 evals/test_judge.py`
-NEEDS: Review B. Stacked na #27. Ne mergovati bez review-a.
-NEXT: S11 ChangeSet (#12) — A može sam; S13 čeka B S12 za stvarni patch fajla.
+NEEDS: B re-review #27 pa ovaj PR. B merdžuje #33/#34 (A Approve).
+NEXT: S11 changeset kad #27/#28 uđu u main.
