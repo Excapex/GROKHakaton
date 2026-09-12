@@ -1,10 +1,10 @@
 # Handoff — Builder A
 
-ISSUE: #14 S13 reread
-PR: https://github.com/Excapex/GROKHakaton/pull/30 (`feat/A/14-reread`)
-DONE: `engine/reread/compare.py` — nova revizija se extract+judge-uje iz novog ingest-a; `verified` samo kad nalaz više nije fail; R4 ostaje otvoren. S11 je u `main` (`9205af3`, #29).
-CONTRACT: promena broja u tekstu ≠ dokaz fizičke izmene; unknown≠PASS.
-VALIDATION: `python3 evals/test_reread.py`
-DEPENDENCIES: #29 **merged**. #13 S12 (izvoz/render) je B i nije u ovom PR-u.
-BLOCKERS: #30 čeka B re-review na HEAD posle `merge origin/main`. #31 čeka #30. #13 je B.
-NEXT: retarget #30 na `main`; ne squash-merge dok B ne Approve novi SHA.
+ISSUE: #16 S15 eval
+PR: https://github.com/Excapex/GROKHakaton/pull/31 (`feat/A/16-eval`)
+DONE: `evals/MODEL-EVAL.md` — izmerena tabela R1–R6 (anon fixture + lokalni ingest, bez klijentskih naziva). S13 je u `main` (`aca56f9`, #30).
+CONTRACT: unknown≠PASS; uredan isti-A1 nije conflict; nema klijentskih imena u Gitu.
+VALIDATION: `python3 evals/test_reread.py`; `python3 evals/test_judge.py`
+DEPENDENCIES: #30 **merged**. #13 S12 ostaje B.
+BLOCKERS: #31 čeka B re-review na HEAD posle `merge origin/main`.
+NEXT: retarget #31 na `main`; ne squash-merge dok B ne Approve novi SHA.
