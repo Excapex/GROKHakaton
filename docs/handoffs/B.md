@@ -1,9 +1,9 @@
 # Handoff — Builder B
 
 CURRENT PR: [#33](https://github.com/Excapex/GROKHakaton/pull/33) `feat/B/4-upload-revizije` → `main` (#4 S03)
-DEPS: `#25` shell i `#27` verify su u `origin/main` (`ebd6d77`). `#34` dosije stacked na ovu granu. `#11` S10 WIP u stash-u na `feat/B/11-pitanja-odluke`.
-BLOCKER: Review-agent nije merge-ovao `#33` jer je merge sa `main` padao na `process` u `xai.ts` (#26). `#27` to je sredio na `main`. `origin/main` je uvezen ovde; `npm run verify` zeleno (16 testova). Novi SHA treba review pa squash-merge od B.
-NEXT: Push codegen + merge commit, komentar na `#33` sa SHA i verify. Ne rivjuj A-ove PRove. Nastavak `#11` posle push-a.
+DEPS: `origin/main` je `996808d` (#28 judge). `#34` stacked, APPROVED na `d79c5b5`. `#11` S10 u stash-u.
+BLOCKER: Review na `62ab15d` tražio merge `origin/main` i zeleni GitHub `web`. Uvezen je i `#28`. Čeka se approve na novom SHA. Ne merge-ujem bez approve-a na HEAD.
+NEXT: verify + push + re-review. `#11` ne otvaram dok `#33`/`#34` nisu u `main`.
 
 ISSUE: #4 S03 — upload, dokumenti, revizije
 DONE:
