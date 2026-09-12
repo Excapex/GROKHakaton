@@ -3,8 +3,16 @@
 ISSUE: #56 S25 UI + pozivi (ne engine)
 BRANCH: `feat/A/56-ui-reread-wire` u `/home/mihajlo/GROKHakaton-wt2`
 PR: https://github.com/Excapex/GROKHakaton/pull/69
-DONE: Zadaci + Revizije + Pregled — četiri čipa; apply/verify disabled dok API nije na main; veza po filename na rev 2; CAD bez patch; integritet ≠ verified; klik javlja markApplied/markVerified kad gate prođe.
-CONTRACT: UI ne izmišlja finding ID / page_no / patch. Nepoznato ostaje unknown. Prihvati ≠ applied ≠ verified.
-VALIDATION: `npm test` (54) + `npx tsc -b` u wt2. CI web pass.
-NEEDS: Agent 1 merge ingest (#66) na main → `git merge origin/main` u wt2, po potrebi codegen u wt2.
-NEXT: B review #69. Ne merge-ujem B PR-ove. Ne diram #48–#55.
+
+DONE:
+- Ingest #66 je na `main`; wt2 je merge-ovan sa `origin/main`.
+- UI: Prihvati ≠ primenjeno ≠ provereno. CAD bez patch dugmeta.
+- `markApplied({ changeSetId, revisionId })` / `markVerified({ changeSetId, revisionId })` — klijent ne šalje boolean. Zatvaranje nalaza prati `findingClosedOnReread` (ne zahteva PASS).
+
+CONTRACT: unknown ostaje unknown u prikazu. Original se ne prepisuje. Ne izmišljati finding ID / page_no / patch.
+
+VALIDATION: `npm test` + `npx tsc -b` u wt2.
+
+NEEDS: B Approve #69 na tačan HEAD. Ne merge-ujem B PR-ove.
+
+NEXT: codegen u wt2; uskladiti apply gate sa serverom (isti hash ≠ primena); squash posle B Approve `--match-head-commit`.

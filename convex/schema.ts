@@ -15,6 +15,7 @@ export default defineSchema({
     projectId: v.id("projects"),
     index: v.number(),
     createdAt: v.number(),
+    derivedFromChangeSetId: v.optional(v.id("changeSets")),
   }).index("by_project", ["projectId"]),
 
   documents: defineTable({
@@ -102,6 +103,22 @@ export default defineSchema({
     approvedAt: v.optional(v.number()),
     baseHashes: v.record(v.string(), v.string()),
     designTask: v.optional(v.string()),
+    patches: v.optional(
+      v.array(
+        v.object({
+          document_id: v.string(),
+          format: v.union(v.literal("docx"), v.literal("xlsx")),
+          op: v.union(
+            v.literal("replace_text"),
+            v.literal("set_cell"),
+            v.literal("insert_row"),
+          ),
+          locator: v.string(),
+          from: v.string(),
+          to: v.string(),
+        }),
+      ),
+    ),
     createdAt: v.number(),
   }).index("by_project", ["projectId"]).index("by_question", ["questionId"]),
 });
