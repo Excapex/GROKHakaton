@@ -40,12 +40,18 @@ describe("katalog modula", () => {
 });
 
 describe("buildReviewRequest", () => {
-  it("prihvata aktivan modul, ali ne tvrdi da je pipeline spreman", () => {
+  it("prihvata aktivan modul, ali bez teksta nije pipeline spreman", () => {
     const result = buildReviewRequest(baseArgs);
     expect(result.accepted).toBe(true);
     expect(result.domain_pack_id).toBe("fire_protection");
     expect(result.pack_version).toBe("v1");
     expect(result.pipeline_ready).toBe(false);
+  });
+
+  it("pipeline_ready samo uz ingestovani tekst", () => {
+    expect(buildReviewRequest(baseArgs, { hasIngestText: true }).pipeline_ready).toBe(
+      true,
+    );
   });
 
   it("odbija izmišljen domain_pack_id", () => {

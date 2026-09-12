@@ -50,6 +50,11 @@ def main() -> int:
         fail("R1 verified posle novog čitanja")
     if not any(s["id"] == "find_r4" for s in diff["still_open"]):
         fail("R4 ostaje otvoren")
+
+    same_hash = compare_revisions(prev, prev)
+    if same_hash["verified"]:
+        fail("isti nalazi / isti hash ne smeju dati verified")
+
     print("evals/test_reread: OK", diff["note"])
     return 0
 

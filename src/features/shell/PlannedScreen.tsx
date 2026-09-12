@@ -145,7 +145,10 @@ export function PlannedScreen({
       </div>
       {navId === "zadaci" && (
         <div className="lifecycle" aria-label="Planirani tok izmene">
-          <p>Četiri odvojena stanja izmene</p>
+          <p>
+            Četiri odvojena stanja: predloženo, prihvaćeno, primenjeno, provereno.
+            Prihvatanje nije provera.
+          </p>
           <ol>
             {["Predloženo", "Prihvaćeno", "Primenjeno", "Provereno"].map(
               (label, index) => (

@@ -7,6 +7,14 @@ export type ExportableChangeSet = {
   designTask?: string | null;
   approvedBy?: string | null;
   approvedAt?: number | null;
+  patches?: Array<{
+    document_id: string;
+    format: "docx" | "xlsx";
+    op: "replace_text" | "set_cell" | "insert_row";
+    locator: string;
+    from: string;
+    to: string;
+  }>;
 };
 
 export type ExportableDocument = {
@@ -17,9 +25,8 @@ export type ExportableDocument = {
 };
 
 /**
- * Package an accepted ChangeSet for the apply CLI. It carries the base hashes
- * so a stale original is refused; it does not carry patch text, because the
- * concrete operations come from the engine plan, not from the browser.
+ * Package an accepted ChangeSet for the apply CLI.
+ * Patches come from the engine plan stored on the server, not from the browser.
  */
 export function buildChangeSetExport(
   changeSet: ExportableChangeSet,
@@ -41,6 +48,7 @@ export function buildChangeSetExport(
       ? { id: target._id, filename: target.filename, kind: target.kind, sha256: target.sha256 }
       : null,
     base_hashes: changeSet.baseHashes,
+    patches: changeSet.patches ?? [],
     design_tasks: changeSet.designTask
       ? [
           {
