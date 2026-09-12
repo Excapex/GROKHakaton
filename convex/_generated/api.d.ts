@@ -11,6 +11,7 @@
 import type * as documents from "../documents.js";
 import type * as domainPackRegistry from "../domainPackRegistry.js";
 import type * as domainPacks from "../domainPacks.js";
+import type * as dossiers from "../dossiers.js";
 import type * as filePolicy from "../filePolicy.js";
 import type * as lib_providers_xai from "../lib/providers/xai.js";
 import type * as lib_verify from "../lib/verify.js";
@@ -28,6 +29,7 @@ declare const fullApi: ApiFromModules<{
   documents: typeof documents;
   domainPackRegistry: typeof domainPackRegistry;
   domainPacks: typeof domainPacks;
+  dossiers: typeof dossiers;
   filePolicy: typeof filePolicy;
   "lib/providers/xai": typeof lib_providers_xai;
   "lib/verify": typeof lib_verify;

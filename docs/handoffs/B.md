@@ -1,9 +1,20 @@
 # Handoff — Builder B
 
-CURRENT PR: [#33](https://github.com/Excapex/GROKHakaton/pull/33) `feat/B/4-upload-revizije` → `main` (#4 S03)
-DEPS: `origin/main` je `996808d` (#28 judge). `#34` stacked, APPROVED na `d79c5b5`. `#11` S10 u stash-u.
-BLOCKER: Review na `62ab15d` tražio merge `origin/main` i zeleni GitHub `web`. Uvezen je i `#28`. Čeka se approve na novom SHA. Ne merge-ujem bez approve-a na HEAD.
-NEXT: verify + push + re-review. `#11` ne otvaram dok `#33`/`#34` nisu u `main`.
+CURRENT PR: [#34](https://github.com/Excapex/GROKHakaton/pull/34) `feat/B/10-dosije` → `main` (#10 S09)
+DEPS: `origin/main` je `aca56f9` (#30 reread). `#33` je u `main`.
+BLOCKER: CHANGES_REQUESTED na `7e7a0af` — nije bilo GitHub `web` checka, i PR je bio iza `main`. Uvezen #30; push da se pokrene CI.
+NEXT: verify + push + re-review na novi SHA. Merge tek posle approve-a na HEAD.
+
+ISSUE: #10 S09 — dosije i dokazi
+DONE:
+- Pregled je trokolonski radni prostor: nalazi · original · akcije. Zoom +/- i tastatura.
+- Konflikt layout (dva izvora) i četiri odvojena stanja izmene su u UI-ju.
+- `dossiers.getActive` namerno vraća `pipelineReady: false` i `dossier: null` — nema lažnog nalaza
+  dok engine (#9) ne upiše dosije.
+CONTRACT: nema izmene `contracts/`. Konzumira `Dossier`, `Finding`, `Observation`, `ChangeLifecycle`.
+VALIDATION: `npm run verify` 18 testova. Browser `#pregled` pokazuje prazan dosije i lifecycle.
+NEEDS: A da upiše stvarni dosije (R3 dva izvora). Tada klik na nalaz otvara stranu+region.
+NEXT: Review na SHA posle sync sa `main`, zatim squash-merge od B.
 
 ISSUE: #4 S03 — upload, dokumenti, revizije
 DONE:
@@ -19,8 +30,8 @@ VALIDATION:
 - `npx convex dev --once` na `gallant-dolphin-326` kreirao indekse i funkcije.
 - `projects:ensureDemo` + `getWorkspace` vraćaju živi predmet. Browser: `#dokumenti` dropzona i
   `#revizije` lanac + „Nova revizija“, deep-link ostaje posle navigacije.
-NEEDS: Review na SHA posle merge `origin/main` (prethodni approve je bio `fa1267b`). Ručni dokaz upload → refresh → revizija 2 i dalje na pregledaču.
-NEXT: Kad `#33` uđe u `main`, merge `origin/main` u `#34`, pa `#11` S10.
+NEEDS: zatvoreno u `#33` / `main`.
+NEXT: `#34` dosije, zatim `#11` S10.
 
 ## S02 · shell i katalog (#3)
 

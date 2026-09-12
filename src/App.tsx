@@ -3,6 +3,7 @@ import type { Id } from "../convex/_generated/dataModel";
 import { AppShell } from "./components/generated/AppShell.tsx";
 import { StatePanel } from "./components/generated/StatePanel.tsx";
 import { DocumentsPage } from "./features/documents/DocumentsPage.tsx";
+import { DossierPage } from "./features/dossier/DossierPage.tsx";
 import {
   DEMO_PROJECT_CODE,
   revisionLabel,
@@ -161,6 +162,11 @@ function LiveApp({
           projectId={mapped.project.id}
           revisionId={mapped.project.active_revision_id}
           onReviewAccepted={setSelectedModule}
+        />
+      ) : activeNavId === "pregled" ? (
+        <DossierPage
+          projectId={workspace.project._id as Id<"projects">}
+          documents={mapped.activeDocuments}
         />
       ) : activeNavId === "dokumenti" ? (
         <DocumentsPage
