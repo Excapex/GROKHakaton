@@ -21,6 +21,8 @@ export type AppShellProps = {
   factsNote?: string;
   fixtureLabel?: string;
   account?: { initials: string; name: string };
+  /** Stvarni izbor predmeta. Bez njega se prikazuje samo naziv, bez chevrona. */
+  projectSwitcher?: ReactNode;
   children: ReactNode;
 };
 const navIcons: Record<string, IconName> = {
@@ -43,6 +45,7 @@ export function AppShell({
   factsNote,
   fixtureLabel,
   account,
+  projectSwitcher,
   children,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
@@ -112,16 +115,14 @@ export function AppShell({
             </span>
           </div>
           <div className="project-switch">
-            <span className="rail-label">Trenutni projekat</span>
-            <button
-              type="button"
-              title={projectTitle ?? "Pregled projekta"}
-              onClick={() => navigate("pregled")}
-            >
-              <Icon name="building" size={18} />
-              <span className="rail-label">{projectTitle ?? "Projekat"}</span>
-              <Icon name="chevron-right" size={15} />
-            </button>
+            <span className="rail-label">Trenutni predmet</span>
+            {projectSwitcher ?? (
+              // Bez spiska predmeta nema ni chevrona koji ga obećava.
+              <p className="project-switch-static" title={projectTitle ?? ""}>
+                <Icon name="building" size={18} />
+                <span className="rail-label">{projectTitle ?? "Predmet"}</span>
+              </p>
+            )}
           </div>
           <nav aria-label="Glavna navigacija">
             <ul className="nav-list">
