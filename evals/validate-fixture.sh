@@ -14,4 +14,5 @@ if ! "$py" -c "import jsonschema" 2>/dev/null; then
   exit 1
 fi
 "$py" "$root/evals/validate_fixture.py"
-exec "$py" "$root/evals/test_extract.py"
+"$py" "$root/evals/test_extract.py"
+exec "$py" "$root/evals/test_verify.py"

@@ -1,8 +1,8 @@
 # Handoff — Builder A
 
-ISSUE: #7 S06 extract
-DONE: `engine/extract` R1–R6 (regex + ingest `page_no`); `slot_map.json` → pack `requires_slots`; Convex `workflows/extract` + `lib/providers/xai` (`grok-4.6`, server). Anon fixture eval.
-CONTRACT: Observation `value` null ⇒ `search_scope`; evidence `page_no` samo iz manifesta.
-VALIDATION: `python3 evals/test_extract.py` (i `evals/validate_fixture.py`).
-NEEDS: Reviewer Excapex. Pravi PDF-ovi van Gita → ingest pa extract; dok se to ne uradi issue se ne zatvara dokazom strana.
-NEXT: S07 verify / S08 gate.
+ISSUE: #8 S07 verify
+DONE: `engine/verify` drugi prolaz: payload `{slot, page, criterion, text}` bez `value`. Neslaganje → `unknown`, ne prosek. `convex/lib/verify.ts` isti ugovor. Usklađeno sa `main` (extract #26 + shell #25).
+CONTRACT: `Observation.verified_by_second_pass`; Integrity i dalje u #9.
+VALIDATION: `python3 evals/test_verify.py`
+NEEDS: Re-review B na CI zelenom, base `main`.
+NEXT: S08 gate (#28) posle merge ovog PR-a.
