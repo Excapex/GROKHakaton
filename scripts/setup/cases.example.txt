@@ -1,0 +1,9 @@
+# Šablon. Kopiraj u cases.local.txt i upiši stvarne nazive predmeta.
+# cp scripts/setup/cases.example.txt scripts/setup/cases.local.txt
+#
+# Jedan ERE izraz po liniji. Guard blokira commit ako se naziv pojavi
+# u imenu fajla ili u dodatim linijama diff-a.
+#
+# naziv-investitora
+# naziv-ulice
+# naziv-objekta
