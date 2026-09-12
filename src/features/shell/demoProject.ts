@@ -17,6 +17,6 @@ export const DEMO_PROJECT: Project = {
 
 export const DEMO_PROJECT_CODE = 'PZI-DEMO-01-2026'
 
-export const DEMO_ACTIVE_REVISION_LABEL = 'Revizija 2'
+export const DEMO_ACTIVE_REVISION_LABEL = 'Provera 2'
 
 export const FIXTURE_LABEL = 'demo fixture'

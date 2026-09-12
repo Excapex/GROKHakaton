@@ -10,6 +10,20 @@ type Screen = {
   sections: { title: string; body: string }[];
 };
 const SCREENS: Record<string, Screen> = {
+  projekat: {
+    title: "Projekat",
+    description:
+      "Ubaci dokumentaciju, izaberi tip pregleda i pročitaj primedbe.",
+    icon: "layout-dashboard",
+    emptyTitle: "Dobra odluka počinje dokazom.",
+    message:
+      "Predmet, dokumenti i primedbe stižu kad je veza sa serverom podešena.",
+    sections: [
+      { title: "Dokumentacija", body: "Originali tekuće provere." },
+      { title: "Primedbe", body: "Šta nije u redu, gde stoji i šta uraditi." },
+      { title: "Provere", body: "Svaki novi set dokumenata je nova provera." },
+    ],
+  },
   pregled: {
     title: "Pregled projekta",
     description: "Dokumentacija, stručni nalazi i odluke na jednom mestu.",

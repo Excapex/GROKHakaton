@@ -84,7 +84,7 @@ describe("dossierView", () => {
 
   it("ima četiri odvojena stanja izmene", () => {
     expect(LIFECYCLE_LABELS.proposed).toBe("Predloženo");
-    expect(LIFECYCLE_LABELS.verified).toBe("Provereno");
+    expect(LIFECYCLE_LABELS.verified).toBe("Potvrđeno u novoj proveri");
   });
 
   it("status nalaza se čita bez poznavanja engine-a", () => {

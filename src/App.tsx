@@ -2,20 +2,16 @@ import { useEffect, useState, type ReactNode } from "react";
 import type { Id } from "../convex/_generated/dataModel";
 import { AppShell } from "./components/generated/AppShell.tsx";
 import { StatePanel } from "./components/generated/StatePanel.tsx";
-import { DocumentsPage } from "./features/documents/DocumentsPage.tsx";
-import { DossierPage } from "./features/dossier/DossierPage.tsx";
 import {
   DEMO_PROJECT_CODE,
   revisionLabel,
   toContractProject,
 } from "./features/documents/projectMap.ts";
-import { RevisionsPage } from "./features/documents/RevisionsPage.tsx";
 import { useWorkspace } from "./features/documents/useDemoWorkspace.ts";
 import { ProjectSwitcher } from "./features/shell/ProjectSwitcher.tsx";
 import { ModulesPage } from "./features/modules/ModulesPage.tsx";
 import { ModulesUnavailable } from "./features/modules/ModulesUnavailable.tsx";
 import { PlannedScreen } from "./features/shell/PlannedScreen.tsx";
-import { TasksPage } from "./features/tasks/TasksPage.tsx";
 import {
   DEMO_ACTIVE_REVISION_LABEL,
   DEMO_PROJECT,
@@ -23,11 +19,12 @@ import {
   FIXTURE_LABEL,
 } from "./features/shell/demoProject.ts";
 import {
-  DEFAULT_NAV_ID,
   NAV_ITEMS,
   type NavId,
   isNavId,
+  resolveNavId,
 } from "./features/shell/navigation.ts";
+import { ProjectPage } from "./features/project/ProjectPage.tsx";
 import {
   FIELDS_SEPARATION_NOTE,
   buildProjectFacts,
@@ -41,13 +38,13 @@ export type AppProps = {
 function useHashNavigation() {
   const [activeNavId, setActiveNavId] = useState<NavId>(() => {
     const hash = window.location.hash.slice(1);
-    return isNavId(hash) ? hash : DEFAULT_NAV_ID;
+    return resolveNavId(hash);
   });
 
   useEffect(() => {
     const syncNavigation = () => {
       const hash = window.location.hash.slice(1);
-      setActiveNavId(isNavId(hash) ? hash : DEFAULT_NAV_ID);
+      setActiveNavId(resolveNavId(hash));
     };
     window.addEventListener("hashchange", syncNavigation);
     return () => window.removeEventListener("hashchange", syncNavigation);
@@ -189,32 +186,20 @@ function LiveApp({
             )
           }
         />
-      ) : activeNavId === "pregled" ? (
-        <DossierPage
-          projectId={workspace.project._id as Id<"projects">}
-          documents={mapped.activeDocuments}
-        />
-      ) : activeNavId === "dokumenti" ? (
-        <DocumentsPage
+      ) : (
+        <ProjectPage
           projectId={workspace.project._id as Id<"projects">}
           revisionId={workspace.project.activeRevisionId}
-          documents={mapped.activeDocuments}
-        />
-      ) : activeNavId === "zadaci" ? (
-        <TasksPage
-          projectId={workspace.project._id as Id<"projects">}
-          documents={mapped.activeDocuments}
-        />
-      ) : activeNavId === "revizije" ? (
-        <RevisionsPage
-          projectId={workspace.project._id as Id<"projects">}
-          activeRevisionId={workspace.project.activeRevisionId}
           revisions={workspace.revisions}
-          documents={workspace.documents}
+          documents={mapped.activeDocuments}
+          allDocuments={workspace.documents}
           events={workspace.events}
+          onReviewAccepted={(module) =>
+            setReview(
+              activeProjectId ? { projectId: activeProjectId, module } : null,
+            )
+          }
         />
-      ) : (
-        <PlannedScreen navId={activeNavId} onNavigate={navigate} />
       )}
     </ShellFrame>
   );
