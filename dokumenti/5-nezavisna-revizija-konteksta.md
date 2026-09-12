@@ -4,7 +4,7 @@ Datum: 11.09.2026. Obuhvat: postojeći folder, CrossBeam arhiva, dodatne javne p
 
 ## Zaključak
 
-Nalaznik ostaje najbolji izbor nakon potvrde da porodica poseduje propise, stvarne stručne primedbe sa pravnim osnovom i projekte pre i posle ispravki. Potrebno je promeniti definiciju proizvoda: završiti ciklus pregleda, pripreme ispravki i provere nove revizije. Postojeći plan završava prerano, kod liste nalaza, dok neke njegove tehničke garancije nisu potkrepljene implementacijom.
+ProjectLens ostaje najbolji izbor nakon potvrde da porodica poseduje propise, stvarne stručne primedbe sa pravnim osnovom i projekte pre i posle ispravki. Potrebno je promeniti definiciju proizvoda: završiti ciklus pregleda, pripreme ispravki i provere nove revizije. Postojeći plan završava prerano, kod liste nalaza, dok neke njegove tehničke garancije nisu potkrepljene implementacijom.
 
 Korisnik želi maksimalan kvalitet i kompletnost ostvarivu tokom hakatona. Jednostavno korisničko iskustvo ne podrazumeva jednostavan sistem. Složenost je opravdana kada povećava sposobnost, proverljivost ili pouzdanost proizvoda; broj integracija nije samostalna mera uspeha.
 
@@ -26,7 +26,7 @@ Originalni materijali nisu menjani. Ekstrakcije, inventar i dodatne provere nala
 | Runbook | Operativni detalji, ali su ispravke i izvoz uklonjeni iz jezgra proizvoda |
 | PDF razgovor kolege | Želja za opipljivim i vizuelno ubedljivim proizvodom, posebno HomeTwin |
 | Excel | Šablon za unos znanja; nije popunjena stručna baza |
-| Python prototip Nalaznika | Sintetičke činjenice, mali engine i demonstracija JSON sheme; nema potvrđenog toka PDF → nalaz |
+| Python prototip ProjectLens-a | Sintetičke činjenice, mali engine i demonstracija JSON sheme; nema potvrđenog toka PDF → nalaz |
 | CAD, ngspice, akustika | Dokaz da pojedini lokalni proračuni rade; ne dokaz kompletnosti tih proizvoda |
 | CrossBeam | Najvredniji primer organizacije znanja, višefaznog rada i završnog profesionalnog paketa |
 
@@ -37,7 +37,7 @@ Istraživački dosije u rootu i u `Claude outputs` je identičan. Sačuvane HTML
 - Otac ima skup propisa, tipske primedbe sa pozivom na zakon, gotove projekte i verzije pre ispravki. Materijal još nije bio dodat folderu tokom ove provere.
 - Oba člana imaju osnovne plaćene ChatGPT i Claude/Claude Code planove, približno 20 evra mesečno.
 - Tim čine dva člana; korisnik je iskusniji u programiranju.
-- Problem Nalaznika nije odbačen. Primedba je da je prethodni plan žrtvovao kompletnost proizvoda radi lakše implementacije.
+- Problem ProjectLens-a nije odbačen. Primedba je da je prethodni plan žrtvovao kompletnost proizvoda radi lakše implementacije.
 - Korisnik je dodatno potvrdio da materijal uključuje sve izvorne formate iz pitanja (Word/Excel/DWG uz PDF) i da će kompletan materijal dodati večeras. Sadržaj i urednost tih fajlova tek treba pregledati. Time stvarna izmena podržanog izvornog dokumenta ulazi u glavni plan.
 
 ## Činjenice o događaju koje treba ispraviti
@@ -62,7 +62,7 @@ Ovo potvrđuje da postoji implementacija i namera poređenja, a ne dokazuje potp
 
 Vrednosti koje treba preuzeti: stručni sadržaj strukturisan kao skills/reference, mapiranje fizičke PDF strane na oznaku lista, ciljano čitanje relevantnih delova, pitanja čoveku, odvojene radne faze i konkretni završni dokumenti. Skills predstavljaju znanje; agenti izvršavaju posao. Jedno ne zamenjuje drugo.
 
-Dnevnik opisuje višednevni razvoj, probleme sa rasterizacijom i memorijom, mrežom i prezentacijom, kao i vremenski skupe agentske tokove. Završni demo razlikuje pregled već dobijenih rezultata od stvarnog novog pokretanja. To je važna pouka za Nalaznik: vidljiv tok rada i ponovljiv rezultat moraju postojati zajedno. Lokalni izvor: raspakovana arhiva u `tmp/context_audit/crossbeam/`. [Javni repozitorijum](https://github.com/mikeOnBreeze/cc-crossbeam).
+Dnevnik opisuje višednevni razvoj, probleme sa rasterizacijom i memorijom, mrežom i prezentacijom, kao i vremenski skupe agentske tokove. Završni demo razlikuje pregled već dobijenih rezultata od stvarnog novog pokretanja. To je važna pouka za ProjectLens: vidljiv tok rada i ponovljiv rezultat moraju postojati zajedno. Lokalni izvor: raspakovana arhiva u `tmp/context_audit/crossbeam/`. [Javni repozitorijum](https://github.com/mikeOnBreeze/cc-crossbeam).
 
 CrossBeam jeste osvojio prvo mesto na događaju održanom tokom jedne nedelje, sa drugačijim resursima od sutrašnjeg dana. Njegov rezultat podržava vrednost poznavanja korisnika i završenog profesionalnog toka. [Objava organizatora](https://claude.com/blog/meet-the-winners-of-our-built-with-opus-4-6-claude-code-hackathon).
 
@@ -122,7 +122,7 @@ Provereni su svi navedeni identifikatori i javni sažeci; ovo nije replikacija e
 
 Bluebeam dokumentuje AI provere neslaganja među listovima, oznakama i tabelama. CodeComply oglašava provere usklađenosti i projektne dokumentacije. To nije nezavisna evaluacija njihove tačnosti, ali jeste dovoljno da se odbaci tvrdnja „niko ovo ne radi“. [Bluebeam Smart Review](https://support.bluebeam.com/revu/how-to/use-smart-review.html), [CodeComply](https://codecomply.ai/ai-compliance-design/).
 
-Nalaznik treba razlikovati dokazanim lokalnim stručnim znanjem, radom kroz revizije i pripremom koordinisanih ispravki. Zbir postojećih funkcija ili tvrdnja da je JSON shema inovacija neće biti dovoljan.
+ProjectLens treba razlikovati dokazanim lokalnim stručnim znanjem, radom kroz revizije i pripremom koordinisanih ispravki. Zbir postojećih funkcija ili tvrdnja da je JSON shema inovacija neće biti dovoljan.
 
 ## Tehnički resursi i neproverene pretpostavke
 
@@ -136,4 +136,4 @@ Ne postoji dokaz u folderu da su API krediti, prava na konkretne modele, promoci
 
 ## Konačna procena
 
-Najveći rizik Nalaznika nije frontend niti broj agenata. To je ispravno povezivanje činjenica, primenljivost pravila i dokaz da izmena rešava stvarni problem. Upravo tome treba posvetiti ambiciju. Predlog proizvoda i izvođenja nalazi se u `6-preporuka-za-hakaton.md`.
+Najveći rizik ProjectLens-a nije frontend niti broj agenata. To je ispravno povezivanje činjenica, primenljivost pravila i dokaz da izmena rešava stvarni problem. Upravo tome treba posvetiti ambiciju. Predlog proizvoda i izvođenja nalazi se u `6-preporuka-za-hakaton.md`.

@@ -1,7 +1,7 @@
-# Nalaznik — zajednički protokol
+# ProjectLens — zajednički protokol
 
 ## Proizvod i autoritet
-Nalaznik je kopilot za tehničke projekte različitih disciplina.
+ProjectLens je kopilot za tehničke projekte različitih disciplina.
 Zajednički UI i model: predmet, dokumenti, revizije, dosije, dokazi, zadaci i izmene.
 Za hakaton implementiramo samo stručni modul fire_protection (ZOP).
 Ostali moduli imaju oznaku Planirano i ne proizvode rezultate ni ocene.

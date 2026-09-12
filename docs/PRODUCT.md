@@ -1,4 +1,4 @@
-# PRODUCT — Nalaznik
+# PRODUCT — ProjectLens
 
 ## Šta je
 Kopilot za tehničke projekte svih disciplina. Jedan radni prostor za projekte,

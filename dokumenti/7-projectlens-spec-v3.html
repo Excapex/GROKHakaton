@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Nalaznik — specifikacija v3</title>
-<meta name="description" content="Nalaznik v3: pregled projekta, povezane ispravke i provera nove revizije. Specifikacija za hakaton 12.09.2026.">
+<title>ProjectLens — specifikacija v3</title>
+<meta name="description" content="ProjectLens v3: pregled projekta, povezane ispravke i provera nove revizije. Specifikacija za hakaton 12.09.2026.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Spectral:ital,wght@0,400;0,600;1,400&family=Roboto+Mono:wght@400;500;700&display=swap">
 <style>
   :root{
@@ -257,14 +257,14 @@ body{margin:0} html{scroll-behavior:smooth} section{scroll-margin-top:20px}
 <main class="w" id="vrh">
 <header class="top">
   <div class="eyebrow">Verzija 3 · 11.09.2026 · Grok Bot Serbia Hackathon</div>
-  <h1>Nalaznik</h1>
+  <h1>ProjectLens</h1>
   <p class="sub">Kopilot za tehničke projekte svih disciplina.</p>
   <p class="dek">Jedan radni prostor za projekte, dokumente, stručne preglede i revizije. Zaštita od požara je prvi aktivni modul: od dokaza i odluke do stvarne ispravke i proverene nove verzije.</p>
   <div class="meta"><span>Hakaton: 12.09.2026 · tim od 2 člana</span><span>Planirana predaja: 18:30 · javni rok: 19:00</span><span>Status: specifikacija za izradu</span></div>
 </header>
 <div class="lede">
   <h2>Širok proizvod. Prvi kompletan stručni modul.</h2>
-  <p><strong>Novi dogovor tima:</strong> interfejs i zajednički model podržavaju sve vrste tehničkih projekata; na hakatonu implementiramo ZOP. Ostali stručni moduli su jasno označeni kao planirani.</p><p>Projektant dodaje dokumentaciju. Nalaznik pronalazi problem, otvara dokaz, traži presudno pojašnjenje, priprema koordinisane izmene i posle prihvatanja proverava novu verziju. <strong>Posao je završen kada postoji upotrebljiv paket i dokaz šta je rešeno.</strong></p>
+  <p><strong>Novi dogovor tima:</strong> interfejs i zajednički model podržavaju sve vrste tehničkih projekata; na hakatonu implementiramo ZOP. Ostali stručni moduli su jasno označeni kao planirani.</p><p>Projektant dodaje dokumentaciju. ProjectLens pronalazi problem, otvara dokaz, traži presudno pojašnjenje, priprema koordinisane izmene i posle prihvatanja proverava novu verziju. <strong>Posao je završen kada postoji upotrebljiv paket i dokaz šta je rešeno.</strong></p>
   <p>Otac ima propise, tipske primedbe sa pravnim osnovom i projekte pre i posle ispravki, uključujući izvorne fajlove. Korisnik je potvrdio da materijal stiže večeras. To je osnova za izbor slučaja, pravila i evaluaciju; sadržaj još nije pregledan.</p>
   <p><strong>Izmena izvornog dokumenta, izvoz i provera revizije ulaze u glavni obuhvat.</strong> Ambiciju ulažemo u tačnost povezivanja, posledice izmena i pouzdan završetak procesa.</p>
 </div>
@@ -332,7 +332,7 @@ body{margin:0} html{scroll-behavior:smooth} section{scroll-margin-top:20px}
   <div class="lab">05 — Interfejs</div><h3>Dokument, dokaz i odluka na istom mestu</h3>
   <p>Zajednički ekran projekta ima pregled, dokumente, zadatke, revizije i module. Unutar aktivnog ZOP modula otvara se radni prostor za dokumentaciju: leva lista sadrži prioritetne nalaze; sredina prikazuje original; desni panel vodi kroz dokaz, pitanje i izmenu. Na manjim ekranima iste celine smenjuju se kroz jasne tabove. Šira navigacija i budući moduli opisani su u odeljku 19.</p>
   <div class="workspace-map" aria-label="Predlog organizacije korisničkog interfejsa">
-    <div class="workspace-bar">NALAZNIK · PROJEKAT · REVIZIJA A → B <span>Pregled · Dokumenti · Zadaci · Revizije · Moduli</span><span>AKTIVNI MODUL: ZAŠTITA OD POŽARA · Dosije · obuhvat · preuzmi paket</span></div>
+    <div class="workspace-bar">PROJECTLENS · PROJEKAT · REVIZIJA A → B <span>Pregled · Dokumenti · Zadaci · Revizije · Moduli</span><span>AKTIVNI MODUL: ZAŠTITA OD POŽARA · Dosije · obuhvat · preuzmi paket</span></div>
     <div class="workspace-col"><div class="lab">Nalazi</div><p>Konflikti<br>Nedostajući dokazi<br>Predložene izmene<br>Otvoreni zadaci</p></div>
     <div class="workspace-col"><div class="lab">Dokument</div><p>Originalna strana<br>Označeno mesto<br>Drugi izvor<br>Pregled razlika</p></div>
     <div class="workspace-col"><div class="lab">Sledeća odluka</div><p>Zašto postoji problem<br>Primena pravila<br>Pitanje projektantu<br>Prihvati predlog</p></div>
@@ -557,13 +557,13 @@ body{margin:0} html{scroll-behavior:smooth} section{scroll-margin-top:20px}
   <div class="lab">18 — Osnova odluke</div><h3>Šta preuzimamo iz istraživanja</h3>
   <p>CrossBeam daje obrazac stručnog znanja i završenog radnog paketa. MaestrIA pokazuje vrednost lokalnog iskustva; Tekton sledljivih dokaza i provera. Njihovi plasmani i rezultati daju smernice, a ne procenat naše verovatnoće pobede. <a href="https://claude.com/blog/meet-the-winners-of-our-built-with-opus-4-6-claude-code-hackathon">Opus 4.6</a> · <a href="https://claude.com/blog/meet-the-winners-of-built-with-opus-4-7-claude-code-hackathon">Opus 4.7</a> · <a href="https://claude.com/blog/meet-the-winners-of-our-claude-opus-4-8-build-day-hackathon">Opus 4.8</a>.</p>
   <p>Istraživanja tehničkih šema opravdavaju razdvajanje ekstrakcije, strukturisanih dokaza i zaključivanja. Njihova tačnost se ne prenosi na ZOP dokumentaciju; potrebno je sopstveno merenje. <a href="https://arxiv.org/abs/2609.05880">Grounded P&amp;ID reasoning</a> · <a href="https://arxiv.org/abs/2603.23910">AnalogAgent</a> · <a href="https://arxiv.org/abs/2607.19568">P&amp;ID → process graphs</a>.</p>
-  <p>Konkurencija već nudi preglede i međudokumentne provere. Nalaznik se razlikuje lokalnim potvrđenim postupkom i dokazanim tokom ispravki. <a href="https://support.bluebeam.com/revu/how-to/use-smart-review.html">Bluebeam Smart Review</a> · <a href="https://codecomply.ai/ai-compliance-design/">CodeComply</a>.</p>
+  <p>Konkurencija već nudi preglede i međudokumentne provere. ProjectLens se razlikuje lokalnim potvrđenim postupkom i dokazanim tokom ispravki. <a href="https://support.bluebeam.com/revu/how-to/use-smart-review.html">Bluebeam Smart Review</a> · <a href="https://codecomply.ai/ai-compliance-design/">CodeComply</a>.</p>
   <div class="box"><span class="k">Zaključak istraživanja</span><h4>Jedna odluka. Povezane izmene. Proverena revizija.</h4><p>Prvi sledeći korak je pregled očevog povezanog slučaja. Iz njega biramo početna pravila, konkretan dokument koji menjamo i dokaz uspeha. Ovaj dokument definiše proizvod koji treba izgraditi; implementirana pokrivenost biće potvrđena testovima.</p></div>
 </section>
 <section id="platforma" class="ops">
 <div class="lab">19 — Dogovor posle sastanka</div>
 
-<h3>Nalaznik je kopilot za sve tehničke discipline</h3>
+<h3>ProjectLens je kopilot za sve tehničke discipline</h3>
 <p><strong>Proizvod ima zajednički radni prostor; prvi izvršivi stručni modul je ZOP.</strong> Ovo je novi dogovor koji ima prednost nad ZOP-specifičnim pozicioniranjem starih dokumenata. Univerzalnost se sada ostvaruje kroz interfejs, model podataka i priključivanje domenskih paketa. Stručne funkcije za druge discipline razvijaju se posle hakatona.</p>
 <p>Početni ekran kaže <strong>„Vaši projekti“</strong>, a glavno dugme <strong>„Novi projekat“</strong>. Kreiranje traži naziv, vrstu/disciplinu, fazu i dokumentaciju. Korisnik može otvoriti arhitektonski, građevinski, elektro, mašinski, hidrotehnički ili drugi tehnički projekat. Za svaki dobija dokumente, verzije, ručne zadatke i istoriju. ZOP pregled pokreće samo kada potvrđeni paket odgovara projektu i postoje potrebni ulazi.</p>
 <div class="scroll" tabindex="0" role="region" aria-label="Tabela"><table>
@@ -726,10 +726,10 @@ gh auth status
 <h3>B pravi jedan repo; A ga klonira</h3>
 <p>Komande su za <strong>novu aplikaciju u zasebnom praznom direktorijumu</strong>. Ne pokretati scaffold preko istraživačkog foldera. <code>$setupSource</code> pokazuje na prateće fajlove ovog dokumenta. Zamenite GitHub owner i kasnije oba handle-a stvarnim vrednostima. Nakon svake komande proverite uspeh; ako komanda prijavi grešku, ne nastavljajte slepo sa sledećom.</p>
 <pre><code class="language-powershell"># B: iz zeljenog roditeljskog direktorijuma za novi repo
-$setupSource = &#39;D:\Faks sav materijal\Hakaton\dokumenti\nalaznik-v3-setup&#39;
-$repo = &#39;YOUR_OWNER/nalaznik&#39;
-npm create vite@latest nalaznik -- --template react-ts
-Set-Location -LiteralPath &#39;.\nalaznik&#39;
+$setupSource = &#39;D:\Faks sav materijal\Hakaton\dokumenti\projectlens-v3-setup&#39;
+$repo = &#39;YOUR_OWNER/projectlens&#39;
+npm create vite@latest projectlens -- --template react-ts
+Set-Location -LiteralPath &#39;.\projectlens&#39;
 npm install
 npm install convex @convex-dev/workflow @daytonaio/sdk
 npm install tailwindcss @tailwindcss/vite
@@ -754,13 +754,13 @@ git add -- .gitignore .env.example CLAUDE.md README.md index.html package.json p
 git diff --cached --check
 git diff --cached --stat
 git status --short
-git commit -m &#39;chore: initialize Nalaznik project&#39;
+git commit -m &#39;chore: initialize ProjectLens project&#39;
 gh repo create $repo --public --source . --remote origin --push
 </code></pre>
 <p>Ako scaffold promeni nazive konfiguracionih fajlova, staging prilagodite stvarnim fajlovima; ne skrivajte neuspešan <code>git add</code>. Pre commita pregledajte i staged sadržaj. B u GitHub <strong>Settings → Collaborators</strong> dodaje A; A prihvata poziv. Repo dobija opis, javni URL kada postoji i početni tag/commit kao granicu prethodne pripreme. <a href="https://cli.github.com/manual/gh_repo_create">GitHub CLI — kreiranje repo-a</a>.</p>
 <pre><code class="language-powershell"># A: u svom direktorijumu, na svom racunaru
-gh repo clone YOUR_OWNER/nalaznik
-Set-Location -LiteralPath &#39;.\nalaznik&#39;
+gh repo clone YOUR_OWNER/projectlens
+Set-Location -LiteralPath &#39;.\projectlens&#39;
 npm ci
 Copy-Item -LiteralPath &#39;.env.example&#39; -Destination &#39;.env.local&#39;
 Copy-Item -LiteralPath &#39;scripts/setup/CLAUDE-A.local.md&#39; -Destination &#39;CLAUDE.local.md&#39;
@@ -905,7 +905,7 @@ if (!process.env.DAYTONA_API_KEY || !process.env.DAYTONA_SNAPSHOT) throw new Err
 const daytona=new Daytona({apiKey:process.env.DAYTONA_API_KEY});
 const sandbox=await daytona.create({snapshot:process.env.DAYTONA_SNAPSHOT,language:'python',autoStopInterval:15});
 try {
-  const result=await sandbox.process.executeCommand('python -c &quot;import fitz, docx, openpyxl, yaml, jsonschema; print(\'NALAZNIK_IMPORTS_OK\')&quot; &amp;&amp; pdftoppm -v &amp;&amp; libreoffice --version',undefined,undefined,60);
+  const result=await sandbox.process.executeCommand('python -c &quot;import fitz, docx, openpyxl, yaml, jsonschema; print(\'PROJECTLENS_IMPORTS_OK\')&quot; &amp;&amp; pdftoppm -v &amp;&amp; libreoffice --version',undefined,undefined,60);
   if (result.exitCode!==0) throw new Error(`Sandbox provera nije prosla, exitCode=${result.exitCode}`);
   console.log('PASS: Python biblioteke, Poppler i LibreOffice dostupni. Sledeci korak je stvarni render fixture-a.');
 } finally {
@@ -921,7 +921,7 @@ try {
 
 <h3>Prompt za prvi UI u Wonder-u</h3>
 <p>B otvara projekat kroz dostupni partner pristup, unosi sledeći brief, izvozi kod u svoju feature granu i proverava diff pre ugradnje. Wonder ne sme prepisati Convex backend, ugovore i lockfile bez B integracije. Fiktivni podaci služe jasno označenom fixture režimu dok pravi podaci ne stignu.</p>
-<pre><code class="language-text">Build Nalaznik, a professional Serbian-language copilot for technical projects.
+<pre><code class="language-text">Build ProjectLens, a professional Serbian-language copilot for technical projects.
 Use React, TypeScript and Tailwind. Design a complete working workspace, not a landing page.
 The product supports multiple engineering disciplines through a shared project shell.
 Only the Fire Protection (ZOP) review module is implemented for this release.
@@ -1151,10 +1151,10 @@ gh issue edit 12 --add-label &#39;status:done&#39; --remove-label &#39;status:re
 <p>U <code>docs/PRODUCT.md</code> mora biti dogovoreni proizvod, u <code>docs/CONTRACTS.md</code> aktuelni ugovor, a u <code>scripts/setup/team.json</code> stvarni GitHub identiteti. Ovi promptovi ne mogu sami znati vaše handle-ove, stanje naloga ili sadržaj očevih još neučitanih materijala.</p>
 <details open><summary>Zajednički CLAUDE.md — obojica koriste ceo blok</summary>
 
-<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Nalaznik — zajednički protokol
+<div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># ProjectLens — zajednički protokol
 
 ## Proizvod i autoritet
-Nalaznik je kopilot za tehničke projekte različitih disciplina.
+ProjectLens je kopilot za tehničke projekte različitih disciplina.
 Zajednički UI i model: predmet, dokumenti, revizije, dosije, dokazi, zadaci i izmene.
 Za hakaton implementiramo samo stručni modul fire_protection (ZOP).
 Ostali moduli imaju oznaku Planirano i ne proizvode rezultate ni ocene.
@@ -1314,8 +1314,8 @@ Handoff piši u docs/handoffs/B.md. Proveri desktop, telefon i javni URL iz drug
 <div class="lab">30 — Prateći fajlovi i predaja</div>
 
 <h3>Sve instrukcije su u dokumentu; fajlovi su spremni za kopiranje</h3>
-<p>Preuzmite <a href="nalaznik-v3-setup.zip">setup paket ZIP</a>. Sadrži zajednički i lokalne Claude promptove, backlog, issue generator, šablone, env primer i smoke testove. HTML sadrži ključne promptove i skripte u celini; prateći fajlovi uklanjaju ručno prepisivanje.</p>
-<ul><li><a download href="nalaznik-v3-setup/CLAUDE.md">CLAUDE.md</a></li><li><a download href="nalaznik-v3-setup/CLAUDE-A.local.md">CLAUDE-A.local.md</a></li><li><a download href="nalaznik-v3-setup/CLAUDE-B.local.md">CLAUDE-B.local.md</a></li><li><a download href="nalaznik-v3-setup/team.example.json">team.example.json</a></li><li><a download href="nalaznik-v3-setup/issue-template.md">issue-template.md</a></li><li><a download href="nalaznik-v3-setup/pr-template.md">pr-template.md</a></li><li><a download href="nalaznik-v3-setup/backlog.json">backlog.json</a></li><li><a download href="nalaznik-v3-setup/create-issues.ps1">create-issues.ps1</a></li><li><a download href="nalaznik-v3-setup/.env.example">.env.example</a></li><li><a download href="nalaznik-v3-setup/.gitignore.append">.gitignore.append</a></li><li><a download href="nalaznik-v3-setup/smoke-api.mjs">smoke-api.mjs</a></li><li><a download href="nalaznik-v3-setup/create-snapshot.mjs">create-snapshot.mjs</a></li><li><a download href="nalaznik-v3-setup/daytona-smoke.mjs">daytona-smoke.mjs</a></li><li><a download href="nalaznik-v3-setup/ci.bootstrap.yml">ci.bootstrap.yml</a></li></ul><details><summary>.env.example — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Lokalni serverski smoke testovi. Popuni u .env.local; bez VITE_ prefiksa za tajne.
+<p>Preuzmite <a href="projectlens-v3-setup.zip">setup paket ZIP</a>. Sadrži zajednički i lokalne Claude promptove, backlog, issue generator, šablone, env primer i smoke testove. HTML sadrži ključne promptove i skripte u celini; prateći fajlovi uklanjaju ručno prepisivanje.</p>
+<ul><li><a download href="projectlens-v3-setup/CLAUDE.md">CLAUDE.md</a></li><li><a download href="projectlens-v3-setup/CLAUDE-A.local.md">CLAUDE-A.local.md</a></li><li><a download href="projectlens-v3-setup/CLAUDE-B.local.md">CLAUDE-B.local.md</a></li><li><a download href="projectlens-v3-setup/team.example.json">team.example.json</a></li><li><a download href="projectlens-v3-setup/issue-template.md">issue-template.md</a></li><li><a download href="projectlens-v3-setup/pr-template.md">pr-template.md</a></li><li><a download href="projectlens-v3-setup/backlog.json">backlog.json</a></li><li><a download href="projectlens-v3-setup/create-issues.ps1">create-issues.ps1</a></li><li><a download href="projectlens-v3-setup/.env.example">.env.example</a></li><li><a download href="projectlens-v3-setup/.gitignore.append">.gitignore.append</a></li><li><a download href="projectlens-v3-setup/smoke-api.mjs">smoke-api.mjs</a></li><li><a download href="projectlens-v3-setup/create-snapshot.mjs">create-snapshot.mjs</a></li><li><a download href="projectlens-v3-setup/daytona-smoke.mjs">daytona-smoke.mjs</a></li><li><a download href="projectlens-v3-setup/ci.bootstrap.yml">ci.bootstrap.yml</a></li></ul><details><summary>.env.example — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code># Lokalni serverski smoke testovi. Popuni u .env.local; bez VITE_ prefiksa za tajne.
 XAI_API_KEY=
 XAI_MODEL=
 ANTHROPIC_API_KEY=
@@ -1341,12 +1341,12 @@ artifacts-local/
 issue-body.local.md
 docs/pr-body.local.md
 </code></pre></div></details><details><summary>team.example.json — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>{
-  &quot;repo&quot;: &quot;YOUR_OWNER/nalaznik&quot;,
+  &quot;repo&quot;: &quot;YOUR_OWNER/projectlens&quot;,
   &quot;builderA&quot;: &quot;GITHUB_HANDLE_A&quot;,
   &quot;builderB&quot;: &quot;GITHUB_HANDLE_B&quot;
 }
 </code></pre></div></details><details><summary>issue-template.md — ceo sadržaj</summary><div class="code-wrap"><button type="button" class="copy-code">Kopiraj</button><pre><code>---
-name: Nalaznik zadatak
+name: ProjectLens zadatak
 about: Isporuciv zadatak sa vlasnikom, SP i dokazom
 ---
 
@@ -1412,8 +1412,8 @@ Ograničenja: šta nije provereno
 </section>
 
 <footer>
-  Nalaznik · specifikacija i runbook v3 · 11.09.2026 · ažurirano prema sastanku tima i runbooku 4 · vizuelni format v2.<br>
-  Dokumenti: <a href="5-nezavisna-revizija-konteksta.md">nezavisna revizija</a> · <a href="6-preporuka-za-hakaton.md">detaljna preporuka</a> · <a href="3-nalaznik-spec-v2.html">arhivirana specifikacija v2</a>.<br>
+  ProjectLens · specifikacija i runbook v3 · 11.09.2026 · ažurirano prema sastanku tima i runbooku 4 · vizuelni format v2.<br>
+  Dokumenti: <a href="5-nezavisna-revizija-konteksta.md">nezavisna revizija</a> · <a href="6-preporuka-za-hakaton.md">detaljna preporuka</a> · <a href="3-projectlens-spec-v2.html">arhivirana specifikacija v2</a>.<br>
   Svi prikazani demo nalazi su ilustracije ponašanja. Stvarni izvori, pragovi i rezultati unose se nakon pregleda i stručne potvrde materijala.<br>
   <a href="#vrh">Nazad na početak ↑</a>
 </footer>

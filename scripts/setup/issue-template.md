@@ -1,5 +1,5 @@
 ---
-name: Nalaznik zadatak
+name: ProjectLens zadatak
 about: Isporuciv zadatak sa vlasnikom, SP i dokazom
 ---
 

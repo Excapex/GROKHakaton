@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nalaznik.local/contracts/dossier.schema.json",
+  "$id": "https://projectlens.local/contracts/dossier.schema.json",
   "title": "Dossier",
   "type": "object",
   "additionalProperties": false,
