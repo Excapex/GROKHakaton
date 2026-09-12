@@ -119,7 +119,7 @@ describe("evaluateMarkApplied", () => {
     if (!gate.ok) expect(gate.reason).toMatch(/Kopije/);
   });
 
-  it("posle uploada kopija vraća revisionId", () => {
+  it("posle uploada kopija sa novim hash-om vraća revisionId", () => {
     const gate = evaluateMarkApplied({
       hasApi: true,
       changeSet: accepted,
@@ -127,6 +127,21 @@ describe("evaluateMarkApplied", () => {
       revisions,
     });
     expect(gate).toEqual({ ok: true, revisionId: "rev2" });
+  });
+
+  it("isti hash na novoj reviziji nije primena", () => {
+    const sameHash: LifecycleDoc[] = [
+      officeDocs[0],
+      { ...officeDocs[1], sha256: "hash-r1" },
+    ];
+    const gate = evaluateMarkApplied({
+      hasApi: true,
+      changeSet: accepted,
+      documents: sameHash,
+      revisions,
+    });
+    expect(gate.ok).toBe(false);
+    if (!gate.ok) expect(gate.reason).toMatch(/Isti hash/);
   });
 });
 
@@ -162,23 +177,24 @@ describe("evaluateMarkVerified", () => {
     if (!gate.ok) expect(gate.reason).toMatch(/Isti hash/);
   });
 
-  it("integrity/anon fixture nisu dokaz", () => {
+  it("integrity/anon fixture nisu dokaz; PASS se ne zahteva", () => {
     const anon = evaluateMarkVerified({
       ...closed,
       dossierSource: "anon_fixture",
     });
     expect(anon.ok).toBe(false);
-    const unknownFinding = evaluateMarkVerified({
-      ...closed,
-      findings: [{ id: "f1", status: "unknown" }],
-    });
-    expect(unknownFinding.ok).toBe(false);
-    const missing = evaluateMarkVerified({
-      ...closed,
-      findings: [{ id: "other", status: "pass" }],
-    });
-    expect(missing.ok).toBe(false);
-    if (!missing.ok) expect(missing.reason).toMatch(/ne izmišlja|nije na novom/i);
+    expect(
+      evaluateMarkVerified({
+        ...closed,
+        findings: [{ id: "f1", status: "unknown" }],
+      }),
+    ).toEqual({ ok: true, revisionId: "rev2" });
+    expect(
+      evaluateMarkVerified({
+        ...closed,
+        findings: [],
+      }),
+    ).toEqual({ ok: true, revisionId: "rev2" });
   });
 
   it("hash promenjen i nalaz zatvoren na ingest revizije 2", () => {

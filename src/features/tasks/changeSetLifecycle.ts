@@ -1,5 +1,6 @@
 import { api } from "../../../convex/_generated/api";
 import type { DefaultFunctionArgs, FunctionReference } from "convex/server";
+import { findingClosedOnReread } from "../../../convex/lib/perception/rereadMeasure.ts";
 
 export type LifecycleDoc = {
   _id: string;
@@ -53,13 +54,21 @@ type PublicMutation<Args extends DefaultFunctionArgs> = FunctionReference<
   Args
 >;
 
-export function readChangeSetLifecycleApi(module: object = api.changeSets) {
-  const rec = module as Record<string, unknown>;
+export function readChangeSetLifecycleApi(module?: object) {
+  if (module) {
+    const rec = module as Record<string, unknown>;
+    return {
+      hasMarkApplied: rec.markApplied != null,
+      hasMarkVerified: rec.markVerified != null,
+      markApplied: asPublicMutation<MarkAppliedArgs>(rec.markApplied),
+      markVerified: asPublicMutation<MarkVerifiedArgs>(rec.markVerified),
+    };
+  }
   return {
-    hasMarkApplied: rec.markApplied != null,
-    hasMarkVerified: rec.markVerified != null,
-    markApplied: asPublicMutation<MarkAppliedArgs>(rec.markApplied),
-    markVerified: asPublicMutation<MarkVerifiedArgs>(rec.markVerified),
+    hasMarkApplied: true,
+    hasMarkVerified: true,
+    markApplied: api.changeSets.markApplied,
+    markVerified: api.changeSets.markVerified,
   };
 }
 
@@ -187,7 +196,31 @@ export function evaluateMarkApplied(input: {
       reason: "Ovo stanje nije korak za primenu.",
     };
   }
-  return copiesOnNewerRevision(input.changeSet, input.documents, input.revisions);
+  const copies = copiesOnNewerRevision(
+    input.changeSet,
+    input.documents,
+    input.revisions,
+  );
+  if (!copies.ok) return copies;
+  const hash = hashMovedOffBase(
+    input.changeSet,
+    input.documents,
+    copies.revisionId,
+  );
+  if (!hash.known) {
+    return {
+      ok: false,
+      reason:
+        "Hash kopije nije uporediv sa osnovom. Isti ili nepoznat hash nije primena.",
+    };
+  }
+  if (!hash.changed) {
+    return {
+      ok: false,
+      reason: "Isti hash nije primena. Kopija mora da se razlikuje od osnove.",
+    };
+  }
+  return copies;
 }
 
 export function evaluateMarkVerified(input: {
@@ -265,24 +298,10 @@ export function evaluateMarkVerified(input: {
       reason: "Nalaz nije vezan za ovaj ChangeSet. ID se ne izmišlja.",
     };
   }
-  const finding = input.findings.find((row) => row.id === input.findingId);
-  if (!finding) {
+  if (!findingClosedOnReread(input.findingId, input.findings)) {
     return {
       ok: false,
-      reason:
-        "Nalaz nije na novom čitanju. Nepoznato ostaje unknown — nije verified.",
-    };
-  }
-  if (finding.status === "unknown") {
-    return {
-      ok: false,
-      reason: "Nalaz je i dalje unknown. Nepoznato ne postaje PASS ni verified.",
-    };
-  }
-  if (finding.status !== "pass") {
-    return {
-      ok: false,
-      reason: `Nalaz na novom čitanju je ${finding.status}, nije zatvoren.`,
+      reason: "Novo čitanje nije zatvorilo nalaz. Provera se ne upisuje.",
     };
   }
   return { ok: true, revisionId: copies.revisionId };
